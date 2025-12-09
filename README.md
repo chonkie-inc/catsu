@@ -4,6 +4,12 @@
 
 # 🔌 mimie 💙
 
+[![PyPI version](https://img.shields.io/pypi/v/mimie.svg)](https://pypi.org/project/mimie/)
+[![Python versions](https://img.shields.io/pypi/pyversions/mimie.svg)](https://pypi.org/project/mimie/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://github.com/chonkie-inc/mimie)
+[![Stars](https://img.shields.io/github/stars/chonkie-inc/mimie?style=social)](https://github.com/chonkie-inc/mimie)
+
 _A unified, batteries-included client for embedding APIs that actually works._
 
 </div>
