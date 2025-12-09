@@ -2,7 +2,7 @@
 
 ![Mimie Logo](./assets/mimie.png)
 
-# 🔌 mimie 💙
+# 🌐 mimie 🚀
 
 [![PyPI version](https://img.shields.io/pypi/v/mimie.svg)](https://pypi.org/project/mimie/)
 [![Python versions](https://img.shields.io/pypi/pyversions/mimie.svg)](https://pypi.org/project/mimie/)
