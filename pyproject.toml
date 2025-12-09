@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mimie"
+version = "0.1.0"
+description = "🌐 A unified, batteries-included client for embedding APIs that actually works 🚀"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+keywords = [
+    "embeddings",
+    "embedding-api",
+    "voyageai",
+    "openai",
+    "cohere",
+    "api-client",
+    "unified-client",
+    "rag",
+    "retrieval",
+    "vector-embeddings",
+]
+authors = [
+    { name = "Bhavnick Minhas", email = "bhavnick@chonkie.ai" }
+]
+maintainers = [
+    { name = "Bhavnick Minhas", email = "bhavnick@chonkie.ai" }
+]
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "httpx>=0.24.0",
+    "pydantic>=2.0.0",
+    "tokenizers>=0.16.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/chonkie-inc/mimie"
+Documentation = "https://github.com/chonkie-inc/mimie"
+"Bug Tracker" = "https://github.com/chonkie-inc/mimie/issues"
+
+[project.optional-dependencies]
+# Optional numpy support for to_numpy() conversion
+numpy = ["numpy>=1.24.0"]
+
+# Development dependencies
+dev = [
+    "pytest>=6.2.0",
+    "pytest-cov>=4.0.0",
+    "pytest-xdist>=2.5.0",
+    "pytest-asyncio>=0.26.0",
+    "coverage",
+    "ruff>=0.0.265",
+    "ty>=0.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = [
+    "mimie",
+    "mimie.providers",
+    "mimie.utils",
+    "mimie.data",
+]
+
+[tool.setuptools.package-data]
+"mimie.data" = ["*.json"]
+
+[tool.ruff]
+exclude = ["*.ipynb"]
+lint.select = ["F", "I", "D"]
+lint.ignore = ["D211", "D213", "D203"]
+
+[tool.ruff.format]
+preview = true
+indent-style = "space"
+
+[tool.ty]
+# Ty static type checker configuration
+# ty will check type hints and provide fast type checking
