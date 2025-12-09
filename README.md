@@ -25,9 +25,9 @@ _A unified, batteries-included client for embedding APIs that actually works._
 
 **Mimie fixes this.** It's a lightweight, unified client built specifically for embeddings with:
 
-🎯 A clean, consistent API across all providers
-🔄 Built-in retry logic with exponential backoff
-💰 Automatic usage and cost tracking
-📚 Rich model metadata and capability discovery
-⚠️ Proper error handling and type hints
+🎯 A clean, consistent API across all providers </br>
+🔄 Built-in retry logic with exponential backoff </br>
+💰 Automatic usage and cost tracking </br>
+📚 Rich model metadata and capability discovery </br>
+⚠️ Proper error handling and type hints </br>
 ⚡ First-class support for both sync and async
