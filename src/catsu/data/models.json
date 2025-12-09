@@ -1,4 +1,48 @@
 {
+  "openai": [
+    {
+      "name": "text-embedding-3-large",
+      "provider": "openai",
+      "dimensions": 3072,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.13,
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    },
+    {
+      "name": "text-embedding-3-small",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.02,
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    },
+    {
+      "name": "text-embedding-ada-002",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.10,
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    }
+  ],
   "voyageai": [
     {
       "name": "voyage-3-large",
@@ -10,7 +54,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-3-large"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
       }
     },
     {
@@ -23,7 +68,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-3.5"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5"
       }
     },
     {
@@ -36,7 +82,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-3.5-lite"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5-lite"
       }
     },
     {
@@ -49,7 +96,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-3"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3"
       }
     },
     {
@@ -62,7 +110,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-3-lite"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-lite"
       }
     },
     {
@@ -75,7 +124,8 @@
       "supports_input_type": true,
       "supports_dimensions": true,
       "tokenizer": {
-        "repo": "voyageai/voyage-code-3"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-3"
       }
     },
     {
@@ -88,7 +138,8 @@
       "supports_input_type": true,
       "supports_dimensions": false,
       "tokenizer": {
-        "repo": "voyageai/voyage-finance-2"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-finance-2"
       }
     },
     {
@@ -101,7 +152,8 @@
       "supports_input_type": true,
       "supports_dimensions": false,
       "tokenizer": {
-        "repo": "voyageai/voyage-law-2"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-law-2"
       }
     },
     {
@@ -114,7 +166,8 @@
       "supports_input_type": true,
       "supports_dimensions": false,
       "tokenizer": {
-        "repo": "voyageai/voyage-code-2"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-2"
       }
     },
     {
@@ -127,7 +180,8 @@
       "supports_input_type": true,
       "supports_dimensions": false,
       "tokenizer": {
-        "repo": "voyageai/voyage-multilingual-2"
+        "engine": "huggingface",
+        "name": "voyageai/voyage-multilingual-2"
       }
     }
   ]

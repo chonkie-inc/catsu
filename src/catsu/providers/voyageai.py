@@ -29,7 +29,7 @@ class VoyageAIProvider(BaseProvider):
 
     Features:
     - Sync and async embedding generation
-    - Local tokenization using HuggingFace tokenizers
+    - Local tokenization (HuggingFace tokenizers or tiktoken)
     - Automatic retry with exponential backoff
     - Cost and latency tracking
 
@@ -86,27 +86,20 @@ class VoyageAIProvider(BaseProvider):
             model: Model name
 
         Returns:
-            HuggingFace tokenizer instance
+            Tokenizer wrapper instance (HuggingFace or tiktoken)
 
         Raises:
-            ImportError: If tokenizers library not installed
+            ImportError: If required tokenizer library not installed
             ProviderError: If tokenizer cannot be loaded
 
         """
+        from catsu.utils import load_tokenizer
+
         # Check cache first
         if model in self._tokenizers:
             return self._tokenizers[model]
 
-        # Import tokenizers library
-        try:
-            from tokenizers import Tokenizer
-        except ImportError as e:
-            raise ImportError(
-                "tokenizers library is required for tokenization. "
-                "Install it with: pip install tokenizers"
-            ) from e
-
-        # Get model info to find tokenizer repo
+        # Get model info to find tokenizer config
         catalog = ModelCatalog()
 
         try:
@@ -117,23 +110,21 @@ class VoyageAIProvider(BaseProvider):
                 provider=self.PROVIDER_NAME,
             ) from e
 
-        if not model_info.tokenizer or "repo" not in model_info.tokenizer:
+        if not model_info.tokenizer:
             raise ProviderError(
                 message=f"No tokenizer configured for model '{model}'",
                 provider=self.PROVIDER_NAME,
             )
 
-        tokenizer_repo = model_info.tokenizer["repo"]
-
-        # Load tokenizer from HuggingFace
+        # Load tokenizer using unified utility
         try:
-            self._log(f"Loading tokenizer from {tokenizer_repo}")
-            tokenizer = Tokenizer.from_pretrained(tokenizer_repo)
+            self._log(f"Loading tokenizer for {model}")
+            tokenizer = load_tokenizer(model_info.tokenizer)
             self._tokenizers[model] = tokenizer
             return tokenizer
         except Exception as e:
             raise ProviderError(
-                message=f"Failed to load tokenizer from '{tokenizer_repo}': {str(e)}",
+                message=f"Failed to load tokenizer for '{model}': {str(e)}",
                 provider=self.PROVIDER_NAME,
             ) from e
 
@@ -479,10 +470,10 @@ class VoyageAIProvider(BaseProvider):
         inputs: List[str],
         **kwargs: Any,
     ) -> TokenizeResponse:
-        """Tokenize inputs using local HuggingFace tokenizer.
+        """Tokenize inputs using local tokenizer.
 
-        Loads the tokenizer from HuggingFace and counts tokens locally
-        without making an API call.
+        Loads the appropriate tokenizer (HuggingFace or tiktoken) and counts
+        tokens locally without making an API call.
 
         Args:
             model: Model name
@@ -493,7 +484,7 @@ class VoyageAIProvider(BaseProvider):
             TokenizeResponse with token count
 
         Raises:
-            ImportError: If tokenizers library not installed
+            ImportError: If required tokenizer library not installed
             ProviderError: If tokenizer cannot be loaded
 
         Example:
@@ -514,8 +505,7 @@ class VoyageAIProvider(BaseProvider):
         # Tokenize all inputs and count tokens
         total_tokens = 0
         for text in inputs:
-            encoding = tokenizer.encode(text)
-            total_tokens += len(encoding.ids)
+            total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(
             tokens=None,  # Don't return actual token IDs
