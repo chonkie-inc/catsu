@@ -102,9 +102,7 @@ def load_tokenizer(
             encoding = tiktoken.get_encoding(name)
             return TiktokenWrapper(encoding)
         except Exception as e:
-            raise ValueError(
-                f"Failed to load tiktoken encoding '{name}': {e}"
-            ) from e
+            raise ValueError(f"Failed to load tiktoken encoding '{name}': {e}") from e
 
     # Load HuggingFace tokenizers
     if engine == "huggingface":
