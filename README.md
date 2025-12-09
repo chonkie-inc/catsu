@@ -5,7 +5,7 @@
 # 🌐 catsu 🐱
 
 [![PyPI version](https://img.shields.io/pypi/v/catsu.svg)](https://pypi.org/project/catsu/)
-[![Python versions](https://img.shields.io/pypi/pyversions/catsu.svg)](https://pypi.org/project/catsu/)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/catsu/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://github.com/chonkie-inc/catsu)
 [![Stars](https://img.shields.io/github/stars/chonkie-inc/catsu?style=social)](https://github.com/chonkie-inc/catsu)
