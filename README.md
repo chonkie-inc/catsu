@@ -14,8 +14,6 @@ _A unified, batteries-included client for embedding APIs that actually works._
 
 </div>
 
-## Why Mimie?
-
 **The world of embedding API clients is broken.**
 
 - Everyone defaults to OpenAI's client for embeddings, even though it wasn't designed for that purpose
