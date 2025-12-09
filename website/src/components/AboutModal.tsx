@@ -59,6 +59,13 @@ export function AboutModal() {
               </div>
 
               <div>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Installation</h3>
+                <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
+                  <code>uv add catsu</code>
+                </pre>
+              </div>
+
+              <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Quick Start</h3>
                 <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
                   <code>{`import catsu
@@ -75,13 +82,6 @@ response = client.embed(
 # Access results
 print(f"Dimensions: {response.dimensions}")
 print(f"Cost: \${response.usage.cost:.6f}")`}</code>
-                </pre>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Installation</h3>
-                <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
-                  <code>pip install catsu</code>
                 </pre>
               </div>
 
