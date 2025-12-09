@@ -3,9 +3,9 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mimie"
+name = "catsu"
 version = "0.0.1a0"
-description = "🌐 A unified, batteries-included client for embedding APIs that actually works 🚀"
+description = "🐱 The embedding client that always lands on its feet 🚀"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
@@ -49,9 +49,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/chonkie-inc/mimie"
-Documentation = "https://github.com/chonkie-inc/mimie"
-"Bug Tracker" = "https://github.com/chonkie-inc/mimie/issues"
+Homepage = "https://github.com/chonkie-inc/catsu"
+Documentation = "https://github.com/chonkie-inc/catsu"
+"Bug Tracker" = "https://github.com/chonkie-inc/catsu/issues"
 
 [project.optional-dependencies]
 # Optional numpy support for to_numpy() conversion
@@ -77,14 +77,14 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.setuptools]
 package-dir = { "" = "src" }
 packages = [
-    "mimie",
-    "mimie.providers",
-    "mimie.utils",
-    "mimie.data",
+    "catsu",
+    "catsu.providers",
+    "catsu.utils",
+    "catsu.data",
 ]
 
 [tool.setuptools.package-data]
-"mimie.data" = ["*.json"]
+"catsu.data" = ["*.json"]
 
 [tool.ruff]
 exclude = ["*.ipynb"]

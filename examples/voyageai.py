@@ -1,16 +1,16 @@
 """VoyageAI Usage Examples.
 
-This example demonstrates how to use Mimie with VoyageAI embedding models.
+This example demonstrates how to use Catsu with VoyageAI embedding models.
 
 Requirements:
     - Set VOYAGE_API_KEY environment variable
-    - pip install mimie
+    - pip install catsu
 """
 
 import asyncio
 import os
 
-from mimie import Client
+from catsu import Client
 
 
 def basic_usage():
@@ -149,7 +149,7 @@ def error_handling():
     """Error handling examples."""
     print("\n=== Error Handling ===")
 
-    from mimie.utils.errors import InvalidInputError, ModelNotFoundError
+    from catsu.utils.errors import InvalidInputError, ModelNotFoundError
 
     client = Client()
 
@@ -174,7 +174,7 @@ def main():
         print("   export VOYAGE_API_KEY='your-api-key-here'")
         return
 
-    print("🌐 Mimie + VoyageAI Examples 🚀")
+    print("🌐 Catsu + VoyageAI Examples 🚀")
     print("=" * 50)
 
     # Run synchronous examples

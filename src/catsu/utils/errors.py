@@ -1,4 +1,4 @@
-"""Custom exception classes for Mimie.
+"""Custom exception classes for Catsu.
 
 Provides a hierarchy of exceptions for different error scenarios, making it
 easier to handle and debug issues when working with embedding providers.
@@ -7,11 +7,11 @@ easier to handle and debug issues when working with embedding providers.
 from typing import Any, Dict, Optional
 
 
-class MimieError(Exception):
-    """Base exception for all Mimie errors.
+class CatsuError(Exception):
+    """Base exception for all Catsu errors.
 
-    All custom exceptions in Mimie inherit from this class, making it easy
-    to catch any Mimie-related error.
+    All custom exceptions in Catsu inherit from this class, making it easy
+    to catch any Catsu-related error.
 
     Attributes:
         message: Error message
@@ -20,7 +20,7 @@ class MimieError(Exception):
     """
 
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
-        """Initialize MimieError.
+        """Initialize CatsuError.
 
         Args:
             message: Error message
@@ -39,7 +39,7 @@ class MimieError(Exception):
         return self.message
 
 
-class ProviderError(MimieError):
+class ProviderError(CatsuError):
     """Exception raised for provider-specific errors.
 
     Raised when an embedding provider returns an error or fails to process
@@ -77,7 +77,7 @@ class ProviderError(MimieError):
         super().__init__(message, details)
 
 
-class ModelNotFoundError(MimieError):
+class ModelNotFoundError(CatsuError):
     """Exception raised when a requested model is not found.
 
     Raised when attempting to use a model that doesn't exist in any provider
@@ -119,7 +119,7 @@ class ModelNotFoundError(MimieError):
         super().__init__(message, details)
 
 
-class AmbiguousModelError(MimieError):
+class AmbiguousModelError(CatsuError):
     """Exception raised when a model name is ambiguous.
 
     Raised when attempting to auto-detect a provider but the model name
@@ -236,7 +236,7 @@ class AuthenticationError(ProviderError):
         )
 
 
-class InvalidInputError(MimieError):
+class InvalidInputError(CatsuError):
     """Exception raised for invalid input parameters.
 
     Raised when the provided input doesn't meet the requirements (e.g.,

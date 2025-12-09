@@ -1,4 +1,4 @@
-# Mimie Examples
+# Catsu Examples
 
 ## Available Examples
 
@@ -8,9 +8,9 @@
 
 ## Setup
 
-1. Install Mimie:
+1. Install Catsu:
 ```bash
-pip install mimie
+pip install catsu
 ```
 
 2. Set your API key:

@@ -1,6 +1,6 @@
-"""Mimie - A unified, batteries-included client for embedding APIs.
+"""Catsu - A unified, batteries-included client for embedding APIs.
 
-Mimie provides a clean, consistent interface for accessing multiple embedding
+Catsu provides a clean, consistent interface for accessing multiple embedding
 providers through a single API with built-in retry logic, cost tracking, and
 rich model metadata.
 """

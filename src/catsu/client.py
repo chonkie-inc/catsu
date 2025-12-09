@@ -1,4 +1,4 @@
-"""Main client for Mimie embedding API.
+"""Main client for Catsu embedding API.
 
 The Client class provides a unified interface for accessing multiple embedding
 providers through a single API.
@@ -28,8 +28,8 @@ class Client:
                   (e.g., {"voyageai": "key123"})
 
     Example:
-        >>> import mimie
-        >>> client = mimie.Client(max_retries=3, timeout=30)
+        >>> import catsu
+        >>> client = catsu.Client(max_retries=3, timeout=30)
         >>>
         >>> # Three ways to specify provider:
         >>> # 1. Separate parameters
@@ -57,7 +57,7 @@ class Client:
         timeout: int = 30,
         api_keys: Optional[Dict[str, str]] = None,
     ) -> None:
-        """Initialize the Mimie client."""
+        """Initialize the Catsu client."""
         self.verbose = verbose
         self.max_retries = max_retries
         self.timeout = timeout
@@ -211,7 +211,7 @@ class Client:
             EmbedResponse with embeddings, usage, and metadata
 
         Raises:
-            MimieError: Base exception for all errors
+            CatsuError: Base exception for all errors
             ProviderError: Provider-specific errors
             ModelNotFoundError: Model not found
             AmbiguousModelError: Model name is ambiguous
