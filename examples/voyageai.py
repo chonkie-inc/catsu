@@ -1,5 +1,4 @@
-"""
-VoyageAI Usage Examples
+"""VoyageAI Usage Examples.
 
 This example demonstrates how to use Mimie with VoyageAI embedding models.
 
@@ -15,18 +14,14 @@ from mimie import Client
 
 
 def basic_usage():
-    """Basic synchronous embedding example."""
+    """Give basic synchronous embedding example."""
     print("\n=== Basic Usage ===")
 
     # Initialize client
     client = Client()
 
     # Generate embeddings (auto-detects VoyageAI for voyage-3)
-    response = client.embed(
-        model="voyage-3",
-        input="Hello, world!",
-        input_type="query"
-    )
+    response = client.embed(model="voyage-3", input="Hello, world!", input_type="query")
 
     print(f"Model: {response.model}")
     print(f"Provider: {response.provider}")
@@ -46,21 +41,17 @@ def batch_embeddings():
     texts = [
         "Machine learning is fascinating",
         "Deep learning powers modern AI",
-        "Natural language processing is evolving"
+        "Natural language processing is evolving",
     ]
 
-    response = client.embed(
-        model="voyage-3-lite",
-        input=texts,
-        input_type="document"
-    )
+    response = client.embed(model="voyage-3-lite", input=texts, input_type="document")
 
     print(f"Embedded {response.input_count} texts")
     print(f"Total tokens: {response.usage.tokens}")
     print(f"Total cost: ${response.usage.cost:.6f}")
 
     for i, embedding in enumerate(response.embeddings):
-        print(f"Text {i+1}: {len(embedding)} dimensions")
+        print(f"Text {i + 1}: {len(embedding)} dimensions")
 
 
 def provider_specification():
@@ -93,18 +84,12 @@ async def async_usage():
     client = Client()
 
     # Single async embedding
-    response = await client.aembed(
-        model="voyage-3",
-        input="Async embedding example"
-    )
+    response = await client.aembed(model="voyage-3", input="Async embedding example")
 
     print(f"Async embedding completed in {response.latency_ms:.2f}ms")
 
     # Parallel async embeddings
-    tasks = [
-        client.aembed(model="voyage-3", input=f"Text {i}")
-        for i in range(3)
-    ]
+    tasks = [client.aembed(model="voyage-3", input=f"Text {i}") for i in range(3)]
 
     responses = await asyncio.gather(*tasks)
     print(f"Processed {len(responses)} embeddings in parallel")
@@ -118,16 +103,12 @@ def tokenization():
 
     client = Client()
 
-    texts = [
-        "Short text",
-        "This is a longer text with more tokens to count"
-    ]
+    texts = ["Short text", "This is a longer text with more tokens to count"]
 
     for text in texts:
         # Count tokens using local tokenizer (no API call!)
         token_response = client._providers["voyageai"].tokenize(
-            model="voyage-3",
-            inputs=[text]
+            model="voyage-3", inputs=[text]
         )
         print(f"'{text[:30]}...' → {token_response.token_count} tokens")
 
@@ -143,8 +124,10 @@ def different_models():
 
     for model in models:
         response = client.embed(model=model, input=text)
-        print(f"{model:20s} - {response.dimensions} dims, "
-              f"{response.usage.tokens} tokens, ${response.usage.cost:.6f}")
+        print(
+            f"{model:20s} - {response.dimensions} dims, "
+            f"{response.usage.tokens} tokens, ${response.usage.cost:.6f}"
+        )
 
 
 def list_available_models():
@@ -156,15 +139,17 @@ def list_available_models():
 
     print(f"Found {len(models)} VoyageAI models:\n")
     for model in models:
-        print(f"  {model['name']:25s} - {model['dimensions']} dims, "
-              f"${model['cost_per_million_tokens']}/M tokens")
+        print(
+            f"  {model['name']:25s} - {model['dimensions']} dims, "
+            f"${model['cost_per_million_tokens']}/M tokens"
+        )
 
 
 def error_handling():
     """Error handling examples."""
     print("\n=== Error Handling ===")
 
-    from mimie.utils.errors import ModelNotFoundError, InvalidInputError
+    from mimie.utils.errors import InvalidInputError, ModelNotFoundError
 
     client = Client()
 
