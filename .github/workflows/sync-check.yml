@@ -1,0 +1,33 @@
+name: Check Models Sync
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  check-models-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare models.json files
+        run: |
+          if ! diff -q src/catsu/data/models.json website/src/models.json > /dev/null 2>&1; then
+            echo "❌ models.json files are out of sync!"
+            echo ""
+            echo "Library:  src/catsu/data/models.json"
+            echo "Website:  website/src/models.json"
+            echo ""
+            echo "Differences:"
+            diff src/catsu/data/models.json website/src/models.json || true
+            echo ""
+            echo "Please ensure both files are identical."
+            exit 1
+          else
+            echo "✅ models.json files are in sync"
+          fi
