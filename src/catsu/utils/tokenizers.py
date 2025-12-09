@@ -19,6 +19,7 @@ class HuggingFaceTokenizerWrapper:
     """Wrapper for HuggingFace tokenizers to provide consistent interface."""
 
     def __init__(self, tokenizer: Any) -> None:
+        """Initialize with a HuggingFace tokenizer."""
         self._tokenizer = tokenizer
 
     def encode(self, text: str) -> List[int]:
@@ -35,6 +36,7 @@ class TiktokenWrapper:
     """Wrapper for tiktoken to provide consistent interface."""
 
     def __init__(self, encoding: Any) -> None:
+        """Initialize with a tiktoken encoding."""
         self._encoding = encoding
 
     def encode(self, text: str) -> List[int]:

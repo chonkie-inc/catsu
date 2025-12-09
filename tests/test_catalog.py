@@ -112,5 +112,14 @@ class TestModelCatalog:
         """Test that models have tokenizer configuration."""
         info = catalog.get_model_info("voyageai", "voyage-3")
         assert info.tokenizer is not None
-        assert "repo" in info.tokenizer
-        assert info.tokenizer["repo"] == "voyageai/voyage-3"
+        assert "engine" in info.tokenizer
+        assert "name" in info.tokenizer
+        assert info.tokenizer["engine"] == "huggingface"
+        assert info.tokenizer["name"] == "voyageai/voyage-3"
+
+    def test_openai_tokenizer_config(self, catalog):
+        """Test that OpenAI models have tiktoken tokenizer configuration."""
+        info = catalog.get_model_info("openai", "text-embedding-3-small")
+        assert info.tokenizer is not None
+        assert info.tokenizer["engine"] == "tiktoken"
+        assert info.tokenizer["name"] == "cl100k_base"
