@@ -23,7 +23,7 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
 
       - name: Install dependencies
-        run: uv sync --dev
+        run: uv pip install -e ".[dev]"
 
       - name: Run Ruff linter
         run: |
