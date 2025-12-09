@@ -50,6 +50,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'provider',
         header: 'PROVIDER',
+        size: 100,
         cell: (info) => (
           <span className="text-xs font-medium uppercase text-gray-900 dark:text-gray-100">
             {info.getValue<string>()}
@@ -59,7 +60,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'name',
         header: 'MODEL',
-        size: 420,
+        size: 470,
         cell: (info) => (
           <span className="text-xs text-gray-700 dark:text-gray-300">
             {info.getValue<string>()}
