@@ -66,7 +66,9 @@ def custom_dimensions():
     print(f"Full dimensions: {response_full.dimensions}")
 
     # Reduce to 256 dimensions
-    response_256 = client.embed(model="text-embedding-3-large", input=text, dimensions=256)
+    response_256 = client.embed(
+        model="text-embedding-3-large", input=text, dimensions=256
+    )
     print(f"Reduced to 256: {response_256.dimensions}")
 
     # Reduce to 1024 dimensions
@@ -85,7 +87,9 @@ def provider_specification():
 
     # Method 1: Explicit provider parameter
     print("\n1. Explicit provider parameter:")
-    response = client.embed(provider="openai", model="text-embedding-3-small", input=text)
+    response = client.embed(
+        provider="openai", model="text-embedding-3-small", input=text
+    )
     print(f"   Provider: {response.provider}, Model: {response.model}")
 
     # Method 2: Provider prefix in model string
@@ -147,7 +151,11 @@ def different_models():
     client = Client()
     text = "Compare embedding models"
 
-    models = ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"]
+    models = [
+        "text-embedding-3-small",
+        "text-embedding-3-large",
+        "text-embedding-ada-002",
+    ]
 
     for model in models:
         response = client.embed(model=model, input=text)
