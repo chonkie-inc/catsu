@@ -44,7 +44,7 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const shortcutHint = document.createElement('kbd');
       shortcutHint.textContent = isMac ? 'cmd + k' : 'ctrl + k';
-      shortcutHint.className = 'absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded pointer-events-none';
+      shortcutHint.className = 'hidden md:inline-flex absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded pointer-events-none';
 
       wrapper.appendChild(searchInput);
       wrapper.appendChild(shortcutHint);
