@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -263,38 +263,106 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
     }
   }, [providerCount, onProviderCountChange]);
 
+  // Refs for sticky header functionality
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const theadRef = useRef<HTMLTableSectionElement>(null);
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Navbar height (py-3 = 24px + h-8 = 32px content = ~56px, but measure dynamically)
+  const navbarHeight = 57;
+
+  // Handle scroll to show/hide sticky header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (theadRef.current) {
+        const rect = theadRef.current.getBoundingClientRect();
+        // Show sticky header when original header scrolls past navbar
+        setShowStickyHeader(rect.top < navbarHeight);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [navbarHeight]);
+
+  // Sync horizontal scroll
+  const handleHorizontalScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setScrollLeft(e.currentTarget.scrollLeft);
+  }, []);
+
+  // Get column widths for consistent sizing
+  const getColumnStyle = (size: number) => ({
+    width: size,
+    minWidth: size,
+    maxWidth: size,
+  });
+
+  // Render header row content (shared between original and sticky)
+  const renderHeaderContent = () => (
+    <>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-800">
+          {headerGroup.headers.map((header) => (
+            <th
+              key={header.id}
+              className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 bg-gray-50 dark:bg-gray-900"
+              style={header.getSize() !== 150 ? getColumnStyle(header.getSize()) : undefined}
+              onClick={header.column.getToggleSortingHandler()}
+            >
+              <div className="flex items-center space-x-1">
+                <span>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </span>
+                {header.column.getIsSorted() && (
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {header.column.getIsSorted() === 'asc' ? '↑' : '↓'}
+                  </span>
+                )}
+              </div>
+            </th>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+
   return (
-    <div className="w-full overflow-x-auto">
-      {/* Table */}
-      <div className="border-t border-gray-200 dark:border-gray-800 min-w-max">
-        <table className="w-full text-xs">
-          <thead className="bg-gray-50 dark:bg-gray-900">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-800">
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 bg-gray-50 dark:bg-gray-900"
-                      style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      <div className="flex items-center space-x-1">
-                        <span>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </span>
-                        {header.column.getIsSorted() && (
-                          <span className="text-gray-900 dark:text-gray-100">
-                            {header.column.getIsSorted() === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              ))}
+    <div className="w-full">
+      {/* Sticky header that appears when scrolling */}
+      {showStickyHeader && (
+        <div
+          className="fixed left-0 right-0 z-40 overflow-hidden border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900"
+          style={{ top: navbarHeight }}
+        >
+          <div
+            style={{ transform: `translateX(-${scrollLeft}px)` }}
+          >
+            <table className="text-xs" style={{ tableLayout: 'fixed' }}>
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                {renderHeaderContent()}
+              </thead>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Main scrollable container */}
+      <div
+        ref={scrollContainerRef}
+        className="w-full overflow-x-auto"
+        onScroll={handleHorizontalScroll}
+      >
+        {/* Table */}
+        <div className="border-t border-gray-200 dark:border-gray-800">
+          <table className="text-xs" style={{ tableLayout: 'fixed' }}>
+            <thead ref={theadRef} className="bg-gray-50 dark:bg-gray-900">
+              {renderHeaderContent()}
             </thead>
             <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-100 dark:divide-gray-800">
               {table.getRowModel().rows.map((row) => (
@@ -306,7 +374,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
                     <td
                       key={cell.id}
                       className="px-4 py-2.5"
-                      style={{ width: cell.column.getSize() !== 150 ? cell.column.getSize() : undefined }}
+                      style={cell.column.getSize() !== 150 ? getColumnStyle(cell.column.getSize()) : undefined}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
@@ -315,6 +383,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
               ))}
             </tbody>
           </table>
+        </div>
       </div>
     </div>
   );
