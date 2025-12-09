@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from mimie.models import EmbedResponse, ModelInfo, TokenizeResponse, Usage
+from catsu.models import EmbedResponse, ModelInfo, TokenizeResponse, Usage
 
 
 class TestUsage:

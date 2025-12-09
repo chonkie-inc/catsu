@@ -2,9 +2,9 @@
 
 import pytest
 
-from mimie.catalog import ModelCatalog
-from mimie.models import ModelInfo
-from mimie.utils.errors import ModelNotFoundError
+from catsu.catalog import ModelCatalog
+from catsu.models import ModelInfo
+from catsu.utils.errors import ModelNotFoundError
 
 
 class TestModelCatalog:

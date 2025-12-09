@@ -28,15 +28,15 @@ jobs:
       - name: Run Ruff linter
         run: |
           source .venv/bin/activate
-          ruff check src/mimie tests/
+          ruff check src/catsu tests/
 
       - name: Run Ruff formatter check
         run: |
           source .venv/bin/activate
-          ruff format --check src/mimie tests/
+          ruff format --check src/catsu tests/
 
       - name: Run type checker (ty)
         run: |
           source .venv/bin/activate
-          ty check src/mimie
+          ty check src/catsu
         continue-on-error: true

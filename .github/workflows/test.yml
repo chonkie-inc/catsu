@@ -33,14 +33,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface/hub
-          key: ubuntu-huggingface-tokenizers-${{ hashFiles('src/mimie/data/models.json') }}
+          key: ubuntu-huggingface-tokenizers-${{ hashFiles('src/catsu/data/models.json') }}
           restore-keys: |
             ubuntu-huggingface-tokenizers-
 
       - name: Run unit tests
         run: |
           source .venv/bin/activate
-          python -m pytest -n auto -vv --cov=mimie --cov-report=xml --cov-report=term-missing
+          python -m pytest -n auto -vv --cov=catsu --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.12'

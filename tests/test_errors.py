@@ -1,10 +1,10 @@
 """Tests for custom exceptions."""
 
-from mimie.utils.errors import (
+from catsu.utils.errors import (
     AmbiguousModelError,
     AuthenticationError,
+    CatsuError,
     InvalidInputError,
-    MimieError,
     ModelNotFoundError,
     NetworkError,
     ProviderError,
@@ -13,19 +13,19 @@ from mimie.utils.errors import (
 )
 
 
-class TestMimieError:
-    """Tests for base MimieError."""
+class TestCatsuError:
+    """Tests for base CatsuError."""
 
     def test_basic_error(self):
         """Test basic error creation."""
-        error = MimieError("Something went wrong")
+        error = CatsuError("Something went wrong")
         assert str(error) == "Something went wrong"
         assert error.message == "Something went wrong"
         assert error.details == {}
 
     def test_error_with_details(self):
         """Test error with additional details."""
-        error = MimieError("Error occurred", details={"key": "value"})
+        error = CatsuError("Error occurred", details={"key": "value"})
         assert "key=value" in str(error)
         assert error.details["key"] == "value"
 

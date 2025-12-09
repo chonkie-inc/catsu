@@ -1,1 +1,1 @@
-"""Mimie test suite."""
+"""Catsu test suite."""

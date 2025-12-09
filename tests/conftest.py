@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for Mimie tests."""
+"""Shared pytest fixtures for Catsu tests."""
 
 import os
 

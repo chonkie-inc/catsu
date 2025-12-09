@@ -5,9 +5,9 @@ import os
 import httpx
 import pytest
 
-from mimie.models import EmbedResponse
-from mimie.providers.voyageai import VoyageAIProvider
-from mimie.utils.errors import InvalidInputError
+from catsu.models import EmbedResponse
+from catsu.providers.voyageai import VoyageAIProvider
+from catsu.utils.errors import InvalidInputError
 
 
 class TestVoyageAIProvider:

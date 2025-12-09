@@ -138,7 +138,7 @@ class EmbedResponse(BaseModel):
     def to_numpy(self) -> "np.ndarray":
         """Convert embeddings to numpy array.
 
-        Requires numpy to be installed (mimie[numpy]).
+        Requires numpy to be installed (catsu[numpy]).
 
         Returns:
             numpy.ndarray of shape (input_count, dimensions)
@@ -160,7 +160,7 @@ class EmbedResponse(BaseModel):
         except ImportError as e:
             raise ImportError(
                 "numpy is required for to_numpy(). "
-                "Install it with: pip install mimie[numpy]"
+                "Install it with: pip install catsu[numpy]"
             ) from e
 
     def __repr__(self) -> str:

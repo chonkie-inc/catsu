@@ -4,9 +4,9 @@ import os
 
 import pytest
 
-from mimie import Client
-from mimie.models import EmbedResponse
-from mimie.utils.errors import (
+from catsu import Client
+from catsu.models import EmbedResponse
+from catsu.utils.errors import (
     InvalidInputError,
     ModelNotFoundError,
 )
