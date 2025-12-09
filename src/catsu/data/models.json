@@ -625,7 +625,8 @@
       ],
       "quantizations": [
         "float",
-        "int8"
+        "int8",
+        "binary"
       ],
       "supports_batching": true,
       "supports_input_type": false,
