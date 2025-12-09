@@ -73,8 +73,8 @@ response = client.embed(
 )
 
 # Access results
-print(f"Dimensions: ${"{"}{response.dimensions}{"}"}")
-print(f"Cost: ${"$"}{response.usage.cost:.6f}")`}</code>
+print(f"Dimensions: {response.dimensions}")
+print(f"Cost: \${response.usage.cost:.6f}")`}</code>
                 </pre>
               </div>
 
