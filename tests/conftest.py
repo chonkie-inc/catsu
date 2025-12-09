@@ -40,3 +40,22 @@ def skip_if_no_voyage_key():
     """Skip test if VoyageAI API key is not set."""
     if not os.getenv("VOYAGE_API_KEY"):
         pytest.skip("VOYAGE_API_KEY not set")
+
+
+@pytest.fixture
+def cohere_api_key():
+    """Get Cohere API key from environment."""
+    return os.getenv("COHERE_API_KEY")
+
+
+@pytest.fixture
+def has_cohere_api_key():
+    """Check if Cohere API key is available."""
+    return os.getenv("COHERE_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_cohere_key():
+    """Skip test if Cohere API key is not set."""
+    if not os.getenv("COHERE_API_KEY"):
+        pytest.skip("COHERE_API_KEY not set")

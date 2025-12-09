@@ -16,6 +16,7 @@ interface Model {
   max_input_tokens: number;
   cost_per_million_tokens: number;
   modalities: string[];
+  quantizations?: string[];
   supports_batching: boolean;
   supports_input_type: boolean;
   supports_dimensions: boolean;
@@ -26,6 +27,12 @@ interface Model {
 const modalityBadge: Record<string, string> = {
   text: 'T',
   image: 'I',
+};
+
+const quantizationBadge: Record<string, string> = {
+  float: 'F',
+  int8: 'I',
+  binary: 'B',
 };
 
 interface ModelsTableProps {
@@ -138,6 +145,27 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
                   title={modality}
                 >
                   {modalityBadge[modality] || modality[0].toUpperCase()}
+                </span>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'quantizations',
+        header: 'QUANT',
+        size: 90,
+        cell: (info) => {
+          const quantizations = info.getValue<string[]>() || ['float'];
+          return (
+            <div className="flex gap-1">
+              {quantizations.map((quant) => (
+                <span
+                  key={quant}
+                  className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-semibold border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
+                  title={quant}
+                >
+                  {quantizationBadge[quant] || quant[0].toUpperCase()}
                 </span>
               ))}
             </div>

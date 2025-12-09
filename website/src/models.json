@@ -6,7 +6,9 @@
       "dimensions": 3072,
       "max_input_tokens": 8191,
       "cost_per_million_tokens": 0.13,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": false,
       "supports_dimensions": true,
@@ -15,7 +17,10 @@
       "tokenizer": {
         "engine": "tiktoken",
         "name": "cl100k_base"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "text-embedding-3-small",
@@ -23,7 +28,9 @@
       "dimensions": 1536,
       "max_input_tokens": 8191,
       "cost_per_million_tokens": 0.02,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": false,
       "supports_dimensions": true,
@@ -32,15 +39,20 @@
       "tokenizer": {
         "engine": "tiktoken",
         "name": "cl100k_base"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "text-embedding-ada-002",
       "provider": "openai",
       "dimensions": 1536,
       "max_input_tokens": 8191,
-      "cost_per_million_tokens": 0.10,
-      "modalities": ["text"],
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": false,
       "supports_dimensions": false,
@@ -49,7 +61,10 @@
       "tokenizer": {
         "engine": "tiktoken",
         "name": "cl100k_base"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     }
   ],
   "voyageai": [
@@ -59,7 +74,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.18,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -68,7 +85,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-3-large"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-3.5",
@@ -76,7 +96,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.06,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -85,7 +107,12 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-3.5"
-      }
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ]
     },
     {
       "name": "voyage-3.5-lite",
@@ -93,7 +120,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.02,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -102,7 +131,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-3.5-lite"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-3",
@@ -110,7 +142,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.06,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -119,7 +153,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-3"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-3-lite",
@@ -127,7 +164,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.02,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -136,7 +175,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-3-lite"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-code-3",
@@ -144,7 +186,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.18,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
@@ -153,7 +197,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-code-3"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-finance-2",
@@ -161,7 +208,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.12,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": false,
@@ -170,7 +219,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-finance-2"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-law-2",
@@ -178,7 +230,9 @@
       "dimensions": 1024,
       "max_input_tokens": 16000,
       "cost_per_million_tokens": 0.12,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": false,
@@ -187,7 +241,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-law-2"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-code-2",
@@ -195,7 +252,9 @@
       "dimensions": 1536,
       "max_input_tokens": 16000,
       "cost_per_million_tokens": 0.12,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": false,
@@ -204,7 +263,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-code-2"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-multilingual-2",
@@ -212,7 +274,9 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.12,
-      "modalities": ["text"],
+      "modalities": [
+        "text"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": false,
@@ -221,7 +285,10 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-multilingual-2"
-      }
+      },
+      "quantizations": [
+        "float"
+      ]
     },
     {
       "name": "voyage-multimodal-3",
@@ -229,7 +296,10 @@
       "dimensions": 1024,
       "max_input_tokens": 32000,
       "cost_per_million_tokens": 0.12,
-      "modalities": ["text", "image"],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": false,
@@ -238,7 +308,124 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "voyageai/voyage-multimodal-3"
+      },
+      "quantizations": [
+        "float"
+      ]
+    }
+  ],
+  "cohere": [
+    {
+      "name": "embed-v4.0",
+      "provider": "cohere",
+      "dimensions": 1536,
+      "max_input_tokens": 128000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 64.98,
+      "rteb_score": 71.4,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-v4"
       }
+    },
+    {
+      "name": "embed-english-v3.0",
+      "provider": "cohere",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 66.21,
+      "rteb_score": 51.89,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-english-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ]
+    },
+    {
+      "name": "embed-english-light-v3.0",
+      "provider": "cohere",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 64.59,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-english-light-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ]
+    },
+    {
+      "name": "embed-multilingual-v3.0",
+      "provider": "cohere",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 66.01,
+      "rteb_score": 55.43,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-multilingual-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ]
+    },
+    {
+      "name": "embed-multilingual-light-v3.0",
+      "provider": "cohere",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 62.75,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-multilingual-light-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ]
     }
   ]
 }
