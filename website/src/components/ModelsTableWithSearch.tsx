@@ -20,33 +20,35 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
   const [searchValue, setSearchValue] = useState('');
   const [rowCount, setRowCount] = useState(models.length);
 
-  // Inject search bar into navbar
+  // Inject search bar into navbar (only once on mount)
   useEffect(() => {
     const navbarSearch = document.getElementById('navbar-search');
-    const navbarModelCount = document.getElementById('navbar-model-count');
 
     if (navbarSearch && !navbarSearch.querySelector('input')) {
       const searchInput = document.createElement('input');
       searchInput.type = 'text';
-      searchInput.placeholder = 'Filter by model';
-      searchInput.className = 'w-48 px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-600';
-      searchInput.value = searchValue;
+      searchInput.placeholder = 'Filter';
+      searchInput.className = 'w-24 md:w-48 px-2 md:px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-600';
       searchInput.addEventListener('input', (e) => {
         setSearchValue((e.target as HTMLInputElement).value);
       });
       navbarSearch.appendChild(searchInput);
     }
+  }, []);
 
-    // Update model count in navbar
+  // Update model count in navbar
+  useEffect(() => {
+    const navbarModelCount = document.getElementById('navbar-model-count');
     if (navbarModelCount) {
       navbarModelCount.textContent = rowCount.toString();
     }
-  }, [rowCount, searchValue]);
+  }, [rowCount]);
 
   return (
     <div>
       <ModelsTable
         models={models}
+        filterValue={searchValue}
         onFilterChange={setSearchValue}
         onRowCountChange={setRowCount}
       />

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -22,13 +22,19 @@ interface Model {
 
 interface ModelsTableProps {
   models: Model[];
+  filterValue?: string;
   onFilterChange?: (filter: string) => void;
   onRowCountChange?: (count: number) => void;
 }
 
-export function ModelsTable({ models, onFilterChange, onRowCountChange }: ModelsTableProps) {
-  const [globalFilter, setGlobalFilter] = useState('');
+export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCountChange }: ModelsTableProps) {
+  const [globalFilter, setGlobalFilter] = useState(filterValue);
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  // Sync external filterValue with internal state
+  useEffect(() => {
+    setGlobalFilter(filterValue);
+  }, [filterValue]);
 
   const columns = useMemo<ColumnDef<Model>[]>(
     () => [
@@ -127,16 +133,18 @@ export function ModelsTable({ models, onFilterChange, onRowCountChange }: Models
 
   // Notify parent of row count changes
   const rowCount = table.getRowModel().rows.length;
-  if (onRowCountChange) {
-    onRowCountChange(rowCount);
-  }
+  useEffect(() => {
+    if (onRowCountChange) {
+      onRowCountChange(rowCount);
+    }
+  }, [rowCount, onRowCountChange]);
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       {/* Table */}
-      <div className="border-t border-gray-200 dark:border-gray-800">
+      <div className="border-t border-gray-200 dark:border-gray-800 min-w-max">
         <table className="w-full text-xs">
-          <thead className="sticky top-[49px] z-40 bg-gray-50 dark:bg-gray-900">
+          <thead className="bg-gray-50 dark:bg-gray-900">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-800">
                   {headerGroup.headers.map((header) => (
