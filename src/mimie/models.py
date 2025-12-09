@@ -5,9 +5,15 @@ This module defines the response models and data structures used throughout
 the Mimie library, providing type safety and validation.
 """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
+
+if TYPE_CHECKING:
+    try:
+        import numpy as np  # type: ignore
+    except ImportError:
+        np = None  # type: ignore
 
 
 class Usage(BaseModel):
@@ -132,7 +138,7 @@ class EmbedResponse(BaseModel):
                 raise ValueError("all embeddings must have the same length")
         return v
 
-    def to_numpy(self) -> Any:
+    def to_numpy(self) -> "np.ndarray":
         """
         Convert embeddings to numpy array.
 
@@ -151,7 +157,7 @@ class EmbedResponse(BaseModel):
             (1, 1024)
         """
         try:
-            import numpy as np
+            import numpy as np  # type: ignore
 
             return np.array(self.embeddings)
         except ImportError as e:
