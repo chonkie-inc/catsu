@@ -2,7 +2,7 @@
 
 ![Catsu Logo](./assets/catsu.png)
 
-# 🌐 catsu 🚀
+# 🌐 catsu 🐱
 
 [![PyPI version](https://img.shields.io/pypi/v/catsu.svg)](https://pypi.org/project/catsu/)
 [![Python versions](https://img.shields.io/pypi/pyversions/catsu.svg)](https://pypi.org/project/catsu/)
@@ -31,3 +31,54 @@ _A unified, batteries-included client for embedding APIs that actually works._
 📚 Rich model metadata and capability discovery </br>
 ⚠️ Proper error handling and type hints </br>
 ⚡ First-class support for both sync and async
+
+## 📦 Install
+
+Install with pip:
+```bash
+pip install catsu
+```
+
+Or with uv (recommended):
+```bash
+uv pip install catsu
+```
+
+## 🚀 Quick Start
+
+Get started in seconds! Just import catsu, create a client, and start embedding:
+
+```python
+import catsu
+
+# Initialize the client
+client = catsu.Client()
+
+# Generate embeddings (auto-detects provider from model name)
+response = client.embed(
+    model="voyage-3",
+    input="Hello, embeddings!"
+)
+
+# Access your results
+print(f"Dimensions: {response.dimensions}")
+print(f"Tokens used: {response.usage.tokens}")
+print(f"Cost: ${response.usage.cost:.6f}")
+print(f"Embedding: {response.embeddings[0][:5]}...")  # First 5 dims
+```
+
+That's it! No configuration needed—catsu picks up your API keys from environment variables automatically (`VOYAGE_API_KEY`, `OPENAI_API_KEY`, etc.).
+
+**Want more control?** Specify the provider explicitly:
+```python
+# Method 1: Separate parameters
+response = client.embed(provider="voyageai", model="voyage-3", input="Hello!")
+
+# Method 2: Provider prefix
+response = client.embed(model="voyageai:voyage-3", input="Hello!")
+```
+
+**Need async?** Just use `aembed`:
+```python
+response = await client.aembed(model="voyage-3", input="Hello, async world!")
+```
