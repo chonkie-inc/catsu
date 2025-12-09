@@ -106,6 +106,7 @@ class Client:
             "voyageai": "VOYAGE_API_KEY",
             "openai": "OPENAI_API_KEY",
             "cohere": "COHERE_API_KEY",
+            "jinaai": "JINA_API_KEY",
         }
 
         env_var = env_var_map.get(provider)

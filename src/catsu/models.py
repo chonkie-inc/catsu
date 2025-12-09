@@ -221,6 +221,12 @@ class ModelInfo(BaseModel):
     modalities: List[str] = Field(
         default=["text"], description="Supported modalities (e.g., text, image)"
     )
+    quantizations: List[str] = Field(
+        default=["float"], description="Supported quantization formats (e.g., float, int8, binary)"
+    )
+    release_date: Optional[str] = Field(
+        default=None, description="Model release date (YYYY-MM-DD format)"
+    )
 
     @field_validator("dimensions", "max_input_tokens")
     @classmethod

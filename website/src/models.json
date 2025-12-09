@@ -118,6 +118,147 @@
       "release_date": "2023-11-02"
     }
   ],
+  "jinaai": [
+    {
+      "name": "jina-embeddings-v4",
+      "provider": "jinaai",
+      "dimensions": 2048,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 67.9,
+      "release_date": "2025-06-24",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v4"
+      }
+    },
+    {
+      "name": "jina-embeddings-v3",
+      "provider": "jinaai",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2024-09-18",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v3"
+      }
+    },
+    {
+      "name": "jina-code-embeddings-1.5b",
+      "provider": "jinaai",
+      "dimensions": 1536,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-09-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-code-embeddings-1.5b"
+      }
+    },
+    {
+      "name": "jina-code-embeddings-0.5b",
+      "provider": "jinaai",
+      "dimensions": 896,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-09-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-code-embeddings-0.5b"
+      }
+    },
+    {
+      "name": "jina-embeddings-v2-base-en",
+      "provider": "jinaai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 45.97,
+      "rteb_score": 42.12,
+      "release_date": "2023-10-28",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v2-base-en"
+      }
+    },
+    {
+      "name": "jina-embeddings-v2-base-code",
+      "provider": "jinaai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2024-02-15",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v2-base-code"
+      }
+    }
+  ],
   "openai": [
     {
       "name": "text-embedding-3-large",

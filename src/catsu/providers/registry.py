@@ -7,12 +7,14 @@ from typing import Dict, Type
 
 from .base import BaseProvider
 from .cohere import CohereProvider
+from .jinaai import JinaAIProvider
 from .openai import OpenAIProvider
 from .voyageai import VoyageAIProvider
 
 # Registry of available providers
 registry: Dict[str, Type[BaseProvider]] = {
     "cohere": CohereProvider,
+    "jinaai": JinaAIProvider,
     "openai": OpenAIProvider,
     "voyageai": VoyageAIProvider,
 }

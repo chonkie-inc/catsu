@@ -59,3 +59,22 @@ def skip_if_no_cohere_key():
     """Skip test if Cohere API key is not set."""
     if not os.getenv("COHERE_API_KEY"):
         pytest.skip("COHERE_API_KEY not set")
+
+
+@pytest.fixture
+def jina_api_key():
+    """Get Jina AI API key from environment."""
+    return os.getenv("JINA_API_KEY")
+
+
+@pytest.fixture
+def has_jina_api_key():
+    """Check if Jina AI API key is available."""
+    return os.getenv("JINA_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_jina_key():
+    """Skip test if Jina AI API key is not set."""
+    if not os.getenv("JINA_API_KEY"):
+        pytest.skip("JINA_API_KEY not set")
