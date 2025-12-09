@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/chonkie-inc/catsu/blob/main/README.md
+    about: Check out the documentation for usage examples and guides
+  - name: 💬 Discussions
+    url: https://github.com/chonkie-inc/catsu/discussions
+    about: Ask questions and discuss ideas with the community

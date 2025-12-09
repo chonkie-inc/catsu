@@ -1,0 +1,57 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feat]: "
+labels: ["enhancement"]
+assignees:
+  - chonknick
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe what you'd like to see.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: I would like catsu to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: I also thought about...
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Code Example
+      description: If applicable, provide a code example of how you'd like to use this feature
+      placeholder: |
+        ```python
+        import catsu
+        client = catsu.Client()
+        # Example usage of proposed feature
+        ```
+      render: python
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples about the feature request
+      placeholder: Any additional information that might help us understand your request

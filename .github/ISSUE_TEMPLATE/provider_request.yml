@@ -1,0 +1,91 @@
+name: Provider Request
+description: Request support for a new embedding provider
+title: "Add [Provider Name] provider"
+labels: ["provider", "enhancement"]
+assignees:
+  - chonknick
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a new provider! Please provide details below.
+
+  - type: input
+    id: provider-name
+    attributes:
+      label: Provider Name
+      description: Name of the embedding provider
+      placeholder: e.g., OpenAI, Cohere, Jina AI
+    validations:
+      required: true
+
+  - type: input
+    id: provider-url
+    attributes:
+      label: Provider Website/Documentation
+      description: Link to the provider's website or API documentation
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: textarea
+    id: models
+    attributes:
+      label: Models to Support
+      description: List the specific embedding models this provider offers
+      placeholder: |
+        - model-name-1 (dimensions, cost)
+        - model-name-2 (dimensions, cost)
+    validations:
+      required: true
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Provider Features
+      description: What features does this provider support?
+      placeholder: |
+        - Batch embeddings
+        - Configurable dimensions
+        - Input type specification
+        - etc.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this provider to you?
+      options:
+        - High - I need this for a project
+        - Medium - Would be nice to have
+        - Low - Just a suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Why do you need this provider? What will you use it for?
+      placeholder: Describe your use case...
+    validations:
+      required: true
+
+  - type: textarea
+    id: api-key
+    attributes:
+      label: API Key Availability
+      description: Do you have access to this provider's API for testing?
+      placeholder: Yes/No - and any details about getting API access
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, pricing info, or special considerations
+      placeholder: Any additional information that might help...
