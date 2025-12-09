@@ -1,0 +1,134 @@
+{
+  "voyageai": [
+    {
+      "name": "voyage-3-large",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-3-large"
+      }
+    },
+    {
+      "name": "voyage-3.5",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-3.5"
+      }
+    },
+    {
+      "name": "voyage-3.5-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-3.5-lite"
+      }
+    },
+    {
+      "name": "voyage-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-3"
+      }
+    },
+    {
+      "name": "voyage-3-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-3-lite"
+      }
+    },
+    {
+      "name": "voyage-code-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "tokenizer": {
+        "repo": "voyageai/voyage-code-3"
+      }
+    },
+    {
+      "name": "voyage-finance-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "tokenizer": {
+        "repo": "voyageai/voyage-finance-2"
+      }
+    },
+    {
+      "name": "voyage-law-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "tokenizer": {
+        "repo": "voyageai/voyage-law-2"
+      }
+    },
+    {
+      "name": "voyage-code-2",
+      "provider": "voyageai",
+      "dimensions": 1536,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "tokenizer": {
+        "repo": "voyageai/voyage-code-2"
+      }
+    },
+    {
+      "name": "voyage-multilingual-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "tokenizer": {
+        "repo": "voyageai/voyage-multilingual-2"
+      }
+    }
+  ]
+}
