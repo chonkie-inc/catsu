@@ -158,6 +158,7 @@ class TestModelInfo:
         )
         assert info.name == "voyage-3"
         assert info.dimensions == 1024
+        assert info.tokenizer is not None
         assert info.tokenizer["repo"] == "voyageai/voyage-3"
 
     def test_negative_dimensions(self):

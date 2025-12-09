@@ -38,5 +38,4 @@ jobs:
       - name: Run type checker (ty)
         run: |
           source .venv/bin/activate
-          ty check src/catsu
-        continue-on-error: true
+          ty check src/catsu tests/
