@@ -172,7 +172,12 @@ class CohereProvider(BaseProvider):
 
         # Add input_type if provided
         if input_type:
-            valid_types = ("search_document", "search_query", "classification", "clustering")
+            valid_types = (
+                "search_document",
+                "search_query",
+                "classification",
+                "clustering",
+            )
             if input_type not in valid_types:
                 raise InvalidInputError(
                     f"input_type must be one of {valid_types}, got '{input_type}'",
@@ -356,7 +361,12 @@ class CohereProvider(BaseProvider):
         standard_input_type = "document"
         if input_type in ("search_query", "query"):
             standard_input_type = "query"
-        elif input_type in ("search_document", "document", "classification", "clustering"):
+        elif input_type in (
+            "search_document",
+            "document",
+            "classification",
+            "clustering",
+        ):
             standard_input_type = "document"
 
         return EmbedResponse(
@@ -415,7 +425,9 @@ class CohereProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embed"
-        payload = self._build_request_payload(model, inputs, input_type, truncate, **kwargs)
+        payload = self._build_request_payload(
+            model, inputs, input_type, truncate, **kwargs
+        )
         headers = self._get_headers()
 
         # Make request with retry logic
@@ -472,7 +484,9 @@ class CohereProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embed"
-        payload = self._build_request_payload(model, inputs, input_type, truncate, **kwargs)
+        payload = self._build_request_payload(
+            model, inputs, input_type, truncate, **kwargs
+        )
         headers = self._get_headers()
 
         # Make async request with retry logic
