@@ -26,10 +26,7 @@ class TestClientInitialization:
     def test_client_init_custom_params(self):
         """Test client initializes with custom parameters."""
         client = Client(
-            verbose=True,
-            max_retries=5,
-            timeout=60,
-            api_keys={"voyageai": "test-key"}
+            verbose=True, max_retries=5, timeout=60, api_keys={"voyageai": "test-key"}
         )
         assert client.verbose is True
         assert client.max_retries == 5
@@ -120,15 +117,13 @@ class TestClientEmbedding:
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_with_explicit_provider(self, skip_if_no_voyage_key):
         """Test embedding with explicit provider."""
         client = Client()
         response = client.embed(
-            provider="voyageai",
-            model="voyage-3-lite",
-            input="Test text"
+            provider="voyageai", model="voyage-3-lite", input="Test text"
         )
         assert isinstance(response, EmbedResponse)
         assert response.provider == "voyageai"
@@ -136,58 +131,48 @@ class TestClientEmbedding:
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_with_prefix(self, skip_if_no_voyage_key):
         """Test embedding with provider prefix."""
         client = Client()
-        response = client.embed(
-            model="voyageai:voyage-3-lite",
-            input="Test text"
-        )
+        response = client.embed(model="voyageai:voyage-3-lite", input="Test text")
         assert isinstance(response, EmbedResponse)
         assert response.provider == "voyageai"
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_with_auto_detect(self, skip_if_no_voyage_key):
         """Test embedding with auto-detection."""
         client = Client()
-        response = client.embed(
-            model="voyage-3-lite",
-            input="Test text"
-        )
+        response = client.embed(model="voyage-3-lite", input="Test text")
         assert isinstance(response, EmbedResponse)
         assert response.provider == "voyageai"
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_batch(self, skip_if_no_voyage_key):
         """Test batch embedding."""
         client = Client()
         response = client.embed(
-            model="voyage-3-lite",
-            input=["First", "Second", "Third"]
+            model="voyage-3-lite", input=["First", "Second", "Third"]
         )
         assert len(response.embeddings) == 3
         assert response.input_count == 3
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     @pytest.mark.asyncio
     async def test_aembed(self, skip_if_no_voyage_key):
         """Test async embedding."""
         client = Client()
-        response = await client.aembed(
-            model="voyage-3-lite",
-            input="Async test"
-        )
+        response = await client.aembed(model="voyage-3-lite", input="Async test")
         assert isinstance(response, EmbedResponse)
         await client.aclose()
 

@@ -75,9 +75,7 @@ class EmbedResponse(BaseModel):
 
     """
 
-    embeddings: List[List[float]] = Field(
-        ..., description="List of embedding vectors"
-    )
+    embeddings: List[List[float]] = Field(..., description="List of embedding vectors")
     model: str = Field(..., description="Model name")
     provider: str = Field(..., description="Provider name")
     dimensions: int = Field(..., description="Embedding dimensionality")
@@ -201,9 +199,7 @@ class ModelInfo(BaseModel):
     cost_per_million_tokens: float = Field(
         ..., description="Cost per million tokens in USD"
     )
-    supports_batching: bool = Field(
-        default=True, description="Supports batch requests"
-    )
+    supports_batching: bool = Field(default=True, description="Supports batch requests")
     supports_input_type: bool = Field(
         default=False, description="Supports input_type parameter"
     )
@@ -213,9 +209,7 @@ class ModelInfo(BaseModel):
     tokenizer: Optional[Dict[str, Any]] = Field(
         default=None, description="Tokenizer configuration"
     )
-    description: Optional[str] = Field(
-        default=None, description="Model description"
-    )
+    description: Optional[str] = Field(default=None, description="Model description")
 
     @field_validator("dimensions", "max_input_tokens")
     @classmethod

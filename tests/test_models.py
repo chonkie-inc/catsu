@@ -39,7 +39,7 @@ class TestEmbedResponse:
             usage=Usage(tokens=10, cost=0.0000006),
             latency_ms=123.45,
             input_count=1,
-            input_type="query"
+            input_type="query",
         )
         assert len(response.embeddings) == 1
         assert len(response.embeddings[0]) == 3
@@ -73,7 +73,7 @@ class TestEmbedResponse:
                 usage=Usage(tokens=1, cost=0.0),
                 latency_ms=100.0,
                 input_count=1,
-                input_type="invalid"
+                input_type="invalid",
             )
 
     def test_empty_embeddings(self):
@@ -116,6 +116,7 @@ class TestEmbedResponse:
 
         try:
             import numpy as np  # noqa: F401
+
             arr = response.to_numpy()
             assert arr.shape == (2, 2)
             assert arr[0, 0] == 0.1
@@ -153,7 +154,7 @@ class TestModelInfo:
             supports_batching=True,
             supports_input_type=True,
             supports_dimensions=True,
-            tokenizer={"repo": "voyageai/voyage-3"}
+            tokenizer={"repo": "voyageai/voyage-3"},
         )
         assert info.name == "voyage-3"
         assert info.dimensions == 1024
@@ -188,9 +189,7 @@ class TestTokenizeResponse:
     def test_valid_tokenize_response(self):
         """Test creating valid TokenizeResponse."""
         response = TokenizeResponse(
-            token_count=10,
-            model="voyage-3",
-            provider="voyageai"
+            token_count=10, model="voyage-3", provider="voyageai"
         )
         assert response.token_count == 10
         assert response.model == "voyage-3"
@@ -199,10 +198,7 @@ class TestTokenizeResponse:
     def test_with_tokens(self):
         """Test TokenizeResponse with token IDs."""
         response = TokenizeResponse(
-            tokens=[1, 2, 3],
-            token_count=3,
-            model="voyage-3",
-            provider="voyageai"
+            tokens=[1, 2, 3], token_count=3, model="voyage-3", provider="voyageai"
         )
         assert response.tokens == [1, 2, 3]
         assert response.token_count == 3
@@ -210,8 +206,4 @@ class TestTokenizeResponse:
     def test_negative_token_count(self):
         """Test that negative token_count raises error."""
         with pytest.raises(ValidationError):
-            TokenizeResponse(
-                token_count=-1,
-                model="test",
-                provider="test"
-            )
+            TokenizeResponse(token_count=-1, model="test", provider="test")

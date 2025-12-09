@@ -52,9 +52,7 @@ class ModelCatalog:
     def _load_models(self) -> None:
         """Load models from JSON file into memory."""
         if not self._models_path.exists():
-            raise FileNotFoundError(
-                f"Models file not found: {self._models_path}"
-            )
+            raise FileNotFoundError(f"Models file not found: {self._models_path}")
 
         with open(self._models_path, "r") as f:
             data = json.load(f)
@@ -209,10 +207,7 @@ class ModelCatalog:
             False
 
         """
-        return (
-            provider in self._models
-            and model in self._models[provider]
-        )
+        return provider in self._models and model in self._models[provider]
 
     def get_models_by_capability(
         self,
@@ -270,7 +265,4 @@ class ModelCatalog:
         """Return string representation of the catalog."""
         total_models = sum(len(models) for models in self._models.values())
         providers = list(self._models.keys())
-        return (
-            f"ModelCatalog(providers={providers}, "
-            f"total_models={total_models})"
-        )
+        return f"ModelCatalog(providers={providers}, total_models={total_models})"

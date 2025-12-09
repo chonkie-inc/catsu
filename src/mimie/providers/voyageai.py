@@ -212,6 +212,7 @@ class VoyageAIProvider(BaseProvider):
             ProviderError: For API errors
 
         """
+
         @retry(
             retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError)),
             stop=stop_after_attempt(self.max_retries),
@@ -266,6 +267,7 @@ class VoyageAIProvider(BaseProvider):
             ProviderError: For API errors
 
         """
+
         @retry(
             retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError)),
             stop=stop_after_attempt(self.max_retries),
@@ -273,7 +275,9 @@ class VoyageAIProvider(BaseProvider):
             reraise=True,
         )
         async def _do_request() -> httpx.Response:
-            response = await self.async_http_client.post(url, json=payload, headers=headers)
+            response = await self.async_http_client.post(
+                url, json=payload, headers=headers
+            )
 
             if response.status_code == 200:
                 return response

@@ -53,9 +53,7 @@ class TestVoyageAIProvider:
     def test_build_request_payload(self, provider):
         """Test building API request payload."""
         payload = provider._build_request_payload(
-            model="voyage-3",
-            inputs=["hello", "world"],
-            input_type="query"
+            model="voyage-3", inputs=["hello", "world"], input_type="query"
         )
         assert payload["model"] == "voyage-3"
         assert payload["input"] == ["hello", "world"]
@@ -65,21 +63,17 @@ class TestVoyageAIProvider:
         """Test that invalid input_type raises error."""
         with pytest.raises(InvalidInputError):
             provider._build_request_payload(
-                model="voyage-3",
-                inputs=["test"],
-                input_type="invalid"
+                model="voyage-3", inputs=["test"], input_type="invalid"
             )
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_single_text(self, skip_if_no_voyage_key, provider):
         """Test embedding a single text."""
         response = provider.embed(
-            model="voyage-3-lite",
-            inputs=["Hello, world!"],
-            input_type="query"
+            model="voyage-3-lite", inputs=["Hello, world!"], input_type="query"
         )
 
         assert isinstance(response, EmbedResponse)
@@ -94,15 +88,13 @@ class TestVoyageAIProvider:
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     def test_embed_batch(self, skip_if_no_voyage_key, provider):
         """Test embedding multiple texts."""
         texts = ["First text", "Second text", "Third text"]
         response = provider.embed(
-            model="voyage-3-lite",
-            inputs=texts,
-            input_type="document"
+            model="voyage-3-lite", inputs=texts, input_type="document"
         )
 
         assert isinstance(response, EmbedResponse)
@@ -112,15 +104,13 @@ class TestVoyageAIProvider:
 
     @pytest.mark.skipif(
         not os.getenv("VOYAGE_API_KEY"),
-        reason="Requires VOYAGE_API_KEY environment variable"
+        reason="Requires VOYAGE_API_KEY environment variable",
     )
     @pytest.mark.asyncio
     async def test_aembed_single_text(self, skip_if_no_voyage_key, provider):
         """Test async embedding."""
         response = await provider.aembed(
-            model="voyage-3-lite",
-            inputs=["Async test"],
-            input_type="query"
+            model="voyage-3-lite", inputs=["Async test"], input_type="query"
         )
 
         assert isinstance(response, EmbedResponse)
@@ -131,10 +121,7 @@ class TestVoyageAIProvider:
         """Test local tokenization."""
         # This test may skip if tokenizers not installed or model not available
         try:
-            response = provider.tokenize(
-                model="voyage-3",
-                inputs=["Hello, world!"]
-            )
+            response = provider.tokenize(model="voyage-3", inputs=["Hello, world!"])
             assert response.token_count > 0
             assert response.model == "voyage-3"
             assert response.provider == "voyageai"
@@ -145,8 +132,7 @@ class TestVoyageAIProvider:
         """Test tokenizing multiple texts."""
         try:
             response = provider.tokenize(
-                model="voyage-3",
-                inputs=["First", "Second", "Third"]
+                model="voyage-3", inputs=["First", "Second", "Third"]
             )
             assert response.token_count > 0
         except (ImportError, Exception):

@@ -11,7 +11,7 @@ def pytest_addoption(parser):
         "--run-integration",
         action="store_true",
         default=False,
-        help="Run integration tests that require API keys"
+        help="Run integration tests that require API keys",
     )
 
 
@@ -19,7 +19,7 @@ def pytest_configure(config):
     """Configure pytest markers."""
     config.addinivalue_line(
         "markers",
-        "requires_api_key: mark test as requiring an API key (skips if not set)"
+        "requires_api_key: mark test as requiring an API key (skips if not set)",
     )
 
 

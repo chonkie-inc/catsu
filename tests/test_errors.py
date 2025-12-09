@@ -1,6 +1,5 @@
 """Tests for custom exceptions."""
 
-
 from mimie.utils.errors import (
     AmbiguousModelError,
     AuthenticationError,
@@ -56,10 +55,7 @@ class TestAmbiguousModelError:
 
     def test_ambiguous_model(self):
         """Test ambiguous model error."""
-        error = AmbiguousModelError(
-            model="text-embed",
-            providers=["openai", "cohere"]
-        )
+        error = AmbiguousModelError(model="text-embed", providers=["openai", "cohere"])
         assert "text-embed" in str(error)
         assert "openai" in str(error)
         assert "cohere" in str(error)
@@ -78,9 +74,7 @@ class TestProviderError:
     def test_provider_error_with_status(self):
         """Test provider error with status code."""
         error = ProviderError(
-            message="API failed",
-            provider="voyageai",
-            status_code=500
+            message="API failed", provider="voyageai", status_code=500
         )
         assert "voyageai" in str(error)
         assert error.status_code == 500
@@ -92,9 +86,7 @@ class TestRateLimitError:
     def test_rate_limit_error(self):
         """Test rate limit error."""
         error = RateLimitError(
-            message="Rate limited",
-            provider="voyageai",
-            retry_after=60
+            message="Rate limited", provider="voyageai", retry_after=60
         )
         assert error.status_code == 429
         assert error.retry_after == 60
@@ -106,10 +98,7 @@ class TestAuthenticationError:
 
     def test_authentication_error(self):
         """Test authentication error."""
-        error = AuthenticationError(
-            message="Invalid API key",
-            provider="voyageai"
-        )
+        error = AuthenticationError(message="Invalid API key", provider="voyageai")
         assert error.status_code == 401
         assert "Invalid API key" in str(error)
 
@@ -119,10 +108,7 @@ class TestInvalidInputError:
 
     def test_invalid_input_error(self):
         """Test invalid input error."""
-        error = InvalidInputError(
-            message="Input cannot be empty",
-            parameter="input"
-        )
+        error = InvalidInputError(message="Input cannot be empty", parameter="input")
         assert "Input cannot be empty" in str(error)
         assert error.parameter == "input"
 
@@ -133,9 +119,7 @@ class TestTimeoutError:
     def test_timeout_error(self):
         """Test timeout error."""
         error = TimeoutError(
-            message="Request timed out",
-            provider="voyageai",
-            timeout=30.0
+            message="Request timed out", provider="voyageai", timeout=30.0
         )
         assert error.status_code == 408
         assert error.timeout == 30.0
@@ -147,9 +131,6 @@ class TestNetworkError:
 
     def test_network_error(self):
         """Test network error."""
-        error = NetworkError(
-            message="Connection refused",
-            provider="voyageai"
-        )
+        error = NetworkError(message="Connection refused", provider="voyageai")
         assert "Connection refused" in str(error)
         assert error.provider == "voyageai"

@@ -183,7 +183,7 @@ class Client:
                 provider=provider_name,
                 details={
                     "available_providers": list(self._providers.keys()),
-                    "message": f"Provider '{provider_name}' not found"
+                    "message": f"Provider '{provider_name}' not found",
                 },
             )
 
