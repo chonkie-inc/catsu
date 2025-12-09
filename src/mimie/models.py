@@ -1,11 +1,10 @@
-"""
-Pydantic models for Mimie API responses and data structures.
+"""Pydantic models for Mimie API responses and data structures.
 
 This module defines the response models and data structures used throughout
 the Mimie library, providing type safety and validation.
 """
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -17,12 +16,12 @@ if TYPE_CHECKING:
 
 
 class Usage(BaseModel):
-    """
-    Token usage and cost information for an embedding request.
+    """Token usage and cost information for an embedding request.
 
     Attributes:
         tokens: Total number of tokens processed
         cost: Total cost in USD
+
     """
 
     tokens: int = Field(..., description="Total tokens processed")
@@ -46,8 +45,7 @@ class Usage(BaseModel):
 
 
 class EmbedResponse(BaseModel):
-    """
-    Response from an embedding request.
+    """Response from an embedding request.
 
     Contains embeddings, metadata, usage information, and latency tracking.
 
@@ -74,6 +72,7 @@ class EmbedResponse(BaseModel):
         ... )
         >>> print(response.embeddings[0][:3])
         [0.1, 0.2, 0.3]
+
     """
 
     embeddings: List[List[float]] = Field(
@@ -139,8 +138,7 @@ class EmbedResponse(BaseModel):
         return v
 
     def to_numpy(self) -> "np.ndarray":
-        """
-        Convert embeddings to numpy array.
+        """Convert embeddings to numpy array.
 
         Requires numpy to be installed (mimie[numpy]).
 
@@ -155,6 +153,7 @@ class EmbedResponse(BaseModel):
             >>> embeddings_array = response.to_numpy()
             >>> print(embeddings_array.shape)
             (1, 1024)
+
         """
         try:
             import numpy as np  # type: ignore
@@ -177,8 +176,7 @@ class EmbedResponse(BaseModel):
 
 
 class ModelInfo(BaseModel):
-    """
-    Information about an embedding model.
+    """Information about an embedding model.
 
     Used by the model catalog to store and retrieve model metadata.
 
@@ -193,6 +191,7 @@ class ModelInfo(BaseModel):
         supports_dimensions: Whether custom dimensions are supported
         tokenizer: Tokenizer configuration (e.g., {"repo": "voyageai/voyage-3"})
         description: Human-readable model description
+
     """
 
     name: str = Field(..., description="Model name")
@@ -243,8 +242,7 @@ class ModelInfo(BaseModel):
 
 
 class TokenizeResponse(BaseModel):
-    """
-    Response from a tokenization request.
+    """Response from a tokenization request.
 
     Used for counting tokens without performing embedding.
 
@@ -258,6 +256,7 @@ class TokenizeResponse(BaseModel):
         >>> response = client.tokenize(model="voyage-3", input="hello world")
         >>> print(response.token_count)
         2
+
     """
 
     tokens: Optional[List[int]] = Field(

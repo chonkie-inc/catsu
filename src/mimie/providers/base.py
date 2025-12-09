@@ -1,27 +1,25 @@
-"""
-Base provider class for embedding providers.
+"""Base provider class for embedding providers.
 
 Defines the abstract interface that all embedding providers must implement.
 """
 
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import httpx
 
 from ..models import EmbedResponse, TokenizeResponse
 from ..utils.errors import (
-    InvalidInputError,
     AuthenticationError,
-    RateLimitError,
+    InvalidInputError,
     ProviderError,
+    RateLimitError,
 )
 
 
 class BaseProvider(ABC):
-    """
-    Abstract base class for embedding providers.
+    """Abstract base class for embedding providers.
 
     All provider implementations must inherit from this class and implement
     the abstract methods for embedding and tokenization.
@@ -32,6 +30,7 @@ class BaseProvider(ABC):
         api_key: API key for authentication
         max_retries: Maximum number of retry attempts
         verbose: Enable verbose logging
+
     """
 
     def __init__(
@@ -42,8 +41,7 @@ class BaseProvider(ABC):
         max_retries: int = 3,
         verbose: bool = False,
     ) -> None:
-        """
-        Initialize the base provider.
+        """Initialize the base provider.
 
         Args:
             http_client: Synchronous HTTP client
@@ -51,6 +49,7 @@ class BaseProvider(ABC):
             api_key: API key for authentication
             max_retries: Maximum retry attempts (default: 3)
             verbose: Enable verbose logging (default: False)
+
         """
         self.http_client = http_client
         self.async_http_client = async_http_client
@@ -66,8 +65,7 @@ class BaseProvider(ABC):
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """
-        Generate embeddings for input texts (synchronous).
+        """Generate embeddings for input texts (synchronous).
 
         Args:
             model: Model name
@@ -83,6 +81,7 @@ class BaseProvider(ABC):
             AuthenticationError: If authentication fails
             RateLimitError: If rate limit is exceeded
             InvalidInputError: If input is invalid
+
         """
         pass
 
@@ -94,8 +93,7 @@ class BaseProvider(ABC):
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """
-        Generate embeddings for input texts (asynchronous).
+        """Generate embeddings for input texts (asynchronous).
 
         Args:
             model: Model name
@@ -111,6 +109,7 @@ class BaseProvider(ABC):
             AuthenticationError: If authentication fails
             RateLimitError: If rate limit is exceeded
             InvalidInputError: If input is invalid
+
         """
         pass
 
@@ -121,8 +120,7 @@ class BaseProvider(ABC):
         inputs: List[str],
         **kwargs: Any,
     ) -> TokenizeResponse:
-        """
-        Tokenize input texts without generating embeddings.
+        """Tokenize input texts without generating embeddings.
 
         Useful for counting tokens before making actual embedding requests.
 
@@ -137,18 +135,19 @@ class BaseProvider(ABC):
         Raises:
             ProviderError: If API request fails
             NotImplementedError: If provider doesn't support tokenization
+
         """
         pass
 
     def _validate_inputs(self, inputs: List[str]) -> None:
-        """
-        Validate input texts.
+        """Validate input texts.
 
         Args:
             inputs: List of input texts
 
         Raises:
             InvalidInputError: If inputs are invalid
+
         """
         if not inputs:
             raise InvalidInputError("inputs cannot be empty")
@@ -173,11 +172,11 @@ class BaseProvider(ABC):
                 )
 
     def _validate_api_key(self) -> None:
-        """
-        Validate that API key is present.
+        """Validate that API key is present.
 
         Raises:
             AuthenticationError: If API key is missing
+
         """
         if not self.api_key:
             raise AuthenticationError(
@@ -186,18 +185,17 @@ class BaseProvider(ABC):
             )
 
     def _log(self, message: str) -> None:
-        """
-        Log message if verbose mode is enabled.
+        """Log message if verbose mode is enabled.
 
         Args:
             message: Message to log
+
         """
         if self.verbose:
             print(f"[{self.__class__.__name__}] {message}")
 
     def _calculate_cost(self, tokens: int, cost_per_million: float) -> float:
-        """
-        Calculate cost for given token count.
+        """Calculate cost for given token count.
 
         Args:
             tokens: Number of tokens
@@ -205,18 +203,19 @@ class BaseProvider(ABC):
 
         Returns:
             Total cost in USD
+
         """
         return (tokens / 1_000_000) * cost_per_million
 
     def _measure_latency(self, start_time: float) -> float:
-        """
-        Measure latency in milliseconds.
+        """Measure latency in milliseconds.
 
         Args:
             start_time: Start time from time.time()
 
         Returns:
             Latency in milliseconds
+
         """
         return (time.time() - start_time) * 1000
 
@@ -225,8 +224,7 @@ class BaseProvider(ABC):
         response: httpx.Response,
         provider_name: str,
     ) -> None:
-        """
-        Handle HTTP error responses.
+        """Handle HTTP error responses.
 
         Args:
             response: HTTP response object
@@ -236,6 +234,7 @@ class BaseProvider(ABC):
             AuthenticationError: For 401 errors
             RateLimitError: For 429 errors
             ProviderError: For other errors
+
         """
         status_code = response.status_code
 

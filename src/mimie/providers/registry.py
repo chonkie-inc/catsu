@@ -1,5 +1,4 @@
-"""
-Provider registry for Mimie.
+"""Provider registry for Mimie.
 
 Maps provider names to their implementation classes for dynamic loading.
 """

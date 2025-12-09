@@ -7,7 +7,6 @@ import pytest
 from mimie import Client
 from mimie.models import EmbedResponse
 from mimie.utils.errors import (
-    AmbiguousModelError,
     InvalidInputError,
     ModelNotFoundError,
 )

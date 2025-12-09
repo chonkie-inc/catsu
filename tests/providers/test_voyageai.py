@@ -2,11 +2,11 @@
 
 import os
 
-import pytest
 import httpx
+import pytest
 
-from mimie.providers.voyageai import VoyageAIProvider
 from mimie.models import EmbedResponse
+from mimie.providers.voyageai import VoyageAIProvider
 from mimie.utils.errors import InvalidInputError
 
 

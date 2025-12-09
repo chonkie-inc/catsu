@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mimie"
-version = "0.1.0"
+version = "0.0.1a0"
 description = "🌐 A unified, batteries-included client for embedding APIs that actually works 🚀"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -45,6 +45,7 @@ dependencies = [
     "httpx>=0.24.0",
     "pydantic>=2.0.0",
     "tokenizers>=0.16.0",
+    "tenacity>=8.0.0",
 ]
 
 [project.urls]

@@ -4,7 +4,7 @@ import pytest
 
 from mimie.catalog import ModelCatalog
 from mimie.models import ModelInfo
-from mimie.utils.errors import AmbiguousModelError, ModelNotFoundError
+from mimie.utils.errors import ModelNotFoundError
 
 
 class TestModelCatalog:

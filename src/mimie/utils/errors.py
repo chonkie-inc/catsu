@@ -1,5 +1,4 @@
-"""
-Custom exception classes for Mimie.
+"""Custom exception classes for Mimie.
 
 Provides a hierarchy of exceptions for different error scenarios, making it
 easier to handle and debug issues when working with embedding providers.
@@ -9,8 +8,7 @@ from typing import Any, Dict, Optional
 
 
 class MimieError(Exception):
-    """
-    Base exception for all Mimie errors.
+    """Base exception for all Mimie errors.
 
     All custom exceptions in Mimie inherit from this class, making it easy
     to catch any Mimie-related error.
@@ -18,15 +16,16 @@ class MimieError(Exception):
     Attributes:
         message: Error message
         details: Optional additional details about the error
+
     """
 
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
-        """
-        Initialize MimieError.
+        """Initialize MimieError.
 
         Args:
             message: Error message
             details: Optional dictionary with additional error details
+
         """
         self.message = message
         self.details = details or {}
@@ -41,8 +40,7 @@ class MimieError(Exception):
 
 
 class ProviderError(MimieError):
-    """
-    Exception raised for provider-specific errors.
+    """Exception raised for provider-specific errors.
 
     Raised when an embedding provider returns an error or fails to process
     a request.
@@ -50,6 +48,7 @@ class ProviderError(MimieError):
     Attributes:
         provider: Name of the provider that raised the error
         status_code: HTTP status code if applicable
+
     """
 
     def __init__(
@@ -59,14 +58,14 @@ class ProviderError(MimieError):
         status_code: Optional[int] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize ProviderError.
+        """Initialize ProviderError.
 
         Args:
             message: Error message
             provider: Provider name (e.g., "voyageai")
             status_code: HTTP status code if applicable
             details: Optional additional error details
+
         """
         self.provider = provider
         self.status_code = status_code
@@ -79,8 +78,7 @@ class ProviderError(MimieError):
 
 
 class ModelNotFoundError(MimieError):
-    """
-    Exception raised when a requested model is not found.
+    """Exception raised when a requested model is not found.
 
     Raised when attempting to use a model that doesn't exist in any provider
     or in the specified provider.
@@ -88,6 +86,7 @@ class ModelNotFoundError(MimieError):
     Example:
         >>> client.embed(model="nonexistent-model", input="test")
         ModelNotFoundError: Model 'nonexistent-model' not found
+
     """
 
     def __init__(
@@ -96,13 +95,13 @@ class ModelNotFoundError(MimieError):
         provider: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize ModelNotFoundError.
+        """Initialize ModelNotFoundError.
 
         Args:
             model: Model name that was not found
             provider: Provider name if specified
             details: Optional additional error details
+
         """
         self.model = model
         self.provider = provider
@@ -121,8 +120,7 @@ class ModelNotFoundError(MimieError):
 
 
 class AmbiguousModelError(MimieError):
-    """
-    Exception raised when a model name is ambiguous.
+    """Exception raised when a model name is ambiguous.
 
     Raised when attempting to auto-detect a provider but the model name
     exists in multiple providers.
@@ -131,6 +129,7 @@ class AmbiguousModelError(MimieError):
         >>> # If "text-embed" exists in both OpenAI and Cohere
         >>> client.embed(model="text-embed", input="test")
         AmbiguousModelError: Model 'text-embed' found in multiple providers
+
     """
 
     def __init__(
@@ -139,13 +138,13 @@ class AmbiguousModelError(MimieError):
         providers: list[str],
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize AmbiguousModelError.
+        """Initialize AmbiguousModelError.
 
         Args:
             model: Ambiguous model name
             providers: List of providers that have this model
             details: Optional additional error details
+
         """
         self.model = model
         self.providers = providers
@@ -164,13 +163,13 @@ class AmbiguousModelError(MimieError):
 
 
 class RateLimitError(ProviderError):
-    """
-    Exception raised when a rate limit is exceeded.
+    """Exception raised when a rate limit is exceeded.
 
     Raised when a provider returns a rate limit error (typically HTTP 429).
 
     Attributes:
         retry_after: Seconds to wait before retrying (if provided by API)
+
     """
 
     def __init__(
@@ -180,14 +179,14 @@ class RateLimitError(ProviderError):
         retry_after: Optional[int] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize RateLimitError.
+        """Initialize RateLimitError.
 
         Args:
             message: Error message
             provider: Provider name
             retry_after: Seconds to wait before retrying
             details: Optional additional error details
+
         """
         self.retry_after = retry_after
 
@@ -205,14 +204,14 @@ class RateLimitError(ProviderError):
 
 
 class AuthenticationError(ProviderError):
-    """
-    Exception raised for authentication failures.
+    """Exception raised for authentication failures.
 
     Raised when API credentials are missing, invalid, or expired.
 
     Example:
         >>> client.embed(model="voyage-3", input="test")
         AuthenticationError: Invalid API key for provider 'voyageai'
+
     """
 
     def __init__(
@@ -221,13 +220,13 @@ class AuthenticationError(ProviderError):
         provider: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize AuthenticationError.
+        """Initialize AuthenticationError.
 
         Args:
             message: Error message
             provider: Provider name
             details: Optional additional error details
+
         """
         super().__init__(
             message=message,
@@ -238,8 +237,7 @@ class AuthenticationError(ProviderError):
 
 
 class InvalidInputError(MimieError):
-    """
-    Exception raised for invalid input parameters.
+    """Exception raised for invalid input parameters.
 
     Raised when the provided input doesn't meet the requirements (e.g.,
     empty strings, exceeds max tokens, invalid types).
@@ -247,6 +245,7 @@ class InvalidInputError(MimieError):
     Example:
         >>> client.embed(model="voyage-3", input="")
         InvalidInputError: Input cannot be empty
+
     """
 
     def __init__(
@@ -255,13 +254,13 @@ class InvalidInputError(MimieError):
         parameter: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize InvalidInputError.
+        """Initialize InvalidInputError.
 
         Args:
             message: Error message
             parameter: Name of the invalid parameter
             details: Optional additional error details
+
         """
         self.parameter = parameter
 
@@ -273,8 +272,7 @@ class InvalidInputError(MimieError):
 
 
 class TimeoutError(ProviderError):
-    """
-    Exception raised when a request times out.
+    """Exception raised when a request times out.
 
     Raised when a provider request exceeds the configured timeout.
     """
@@ -286,14 +284,14 @@ class TimeoutError(ProviderError):
         timeout: Optional[float] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize TimeoutError.
+        """Initialize TimeoutError.
 
         Args:
             message: Error message
             provider: Provider name
             timeout: Timeout value in seconds
             details: Optional additional error details
+
         """
         self.timeout = timeout
 
@@ -311,8 +309,7 @@ class TimeoutError(ProviderError):
 
 
 class NetworkError(ProviderError):
-    """
-    Exception raised for network-related errors.
+    """Exception raised for network-related errors.
 
     Raised when a network error occurs (connection refused, DNS failure, etc.).
     """
@@ -323,13 +320,13 @@ class NetworkError(ProviderError):
         provider: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Initialize NetworkError.
+        """Initialize NetworkError.
 
         Args:
             message: Error message
             provider: Provider name
             details: Optional additional error details
+
         """
         super().__init__(
             message=message,

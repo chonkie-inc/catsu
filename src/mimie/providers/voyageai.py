@@ -1,5 +1,4 @@
-"""
-VoyageAI embedding provider implementation.
+"""VoyageAI embedding provider implementation.
 
 Provides integration with VoyageAI's embedding API, supporting all voyage models
 with retry logic, cost tracking, and local tokenization via HuggingFace.
@@ -9,16 +8,21 @@ import time
 from typing import Any, Dict, List, Optional
 
 import httpx
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
-from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..catalog import ModelCatalog
+from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..utils.errors import InvalidInputError, NetworkError, ProviderError, TimeoutError
 from .base import BaseProvider
 
 
 class VoyageAIProvider(BaseProvider):
-    """
-    VoyageAI embedding provider.
+    """VoyageAI embedding provider.
 
     Implements the VoyageAI embeddings API with support for all voyage models,
     including voyage-3, voyage-3-lite, voyage-code-3, and specialized models.
@@ -42,6 +46,7 @@ class VoyageAIProvider(BaseProvider):
         ...     inputs=["hello world"],
         ...     input_type="query"
         ... )
+
     """
 
     API_BASE_URL = "https://api.voyageai.com/v1"
@@ -55,8 +60,7 @@ class VoyageAIProvider(BaseProvider):
         max_retries: int = 3,
         verbose: bool = False,
     ) -> None:
-        """
-        Initialize VoyageAI provider.
+        """Initialize VoyageAI provider.
 
         Args:
             http_client: Synchronous HTTP client
@@ -64,6 +68,7 @@ class VoyageAIProvider(BaseProvider):
             api_key: VoyageAI API key (or set VOYAGE_API_KEY env var)
             max_retries: Maximum retry attempts (default: 3)
             verbose: Enable verbose logging (default: False)
+
         """
         super().__init__(
             http_client=http_client,
@@ -75,8 +80,7 @@ class VoyageAIProvider(BaseProvider):
         self._tokenizers: Dict[str, Any] = {}  # Cache for loaded tokenizers
 
     def _get_tokenizer(self, model: str) -> Any:
-        """
-        Get or load tokenizer for a model.
+        """Get or load tokenizer for a model.
 
         Args:
             model: Model name
@@ -87,6 +91,7 @@ class VoyageAIProvider(BaseProvider):
         Raises:
             ImportError: If tokenizers library not installed
             ProviderError: If tokenizer cannot be loaded
+
         """
         # Check cache first
         if model in self._tokenizers:
@@ -133,11 +138,11 @@ class VoyageAIProvider(BaseProvider):
             ) from e
 
     def _get_headers(self) -> Dict[str, str]:
-        """
-        Get HTTP headers for API requests.
+        """Get HTTP headers for API requests.
 
         Returns:
             Dictionary of headers including authorization
+
         """
         self._validate_api_key()
         return {
@@ -152,8 +157,7 @@ class VoyageAIProvider(BaseProvider):
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
-        """
-        Build API request payload.
+        """Build API request payload.
 
         Args:
             model: Model name
@@ -163,6 +167,7 @@ class VoyageAIProvider(BaseProvider):
 
         Returns:
             Request payload dictionary
+
         """
         payload: Dict[str, Any] = {
             "input": inputs,
@@ -189,8 +194,9 @@ class VoyageAIProvider(BaseProvider):
         payload: Dict[str, Any],
         headers: Dict[str, str],
     ) -> httpx.Response:
-        """
-        Make HTTP request with exponential backoff retry logic.
+        """Make HTTP request with exponential backoff retry logic.
+
+        Uses tenacity for automatic retry with exponential backoff.
 
         Args:
             url: API endpoint URL
@@ -204,67 +210,37 @@ class VoyageAIProvider(BaseProvider):
             NetworkError: For network-related errors
             TimeoutError: For timeout errors
             ProviderError: For API errors
+
         """
-        last_exception = None
-        backoff_factor = 2
+        @retry(
+            retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError)),
+            stop=stop_after_attempt(self.max_retries),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            reraise=True,
+        )
+        def _do_request() -> httpx.Response:
+            response = self.http_client.post(url, json=payload, headers=headers)
 
-        for attempt in range(self.max_retries):
-            try:
-                self._log(f"Attempt {attempt + 1}/{self.max_retries}")
+            if response.status_code == 200:
+                return response
 
-                response = self.http_client.post(
-                    url,
-                    json=payload,
-                    headers=headers,
-                )
+            # Handle HTTP errors
+            self._handle_http_error(response, self.PROVIDER_NAME)
+            return response  # Won't reach here due to exception
 
-                # Check for success
-                if response.status_code == 200:
-                    return response
-
-                # Handle errors
-                self._handle_http_error(response, self.PROVIDER_NAME)
-
-            except httpx.TimeoutException as e:
-                last_exception = TimeoutError(
-                    message=f"Request timed out on attempt {attempt + 1}",
-                    provider=self.PROVIDER_NAME,
-                    timeout=self.http_client.timeout.read,
-                )
-                self._log(f"Timeout on attempt {attempt + 1}")
-
-            except httpx.NetworkError as e:
-                last_exception = NetworkError(
-                    message=f"Network error: {str(e)}",
-                    provider=self.PROVIDER_NAME,
-                )
-                self._log(f"Network error on attempt {attempt + 1}: {e}")
-
-            except (ProviderError, InvalidInputError) as e:
-                # Don't retry on these errors
-                raise
-
-            except Exception as e:
-                last_exception = ProviderError(
-                    message=f"Unexpected error: {str(e)}",
-                    provider=self.PROVIDER_NAME,
-                )
-                self._log(f"Unexpected error on attempt {attempt + 1}: {e}")
-
-            # Exponential backoff before retry
-            if attempt < self.max_retries - 1:
-                wait_time = backoff_factor ** attempt
-                self._log(f"Waiting {wait_time}s before retry...")
-                time.sleep(wait_time)
-
-        # All retries exhausted
-        if last_exception:
-            raise last_exception
-        else:
-            raise ProviderError(
-                message="All retry attempts failed",
+        try:
+            return _do_request()
+        except httpx.TimeoutException as e:
+            raise TimeoutError(
+                message=f"Request timed out after {self.max_retries} attempts",
                 provider=self.PROVIDER_NAME,
-            )
+                timeout=self.http_client.timeout.read,
+            ) from e
+        except httpx.NetworkError as e:
+            raise NetworkError(
+                message=f"Network error: {str(e)}",
+                provider=self.PROVIDER_NAME,
+            ) from e
 
     async def _make_request_with_retry_async(
         self,
@@ -272,8 +248,9 @@ class VoyageAIProvider(BaseProvider):
         payload: Dict[str, Any],
         headers: Dict[str, str],
     ) -> httpx.Response:
-        """
-        Make async HTTP request with exponential backoff retry logic.
+        """Make async HTTP request with exponential backoff retry logic.
+
+        Uses tenacity for automatic retry with exponential backoff.
 
         Args:
             url: API endpoint URL
@@ -287,69 +264,37 @@ class VoyageAIProvider(BaseProvider):
             NetworkError: For network-related errors
             TimeoutError: For timeout errors
             ProviderError: For API errors
+
         """
-        import asyncio
+        @retry(
+            retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError)),
+            stop=stop_after_attempt(self.max_retries),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            reraise=True,
+        )
+        async def _do_request() -> httpx.Response:
+            response = await self.async_http_client.post(url, json=payload, headers=headers)
 
-        last_exception = None
-        backoff_factor = 2
+            if response.status_code == 200:
+                return response
 
-        for attempt in range(self.max_retries):
-            try:
-                self._log(f"Async attempt {attempt + 1}/{self.max_retries}")
+            # Handle HTTP errors
+            self._handle_http_error(response, self.PROVIDER_NAME)
+            return response  # Won't reach here due to exception
 
-                response = await self.async_http_client.post(
-                    url,
-                    json=payload,
-                    headers=headers,
-                )
-
-                # Check for success
-                if response.status_code == 200:
-                    return response
-
-                # Handle errors
-                self._handle_http_error(response, self.PROVIDER_NAME)
-
-            except httpx.TimeoutException as e:
-                last_exception = TimeoutError(
-                    message=f"Request timed out on attempt {attempt + 1}",
-                    provider=self.PROVIDER_NAME,
-                    timeout=self.async_http_client.timeout.read,
-                )
-                self._log(f"Timeout on attempt {attempt + 1}")
-
-            except httpx.NetworkError as e:
-                last_exception = NetworkError(
-                    message=f"Network error: {str(e)}",
-                    provider=self.PROVIDER_NAME,
-                )
-                self._log(f"Network error on attempt {attempt + 1}: {e}")
-
-            except (ProviderError, InvalidInputError) as e:
-                # Don't retry on these errors
-                raise
-
-            except Exception as e:
-                last_exception = ProviderError(
-                    message=f"Unexpected error: {str(e)}",
-                    provider=self.PROVIDER_NAME,
-                )
-                self._log(f"Unexpected error on attempt {attempt + 1}: {e}")
-
-            # Exponential backoff before retry
-            if attempt < self.max_retries - 1:
-                wait_time = backoff_factor ** attempt
-                self._log(f"Waiting {wait_time}s before retry...")
-                await asyncio.sleep(wait_time)
-
-        # All retries exhausted
-        if last_exception:
-            raise last_exception
-        else:
-            raise ProviderError(
-                message="All retry attempts failed",
+        try:
+            return await _do_request()
+        except httpx.TimeoutException as e:
+            raise TimeoutError(
+                message=f"Request timed out after {self.max_retries} attempts",
                 provider=self.PROVIDER_NAME,
-            )
+                timeout=self.async_http_client.timeout.read,
+            ) from e
+        except httpx.NetworkError as e:
+            raise NetworkError(
+                message=f"Network error: {str(e)}",
+                provider=self.PROVIDER_NAME,
+            ) from e
 
     def _parse_response(
         self,
@@ -360,8 +305,7 @@ class VoyageAIProvider(BaseProvider):
         latency_ms: float,
         cost_per_million: float,
     ) -> EmbedResponse:
-        """
-        Parse API response into EmbedResponse.
+        """Parse API response into EmbedResponse.
 
         Args:
             response_data: API response JSON
@@ -373,6 +317,7 @@ class VoyageAIProvider(BaseProvider):
 
         Returns:
             EmbedResponse object
+
         """
         # Extract embeddings
         embeddings = []
@@ -413,8 +358,7 @@ class VoyageAIProvider(BaseProvider):
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """
-        Generate embeddings using VoyageAI API (synchronous).
+        """Generate embeddings using VoyageAI API (synchronous).
 
         Args:
             model: Model name (e.g., "voyage-3", "voyage-3-lite")
@@ -439,6 +383,7 @@ class VoyageAIProvider(BaseProvider):
             ... )
             >>> print(response.embeddings[0][:5])
             [0.1, 0.2, 0.3, 0.4, 0.5]
+
         """
         # Validate inputs
         self._validate_inputs(inputs)
@@ -476,8 +421,7 @@ class VoyageAIProvider(BaseProvider):
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """
-        Generate embeddings using VoyageAI API (asynchronous).
+        """Generate embeddings using VoyageAI API (asynchronous).
 
         Args:
             model: Model name (e.g., "voyage-3", "voyage-3-lite")
@@ -494,6 +438,7 @@ class VoyageAIProvider(BaseProvider):
             ...     inputs=["hello", "world"],
             ...     input_type="query"
             ... )
+
         """
         # Validate inputs
         self._validate_inputs(inputs)
@@ -530,8 +475,7 @@ class VoyageAIProvider(BaseProvider):
         inputs: List[str],
         **kwargs: Any,
     ) -> TokenizeResponse:
-        """
-        Tokenize inputs using local HuggingFace tokenizer.
+        """Tokenize inputs using local HuggingFace tokenizer.
 
         Loads the tokenizer from HuggingFace and counts tokens locally
         without making an API call.
@@ -555,6 +499,7 @@ class VoyageAIProvider(BaseProvider):
             ... )
             >>> print(response.token_count)
             4
+
         """
         # Validate inputs
         self._validate_inputs(inputs)

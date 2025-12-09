@@ -1,5 +1,4 @@
-"""
-Main client for Mimie embedding API.
+"""Main client for Mimie embedding API.
 
 The Client class provides a unified interface for accessing multiple embedding
 providers through a single API.
@@ -10,15 +9,13 @@ from typing import Any, Dict, List, Optional, Union
 
 import httpx
 
-from .models import EmbedResponse
 from .catalog import ModelCatalog
-from .utils.errors import ModelNotFoundError, AmbiguousModelError, InvalidInputError
 from .providers import BaseProvider, registry
+from .utils.errors import InvalidInputError, ModelNotFoundError
 
 
 class Client:
-    """
-    Unified client for embedding APIs.
+    """Unified client for embedding APIs.
 
     Supports multiple embedding providers through a clean, consistent interface
     with built-in retry logic, cost tracking, and rich model metadata.
@@ -50,6 +47,7 @@ class Client:
         >>>
         >>> # 3. Auto-detection (if model name is unique)
         >>> result = client.embed(model="voyage-3", input="hello world")
+
     """
 
     def __init__(
@@ -90,14 +88,14 @@ class Client:
             )
 
     def _get_api_key(self, provider: str) -> Optional[str]:
-        """
-        Get API key for a provider from instance keys or environment.
+        """Get API key for a provider from instance keys or environment.
 
         Args:
             provider: Provider name (e.g., "voyageai")
 
         Returns:
             API key if found, None otherwise
+
         """
         # Check instance-level keys first
         if provider in self._api_keys:
@@ -119,8 +117,7 @@ class Client:
     def _parse_model_string(
         self, model: str, provider: Optional[str] = None
     ) -> tuple[str, str]:
-        """
-        Parse model string to extract provider and model name.
+        """Parse model string to extract provider and model name.
 
         Supports three formats:
         1. provider:model (e.g., "voyageai:voyage-3")
@@ -137,6 +134,7 @@ class Client:
         Raises:
             AmbiguousModelError: If model name is ambiguous and no provider specified
             ModelNotFoundError: If model or provider not found
+
         """
         # Format 1: Check for provider prefix in model string
         if ":" in model:
@@ -167,8 +165,7 @@ class Client:
             )
 
     def _get_provider(self, provider_name: str) -> BaseProvider:
-        """
-        Get provider instance by name.
+        """Get provider instance by name.
 
         Args:
             provider_name: Name of the provider (e.g., "voyageai")
@@ -178,6 +175,7 @@ class Client:
 
         Raises:
             ModelNotFoundError: If provider not found
+
         """
         if provider_name not in self._providers:
             raise ModelNotFoundError(
@@ -199,8 +197,7 @@ class Client:
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
-        """
-        Generate embeddings for input text(s).
+        """Generate embeddings for input text(s).
 
         Args:
             model: Model name or "provider:model" string
@@ -229,6 +226,7 @@ class Client:
             >>> print(result.embeddings)  # [[0.1, 0.2, ...]]
             >>> print(result.usage.total_tokens)  # 2
             >>> print(result.usage.total_cost)  # 0.0000002
+
         """
         # Parse provider and model
         provider_name, model_name = self._parse_model_string(model, provider)
@@ -258,8 +256,7 @@ class Client:
         input_type: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
-        """
-        Async version of embed().
+        """Async version of embed().
 
         Generate embeddings for input text(s) asynchronously.
 
@@ -281,6 +278,7 @@ class Client:
             ...     input="hello world",
             ...     provider="voyageai"
             ... )
+
         """
         # Parse provider and model
         provider_name, model_name = self._parse_model_string(model, provider)
@@ -303,8 +301,7 @@ class Client:
         )
 
     def list_models(self, provider: Optional[str] = None) -> List[Dict[str, Any]]:
-        """
-        List available models, optionally filtered by provider.
+        """List available models, optionally filtered by provider.
 
         Args:
             provider: Optional provider name to filter by
@@ -317,6 +314,7 @@ class Client:
             >>> models = client.list_models(provider="voyageai")
             >>> for model in models:
             ...     print(f"{model['name']}: {model['dimensions']} dims")
+
         """
         models = self._catalog.list_models(provider=provider)
         # Convert ModelInfo objects to dictionaries

@@ -1,5 +1,4 @@
-"""
-Model catalog for Mimie.
+"""Model catalog for Mimie.
 
 Manages model metadata, provides model discovery, and enables auto-detection
 of providers based on model names.
@@ -14,8 +13,7 @@ from .utils.errors import AmbiguousModelError, ModelNotFoundError
 
 
 class ModelCatalog:
-    """
-    Central catalog for embedding model metadata.
+    """Central catalog for embedding model metadata.
 
     Loads model information from the bundled models.json file and provides
     methods for querying model capabilities, pricing, and specifications.
@@ -32,15 +30,16 @@ class ModelCatalog:
         1024
         >>> print(model_info.cost_per_million_tokens)
         0.06
+
     """
 
     def __init__(self, models_path: Optional[Path] = None) -> None:
-        """
-        Initialize the model catalog.
+        """Initialize the model catalog.
 
         Args:
             models_path: Optional custom path to models.json file.
                         If not provided, uses bundled models.json.
+
         """
         if models_path is None:
             # Use bundled models.json
@@ -69,8 +68,7 @@ class ModelCatalog:
                 self._models[provider][model_info.name] = model_info
 
     def get_model_info(self, provider: str, model: str) -> ModelInfo:
-        """
-        Get model information for a specific provider and model.
+        """Get model information for a specific provider and model.
 
         Args:
             provider: Provider name (e.g., "voyageai")
@@ -87,6 +85,7 @@ class ModelCatalog:
             >>> info = catalog.get_model_info("voyageai", "voyage-3")
             >>> print(f"{info.dimensions} dimensions, ${info.cost_per_million_tokens}/M")
             1024 dimensions, $0.06/M
+
         """
         if provider not in self._models:
             available = list(self._models.keys())
@@ -107,8 +106,7 @@ class ModelCatalog:
         return self._models[provider][model]
 
     def list_models(self, provider: Optional[str] = None) -> List[ModelInfo]:
-        """
-        List available models, optionally filtered by provider.
+        """List available models, optionally filtered by provider.
 
         Args:
             provider: Optional provider name to filter by.
@@ -125,6 +123,7 @@ class ModelCatalog:
             >>> voyage_models = catalog.list_models(provider="voyageai")
             >>> for model in voyage_models:
             ...     print(f"{model.name}: {model.dimensions} dims")
+
         """
         if provider is not None:
             if provider not in self._models:
@@ -138,8 +137,7 @@ class ModelCatalog:
         return all_models
 
     def auto_detect_provider(self, model: str) -> Optional[str]:
-        """
-        Attempt to auto-detect the provider for a given model name.
+        """Attempt to auto-detect the provider for a given model name.
 
         Searches all providers to find which one(s) have this model.
         If exactly one provider has the model, returns that provider.
@@ -160,6 +158,7 @@ class ModelCatalog:
             >>> provider = catalog.auto_detect_provider("voyage-3")
             >>> print(provider)
             voyageai
+
         """
         matching_providers = []
 
@@ -178,8 +177,7 @@ class ModelCatalog:
             )
 
     def list_providers(self) -> List[str]:
-        """
-        List all available providers.
+        """List all available providers.
 
         Returns:
             List of provider names
@@ -189,12 +187,12 @@ class ModelCatalog:
             >>> providers = catalog.list_providers()
             >>> print(providers)
             ['voyageai']
+
         """
         return list(self._models.keys())
 
     def has_model(self, provider: str, model: str) -> bool:
-        """
-        Check if a specific model exists for a provider.
+        """Check if a specific model exists for a provider.
 
         Args:
             provider: Provider name
@@ -209,6 +207,7 @@ class ModelCatalog:
             True
             >>> catalog.has_model("voyageai", "nonexistent")
             False
+
         """
         return (
             provider in self._models
@@ -222,8 +221,7 @@ class ModelCatalog:
         supports_dimensions: Optional[bool] = None,
         max_cost: Optional[float] = None,
     ) -> List[ModelInfo]:
-        """
-        Filter models by capabilities and constraints.
+        """Filter models by capabilities and constraints.
 
         Args:
             supports_batching: Filter by batching support
@@ -241,6 +239,7 @@ class ModelCatalog:
             ...     supports_dimensions=True,
             ...     max_cost=0.10
             ... )
+
         """
         results = []
 
