@@ -189,6 +189,8 @@ class ModelInfo(BaseModel):
         supports_dimensions: Whether custom dimensions are supported
         tokenizer: Tokenizer configuration (e.g., {"repo": "voyageai/voyage-3"})
         description: Human-readable model description
+        mteb_score: MTEB (Massive Text Embedding Benchmark) average score (0-100 scale)
+        rteb_score: RTEB (Retrieval Text Embedding Benchmark) average score (0-100 scale)
 
     """
 
@@ -210,6 +212,15 @@ class ModelInfo(BaseModel):
         default=None, description="Tokenizer configuration"
     )
     description: Optional[str] = Field(default=None, description="Model description")
+    mteb_score: Optional[float] = Field(
+        default=None, description="MTEB average score (0-100)"
+    )
+    rteb_score: Optional[float] = Field(
+        default=None, description="RTEB average score (0-100)"
+    )
+    modalities: List[str] = Field(
+        default=["text"], description="Supported modalities (e.g., text, image)"
+    )
 
     @field_validator("dimensions", "max_input_tokens")
     @classmethod
@@ -225,6 +236,14 @@ class ModelInfo(BaseModel):
         """Validate that cost is non-negative."""
         if v < 0:
             raise ValueError("cost_per_million_tokens must be non-negative")
+        return v
+
+    @field_validator("mteb_score", "rteb_score")
+    @classmethod
+    def validate_benchmark_score(cls, v: Optional[float]) -> Optional[float]:
+        """Validate that benchmark scores are between 0 and 100."""
+        if v is not None and (v < 0 or v > 100):
+            raise ValueError("Benchmark scores must be between 0 and 100")
         return v
 
     def __repr__(self) -> str:

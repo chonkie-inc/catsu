@@ -19,6 +19,8 @@ interface Model {
   supports_batching: boolean;
   supports_input_type: boolean;
   supports_dimensions: boolean;
+  mteb_score: number | null;
+  rteb_score: number | null;
 }
 
 const modalityBadge: Record<string, string> = {
@@ -57,6 +59,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'name',
         header: 'MODEL',
+        size: 420,
         cell: (info) => (
           <span className="text-xs text-gray-700 dark:text-gray-300">
             {info.getValue<string>()}
@@ -66,6 +69,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'dimensions',
         header: 'DIMENSIONS',
+        size: 110,
         cell: (info) => (
           <span className="text-xs tabular-nums text-gray-700 dark:text-gray-300">
             {info.getValue<number>().toLocaleString()}
@@ -75,6 +79,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'max_input_tokens',
         header: 'MAX TOKENS',
+        size: 140,
         cell: (info) => (
           <span className="text-xs tabular-nums text-gray-700 dark:text-gray-300">
             {info.getValue<number>().toLocaleString()}
@@ -84,6 +89,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'cost_per_million_tokens',
         header: 'COST/1M',
+        size: 120,
         cell: (info) => (
           <span className="text-xs tabular-nums text-gray-700 dark:text-gray-300">
             ${info.getValue<number>().toFixed(2)}
@@ -91,8 +97,35 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
         ),
       },
       {
+        accessorKey: 'mteb_score',
+        header: 'MTEB',
+        size: 90,
+        cell: (info) => {
+          const score = info.getValue<number | null>();
+          return (
+            <span className="text-xs tabular-nums text-gray-700 dark:text-gray-300">
+              {score !== null ? score.toFixed(2) : '—'}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'rteb_score',
+        header: 'RTEB',
+        size: 90,
+        cell: (info) => {
+          const score = info.getValue<number | null>();
+          return (
+            <span className="text-xs tabular-nums text-gray-700 dark:text-gray-300">
+              {score !== null ? score.toFixed(2) : '—'}
+            </span>
+          );
+        },
+      },
+      {
         accessorKey: 'modalities',
         header: 'MODALITY',
+        size: 100,
         cell: (info) => {
           const modalities = info.getValue<string[]>() || ['text'];
           return (
@@ -113,6 +146,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'supports_batching',
         header: 'BATCHING',
+        size: 80,
         cell: (info) => (
           <span className="text-xs text-gray-700 dark:text-gray-300">
             {info.getValue<boolean>() ? 'YES' : 'NO'}
@@ -122,6 +156,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'supports_input_type',
         header: 'INPUT TYPE',
+        size: 110,
         cell: (info) => (
           <span className="text-xs text-gray-700 dark:text-gray-300">
             {info.getValue<boolean>() ? 'YES' : 'NO'}
@@ -131,6 +166,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
       {
         accessorKey: 'supports_dimensions',
         header: 'CONFIG DIMS',
+        size: 120,
         cell: (info) => (
           <span className="text-xs text-gray-700 dark:text-gray-300">
             {info.getValue<boolean>() ? 'YES' : 'NO'}
@@ -187,6 +223,7 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
                     <th
                       key={header.id}
                       className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 bg-gray-50 dark:bg-gray-900"
+                      style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex items-center space-x-1">
@@ -214,7 +251,11 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
                   className="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2.5">
+                    <td
+                      key={cell.id}
+                      className="px-4 py-2.5"
+                      style={{ width: cell.column.getSize() !== 150 ? cell.column.getSize() : undefined }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
