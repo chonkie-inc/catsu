@@ -22,6 +22,7 @@ interface Model {
   supports_dimensions: boolean;
   mteb_score: number | null;
   rteb_score: number | null;
+  release_date: string | null;
 }
 
 const modalityBadge: Record<string, string> = {
@@ -201,6 +202,28 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
             {info.getValue<boolean>() ? 'YES' : 'NO'}
           </span>
         ),
+      },
+      {
+        accessorKey: 'release_date',
+        header: 'RELEASED',
+        size: 100,
+        cell: (info) => {
+          const dateStr = info.getValue<string | null>();
+          if (!dateStr) return <span className="text-xs text-gray-400 dark:text-gray-500">—</span>;
+
+          // Parse date string (YYYY-MM-DD format)
+          const date = new Date(dateStr);
+          const formatter = new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short'
+          });
+
+          return (
+            <span className="text-xs text-gray-700 dark:text-gray-300">
+              {formatter.format(date)}
+            </span>
+          );
+        },
       },
     ],
     []

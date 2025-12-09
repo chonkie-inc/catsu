@@ -1,319 +1,4 @@
 {
-  "openai": [
-    {
-      "name": "text-embedding-3-large",
-      "provider": "openai",
-      "dimensions": 3072,
-      "max_input_tokens": 8191,
-      "cost_per_million_tokens": 0.13,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": false,
-      "supports_dimensions": true,
-      "mteb_score": 79.15,
-      "rteb_score": 63.33,
-      "tokenizer": {
-        "engine": "tiktoken",
-        "name": "cl100k_base"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "text-embedding-3-small",
-      "provider": "openai",
-      "dimensions": 1536,
-      "max_input_tokens": 8191,
-      "cost_per_million_tokens": 0.02,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": false,
-      "supports_dimensions": true,
-      "mteb_score": 77.56,
-      "rteb_score": 56.66,
-      "tokenizer": {
-        "engine": "tiktoken",
-        "name": "cl100k_base"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "text-embedding-ada-002",
-      "provider": "openai",
-      "dimensions": 1536,
-      "max_input_tokens": 8191,
-      "cost_per_million_tokens": 0.1,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": false,
-      "supports_dimensions": false,
-      "mteb_score": 75.79,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "tiktoken",
-        "name": "cl100k_base"
-      },
-      "quantizations": [
-        "float"
-      ]
-    }
-  ],
-  "voyageai": [
-    {
-      "name": "voyage-3-large",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.18,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": null,
-      "rteb_score": 76.34,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-3-large"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-3.5",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.06,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": null,
-      "rteb_score": 73.78,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-3.5"
-      },
-      "quantizations": [
-        "float",
-        "int8",
-        "binary"
-      ]
-    },
-    {
-      "name": "voyage-3.5-lite",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.02,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": null,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-3.5-lite"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-3",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.06,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": 61.38,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-3"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-3-lite",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.02,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": 60.44,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-3-lite"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-code-3",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.18,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": true,
-      "mteb_score": 75.15,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-code-3"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-finance-2",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.12,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": false,
-      "mteb_score": 74.33,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-finance-2"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-law-2",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 16000,
-      "cost_per_million_tokens": 0.12,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": false,
-      "mteb_score": 75.66,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-law-2"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-code-2",
-      "provider": "voyageai",
-      "dimensions": 1536,
-      "max_input_tokens": 16000,
-      "cost_per_million_tokens": 0.12,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": false,
-      "mteb_score": 73.74,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-code-2"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-multilingual-2",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.12,
-      "modalities": [
-        "text"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": false,
-      "mteb_score": 74.45,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-multilingual-2"
-      },
-      "quantizations": [
-        "float"
-      ]
-    },
-    {
-      "name": "voyage-multimodal-3",
-      "provider": "voyageai",
-      "dimensions": 1024,
-      "max_input_tokens": 32000,
-      "cost_per_million_tokens": 0.12,
-      "modalities": [
-        "text",
-        "image"
-      ],
-      "supports_batching": true,
-      "supports_input_type": true,
-      "supports_dimensions": false,
-      "mteb_score": null,
-      "rteb_score": null,
-      "tokenizer": {
-        "engine": "huggingface",
-        "name": "voyageai/voyage-multimodal-3"
-      },
-      "quantizations": [
-        "float"
-      ]
-    }
-  ],
   "cohere": [
     {
       "name": "embed-v4.0",
@@ -337,7 +22,8 @@
       "tokenizer": {
         "engine": "huggingface",
         "name": "Cohere/Cohere-embed-v4"
-      }
+      },
+      "release_date": "2025-04-15"
     },
     {
       "name": "embed-english-v3.0",
@@ -359,7 +45,8 @@
       },
       "quantizations": [
         "float"
-      ]
+      ],
+      "release_date": "2023-11-02"
     },
     {
       "name": "embed-english-light-v3.0",
@@ -381,7 +68,8 @@
       },
       "quantizations": [
         "float"
-      ]
+      ],
+      "release_date": "2023-11-02"
     },
     {
       "name": "embed-multilingual-v3.0",
@@ -403,7 +91,8 @@
       },
       "quantizations": [
         "float"
-      ]
+      ],
+      "release_date": "2023-11-02"
     },
     {
       "name": "embed-multilingual-light-v3.0",
@@ -425,7 +114,337 @@
       },
       "quantizations": [
         "float"
-      ]
+      ],
+      "release_date": "2023-11-02"
+    }
+  ],
+  "openai": [
+    {
+      "name": "text-embedding-3-large",
+      "provider": "openai",
+      "dimensions": 3072,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.13,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 79.15,
+      "rteb_score": 63.33,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-25"
+    },
+    {
+      "name": "text-embedding-3-small",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 77.56,
+      "rteb_score": 56.66,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-25"
+    },
+    {
+      "name": "text-embedding-ada-002",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 75.79,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2022-12-15"
+    }
+  ],
+  "voyageai": [
+    {
+      "name": "voyage-3-large",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 76.34,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2025-01-07"
+    },
+    {
+      "name": "voyage-3.5",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 73.78,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2025-05-20"
+    },
+    {
+      "name": "voyage-3.5-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5-lite"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2025-05-20"
+    },
+    {
+      "name": "voyage-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 61.38,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-09-18"
+    },
+    {
+      "name": "voyage-3-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 60.44,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-lite"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-09-18"
+    },
+    {
+      "name": "voyage-code-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 75.15,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-12-04"
+    },
+    {
+      "name": "voyage-finance-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 74.33,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-finance-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-06-03"
+    },
+    {
+      "name": "voyage-law-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 75.66,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-law-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-04-15"
+    },
+    {
+      "name": "voyage-code-2",
+      "provider": "voyageai",
+      "dimensions": 1536,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 73.74,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-23"
+    },
+    {
+      "name": "voyage-multilingual-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 74.45,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-multilingual-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-06-10"
+    },
+    {
+      "name": "voyage-multimodal-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-multimodal-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-11-12"
     }
   ]
 }
