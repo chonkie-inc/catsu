@@ -26,11 +26,17 @@ jobs:
         run: uv sync --dev
 
       - name: Run Ruff linter
-        run: uv run ruff check src/mimie tests/
+        run: |
+          source .venv/bin/activate
+          ruff check src/mimie tests/
 
       - name: Run Ruff formatter check
-        run: uv run ruff format --check src/mimie tests/
+        run: |
+          source .venv/bin/activate
+          ruff format --check src/mimie tests/
 
       - name: Run type checker (ty)
-        run: uv run ty src/mimie
+        run: |
+          source .venv/bin/activate
+          ty check src/mimie
         continue-on-error: true
