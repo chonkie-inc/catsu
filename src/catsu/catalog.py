@@ -1,4 +1,4 @@
-"""Model catalog for Mimie.
+"""Model catalog for Catsu.
 
 Manages model metadata, provides model discovery, and enables auto-detection
 of providers based on model names.

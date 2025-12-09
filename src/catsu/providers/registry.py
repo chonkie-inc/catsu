@@ -1,4 +1,4 @@
-"""Provider registry for Mimie.
+"""Provider registry for Catsu.
 
 Maps provider names to their implementation classes for dynamic loading.
 """

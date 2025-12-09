@@ -1,7 +1,7 @@
-"""Pydantic models for Mimie API responses and data structures.
+"""Pydantic models for Catsu API responses and data structures.
 
 This module defines the response models and data structures used throughout
-the Mimie library, providing type safety and validation.
+the Catsu library, providing type safety and validation.
 """
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
