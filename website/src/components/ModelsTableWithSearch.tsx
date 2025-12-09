@@ -19,6 +19,9 @@ interface ModelsTableWithSearchProps {
 export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
   const [searchValue, setSearchValue] = useState('');
   const [rowCount, setRowCount] = useState(models.length);
+  const [providerCount, setProviderCount] = useState(
+    new Set(models.map((m) => m.provider)).size
+  );
 
   // Inject search bar into navbar (only once on mount)
   useEffect(() => {
@@ -44,6 +47,14 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
     }
   }, [rowCount]);
 
+  // Update provider count in navbar
+  useEffect(() => {
+    const navbarProviderCount = document.getElementById('navbar-provider-count');
+    if (navbarProviderCount) {
+      navbarProviderCount.textContent = providerCount.toString();
+    }
+  }, [providerCount]);
+
   return (
     <div>
       <ModelsTable
@@ -51,6 +62,7 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
         filterValue={searchValue}
         onFilterChange={setSearchValue}
         onRowCountChange={setRowCount}
+        onProviderCountChange={setProviderCount}
       />
     </div>
   );

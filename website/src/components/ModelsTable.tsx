@@ -15,19 +15,26 @@ interface Model {
   dimensions: number;
   max_input_tokens: number;
   cost_per_million_tokens: number;
+  modalities: string[];
   supports_batching: boolean;
   supports_input_type: boolean;
   supports_dimensions: boolean;
 }
+
+const modalityBadge: Record<string, string> = {
+  text: 'T',
+  image: 'I',
+};
 
 interface ModelsTableProps {
   models: Model[];
   filterValue?: string;
   onFilterChange?: (filter: string) => void;
   onRowCountChange?: (count: number) => void;
+  onProviderCountChange?: (count: number) => void;
 }
 
-export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCountChange }: ModelsTableProps) {
+export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCountChange, onProviderCountChange }: ModelsTableProps) {
   const [globalFilter, setGlobalFilter] = useState(filterValue);
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -84,6 +91,26 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
         ),
       },
       {
+        accessorKey: 'modalities',
+        header: 'MODALITY',
+        cell: (info) => {
+          const modalities = info.getValue<string[]>() || ['text'];
+          return (
+            <div className="flex gap-1">
+              {modalities.map((modality) => (
+                <span
+                  key={modality}
+                  className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-semibold border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
+                  title={modality}
+                >
+                  {modalityBadge[modality] || modality[0].toUpperCase()}
+                </span>
+              ))}
+            </div>
+          );
+        },
+      },
+      {
         accessorKey: 'supports_batching',
         header: 'BATCHING',
         cell: (info) => (
@@ -131,13 +158,22 @@ export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCou
     getSortedRowModel: getSortedRowModel(),
   });
 
-  // Notify parent of row count changes
-  const rowCount = table.getRowModel().rows.length;
+  // Notify parent of row count and provider count changes
+  const rows = table.getRowModel().rows;
+  const rowCount = rows.length;
+  const providerCount = new Set(rows.map(row => row.original.provider)).size;
+
   useEffect(() => {
     if (onRowCountChange) {
       onRowCountChange(rowCount);
     }
   }, [rowCount, onRowCountChange]);
+
+  useEffect(() => {
+    if (onProviderCountChange) {
+      onProviderCountChange(providerCount);
+    }
+  }, [providerCount, onProviderCountChange]);
 
   return (
     <div className="w-full overflow-x-auto">
