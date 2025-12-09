@@ -78,3 +78,41 @@ def skip_if_no_jina_key():
     """Skip test if Jina AI API key is not set."""
     if not os.getenv("JINA_API_KEY"):
         pytest.skip("JINA_API_KEY not set")
+
+
+@pytest.fixture
+def gemini_api_key():
+    """Get Gemini API key from environment."""
+    return os.getenv("GEMINI_API_KEY")
+
+
+@pytest.fixture
+def has_gemini_api_key():
+    """Check if Gemini API key is available."""
+    return os.getenv("GEMINI_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_gemini_key():
+    """Skip test if Gemini API key is not set."""
+    if not os.getenv("GEMINI_API_KEY"):
+        pytest.skip("GEMINI_API_KEY not set")
+
+
+@pytest.fixture
+def mistral_api_key():
+    """Get Mistral API key from environment."""
+    return os.getenv("MISTRAL_API_KEY")
+
+
+@pytest.fixture
+def has_mistral_api_key():
+    """Check if Mistral API key is available."""
+    return os.getenv("MISTRAL_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_mistral_key():
+    """Skip test if Mistral API key is not set."""
+    if not os.getenv("MISTRAL_API_KEY"):
+        pytest.skip("MISTRAL_API_KEY not set")

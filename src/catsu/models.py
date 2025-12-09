@@ -222,7 +222,8 @@ class ModelInfo(BaseModel):
         default=["text"], description="Supported modalities (e.g., text, image)"
     )
     quantizations: List[str] = Field(
-        default=["float"], description="Supported quantization formats (e.g., float, int8, binary)"
+        default=["float"],
+        description="Supported quantization formats (e.g., float, int8, binary)",
     )
     release_date: Optional[str] = Field(
         default=None, description="Model release date (YYYY-MM-DD format)"
