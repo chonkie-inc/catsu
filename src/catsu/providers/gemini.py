@@ -138,6 +138,7 @@ class GeminiProvider(BaseProvider):
 
         """
         self._validate_api_key()
+        assert self.api_key is not None
         return {
             "Content-Type": "application/json",
             "x-goog-api-key": self.api_key,
