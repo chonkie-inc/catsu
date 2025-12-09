@@ -166,7 +166,7 @@ class EmbedResponse(BaseModel):
             ) from e
 
     def __repr__(self) -> str:
-        """String representation of EmbedResponse."""
+        """Return string representation of EmbedResponse."""
         return (
             f"EmbedResponse(model='{self.model}', provider='{self.provider}', "
             f"input_count={self.input_count}, dimensions={self.dimensions}, "
@@ -234,7 +234,7 @@ class ModelInfo(BaseModel):
         return v
 
     def __repr__(self) -> str:
-        """String representation of ModelInfo."""
+        """Return string representation of ModelInfo."""
         return (
             f"ModelInfo(name='{self.name}', provider='{self.provider}', "
             f"dimensions={self.dimensions}, cost=${self.cost_per_million_tokens}/M)"
@@ -275,7 +275,7 @@ class TokenizeResponse(BaseModel):
         return v
 
     def __repr__(self) -> str:
-        """String representation of TokenizeResponse."""
+        """Return string representation of TokenizeResponse."""
         return (
             f"TokenizeResponse(model='{self.model}', provider='{self.provider}', "
             f"token_count={self.token_count})"

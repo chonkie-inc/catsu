@@ -267,7 +267,7 @@ class ModelCatalog:
         return results
 
     def __repr__(self) -> str:
-        """String representation of the catalog."""
+        """Return string representation of the catalog."""
         total_models = sum(len(models) for models in self._models.values())
         providers = list(self._models.keys())
         return (

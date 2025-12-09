@@ -269,7 +269,7 @@ class BaseProvider(ABC):
             )
 
     def __repr__(self) -> str:
-        """String representation of the provider."""
+        """Return string representation of the provider."""
         return (
             f"{self.__class__.__name__}("
             f"max_retries={self.max_retries}, "

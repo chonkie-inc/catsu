@@ -32,7 +32,7 @@ class MimieError(Exception):
         super().__init__(self.message)
 
     def __str__(self) -> str:
-        """String representation of the error."""
+        """Return string representation of the error."""
         if self.details:
             details_str = ", ".join(f"{k}={v}" for k, v in self.details.items())
             return f"{self.message} ({details_str})"

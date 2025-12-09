@@ -115,7 +115,7 @@ class TestEmbedResponse:
         )
 
         try:
-            import numpy as np
+            import numpy as np  # noqa: F401
             arr = response.to_numpy()
             assert arr.shape == (2, 2)
             assert arr[0, 0] == 0.1
