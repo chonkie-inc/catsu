@@ -130,18 +130,20 @@ class GeminiProvider(BaseProvider):
                 provider=self.PROVIDER_NAME,
             ) from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self, api_key: Optional[str] = None) -> Dict[str, str]:
         """Get HTTP headers for API requests.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
 
         Returns:
             Dictionary of headers including API key
 
         """
-        self._validate_api_key()
-        assert self.api_key is not None
+        effective_key = self._get_effective_api_key(api_key)
         return {
             "Content-Type": "application/json",
-            "x-goog-api-key": self.api_key,
+            "x-goog-api-key": effective_key,
         }
 
     def _build_request_payload(
@@ -380,6 +382,7 @@ class GeminiProvider(BaseProvider):
         input_type: Optional[str] = None,
         task_type: Optional[str] = None,
         output_dimensionality: Optional[int] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Gemini API (synchronous).
@@ -390,6 +393,7 @@ class GeminiProvider(BaseProvider):
             input_type: Input type ("query" or "document")
             task_type: Gemini task type (e.g., "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT")
             output_dimensionality: Output dimensions (128-3072, recommended: 768, 1536, 3072)
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -426,7 +430,7 @@ class GeminiProvider(BaseProvider):
             output_dimensionality=output_dimensionality,
             **kwargs,
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make request with retry logic
         start_time = time.time()
@@ -452,6 +456,7 @@ class GeminiProvider(BaseProvider):
         input_type: Optional[str] = None,
         task_type: Optional[str] = None,
         output_dimensionality: Optional[int] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Gemini API (asynchronous).
@@ -462,6 +467,7 @@ class GeminiProvider(BaseProvider):
             input_type: Input type ("query" or "document")
             task_type: Gemini task type (e.g., "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT")
             output_dimensionality: Output dimensions (128-3072)
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -490,7 +496,7 @@ class GeminiProvider(BaseProvider):
             output_dimensionality=output_dimensionality,
             **kwargs,
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make async request with retry logic
         start_time = time.time()

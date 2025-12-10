@@ -129,16 +129,19 @@ class MistralProvider(BaseProvider):
                 provider=self.PROVIDER_NAME,
             ) from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self, api_key: Optional[str] = None) -> Dict[str, str]:
         """Get HTTP headers for API requests.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
 
         Returns:
             Dictionary of headers including authorization
 
         """
-        self._validate_api_key()
+        effective_key = self._get_effective_api_key(api_key)
         return {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {effective_key}",
             "Content-Type": "application/json",
         }
 
@@ -348,6 +351,7 @@ class MistralProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         encoding_format: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Mistral AI API (synchronous).
@@ -357,6 +361,7 @@ class MistralProvider(BaseProvider):
             inputs: List of input texts (up to 512 texts for batch)
             input_type: Input type ("query" or "document")
             encoding_format: Output encoding format (e.g., "float", "int8")
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -389,7 +394,7 @@ class MistralProvider(BaseProvider):
         payload = self._build_request_payload(
             model, inputs, encoding_format=encoding_format, **kwargs
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make request with retry logic
         start_time = time.time()
@@ -414,6 +419,7 @@ class MistralProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         encoding_format: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Mistral AI API (asynchronous).
@@ -423,6 +429,7 @@ class MistralProvider(BaseProvider):
             inputs: List of input texts (up to 512 texts for batch)
             input_type: Input type ("query" or "document")
             encoding_format: Output encoding format (e.g., "float", "int8")
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -447,7 +454,7 @@ class MistralProvider(BaseProvider):
         payload = self._build_request_payload(
             model, inputs, encoding_format=encoding_format, **kwargs
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make async request with retry logic
         start_time = time.time()

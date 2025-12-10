@@ -130,16 +130,19 @@ class CohereProvider(BaseProvider):
                 provider=self.PROVIDER_NAME,
             ) from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self, api_key: Optional[str] = None) -> Dict[str, str]:
         """Get HTTP headers for API requests.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
 
         Returns:
             Dictionary of headers including authorization
 
         """
-        self._validate_api_key()
+        effective_key = self._get_effective_api_key(api_key)
         return {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {effective_key}",
             "Content-Type": "application/json",
         }
 
@@ -386,6 +389,7 @@ class CohereProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         truncate: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Cohere API (synchronous).
@@ -395,6 +399,7 @@ class CohereProvider(BaseProvider):
             inputs: List of input texts
             input_type: Input type ("search_document", "search_query", "classification", "clustering")
             truncate: Truncation option ("NONE", "START", "END")
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -428,7 +433,7 @@ class CohereProvider(BaseProvider):
         payload = self._build_request_payload(
             model, inputs, input_type, truncate, **kwargs
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make request with retry logic
         start_time = time.time()
@@ -453,6 +458,7 @@ class CohereProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         truncate: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Cohere API (asynchronous).
@@ -462,6 +468,7 @@ class CohereProvider(BaseProvider):
             inputs: List of input texts
             input_type: Input type ("search_document", "search_query", "classification", "clustering")
             truncate: Truncation option ("NONE", "START", "END")
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -487,7 +494,7 @@ class CohereProvider(BaseProvider):
         payload = self._build_request_payload(
             model, inputs, input_type, truncate, **kwargs
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make async request with retry logic
         start_time = time.time()

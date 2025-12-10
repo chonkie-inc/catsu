@@ -131,16 +131,19 @@ class JinaAIProvider(BaseProvider):
                 provider=self.PROVIDER_NAME,
             ) from e
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self, api_key: Optional[str] = None) -> Dict[str, str]:
         """Get HTTP headers for API requests.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
 
         Returns:
             Dictionary of headers including authorization
 
         """
-        self._validate_api_key()
+        effective_key = self._get_effective_api_key(api_key)
         return {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {effective_key}",
             "Content-Type": "application/json",
         }
 
@@ -363,6 +366,7 @@ class JinaAIProvider(BaseProvider):
         task: Optional[str] = None,
         dimensions: Optional[int] = None,
         normalized: bool = True,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Jina AI API (synchronous).
@@ -374,6 +378,7 @@ class JinaAIProvider(BaseProvider):
             task: Task type (e.g., "retrieval.query", "retrieval.passage", "text-matching")
             dimensions: Output dimensions (for Matryoshka models)
             normalized: L2 normalize embeddings (default: True)
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -412,7 +417,7 @@ class JinaAIProvider(BaseProvider):
             normalized=normalized,
             **kwargs,
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make request with retry logic
         start_time = time.time()
@@ -439,6 +444,7 @@ class JinaAIProvider(BaseProvider):
         task: Optional[str] = None,
         dimensions: Optional[int] = None,
         normalized: bool = True,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings using Jina AI API (asynchronous).
@@ -450,6 +456,7 @@ class JinaAIProvider(BaseProvider):
             task: Task type (e.g., "retrieval.query", "retrieval.passage", "text-matching")
             dimensions: Output dimensions (for Matryoshka models)
             normalized: L2 normalize embeddings (default: True)
+            api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
         Returns:
@@ -480,7 +487,7 @@ class JinaAIProvider(BaseProvider):
             normalized=normalized,
             **kwargs,
         )
-        headers = self._get_headers()
+        headers = self._get_headers(api_key)
 
         # Make async request with retry logic
         start_time = time.time()
