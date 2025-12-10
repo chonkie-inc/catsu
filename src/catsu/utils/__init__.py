@@ -1,6 +1,7 @@
 """Utility functions and helpers."""
 
-from catsu.utils.tokenizers import (
+from .timer import Timer
+from .tokenizers import (
     HuggingFaceTokenizerWrapper,
     TiktokenWrapper,
     count_tokens,
@@ -12,4 +13,5 @@ __all__ = [
     "count_tokens",
     "HuggingFaceTokenizerWrapper",
     "TiktokenWrapper",
+    "Timer",
 ]

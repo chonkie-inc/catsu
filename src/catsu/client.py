@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import httpx
 
 from .catalog import ModelCatalog
+from .models import EmbedResponse, TokenizeResponse
 from .providers import BaseProvider, registry
 from .utils.errors import InvalidInputError, ModelNotFoundError, UnsupportedFeatureError
 
@@ -203,7 +204,7 @@ class Client:
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
-    ) -> Any:  # -> EmbedResponse
+    ) -> EmbedResponse:
         """Generate embeddings for input text(s).
 
         Args:
@@ -293,7 +294,7 @@ class Client:
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
-    ) -> Any:  # -> EmbedResponse
+    ) -> EmbedResponse:
         """Async version of embed().
 
         Generate embeddings for input text(s) asynchronously.
@@ -388,6 +389,55 @@ class Client:
         models = self._catalog.list_models(provider=provider)
         # Convert ModelInfo objects to dictionaries
         return [model.model_dump() for model in models]
+
+    def tokenize(
+        self,
+        model: str,
+        input: Union[str, List[str]],
+        provider: Optional[str] = None,
+        **kwargs: Any,
+    ) -> TokenizeResponse:
+        """Tokenize input text(s) without generating embeddings.
+
+        Useful for counting tokens before making embedding requests.
+
+        Args:
+            model: Model name or "provider:model" string
+            input: Single text string or list of text strings
+            provider: Optional provider name (if not in model string)
+            **kwargs: Additional provider-specific parameters
+
+        Returns:
+            TokenizeResponse with token counts
+
+        Example:
+            >>> client = Client()
+            >>> result = client.tokenize(
+            ...     model="voyage-3",
+            ...     input="hello world",
+            ...     provider="voyageai"
+            ... )
+            >>> print(result.token_count)  # 2
+
+        """
+        # Parse provider and model
+        provider_name, model_name = self._parse_model_string(model, provider)
+
+        if self.verbose:
+            print(f"Tokenizing with provider: {provider_name}, model: {model_name}")
+
+        # Get provider instance
+        provider_instance = self._get_provider(provider_name)
+
+        # Normalize input to list
+        inputs = [input] if isinstance(input, str) else input
+
+        # Call provider's tokenize method
+        return provider_instance.tokenize(
+            model=model_name,
+            inputs=inputs,
+            **kwargs,
+        )
 
     def close(self) -> None:
         """Close sync HTTP client."""

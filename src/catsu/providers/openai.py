@@ -5,10 +5,10 @@ text-embedding-3-small, and text-embedding-ada-002 models with retry logic,
 cost tracking, and local tokenization via tiktoken.
 """
 
-import time
 from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
+from ..utils import Timer
 from ..utils.errors import InvalidInputError
 from .base import BaseProvider
 
@@ -124,15 +124,14 @@ class OpenAIProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = self._make_request_with_retry(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = self._make_request_with_retry(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             input_count=len(params.inputs),
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 
@@ -171,15 +170,14 @@ class OpenAIProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = await self._make_request_with_retry_async(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = await self._make_request_with_retry_async(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             input_count=len(params.inputs),
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 

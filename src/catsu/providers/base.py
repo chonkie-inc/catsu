@@ -3,7 +3,6 @@
 Defines the abstract interface that all embedding providers must implement.
 """
 
-import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
@@ -240,18 +239,6 @@ class BaseProvider(ABC):
         """
         return (tokens / 1_000_000) * cost_per_million
 
-    def _measure_latency(self, start_time: float) -> float:
-        """Measure latency in milliseconds.
-
-        Args:
-            start_time: Start time from time.time()
-
-        Returns:
-            Latency in milliseconds
-
-        """
-        return (time.time() - start_time) * 1000
-
     def _handle_http_error(
         self,
         response: httpx.Response,
@@ -400,9 +387,11 @@ class BaseProvider(ABC):
         """
 
         @retry(
-            retry=retry_if_exception_type(
-                (httpx.TimeoutException, httpx.NetworkError, RateLimitError)
-            ),
+            retry=retry_if_exception_type((
+                httpx.TimeoutException,
+                httpx.NetworkError,
+                RateLimitError,
+            )),
             stop=stop_after_attempt(self.max_retries),
             wait=wait_exponential(multiplier=1, min=1, max=10),
             reraise=True,
@@ -457,9 +446,11 @@ class BaseProvider(ABC):
         """
 
         @retry(
-            retry=retry_if_exception_type(
-                (httpx.TimeoutException, httpx.NetworkError, RateLimitError)
-            ),
+            retry=retry_if_exception_type((
+                httpx.TimeoutException,
+                httpx.NetworkError,
+                RateLimitError,
+            )),
             stop=stop_after_attempt(self.max_retries),
             wait=wait_exponential(multiplier=1, min=1, max=10),
             reraise=True,

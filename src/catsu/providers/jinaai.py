@@ -4,10 +4,10 @@ Provides integration with Jina AI's embedding API, supporting all Jina embedding
 with retry logic, cost tracking, and local tokenization via HuggingFace.
 """
 
-import time
 from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
+from ..utils import Timer
 from .base import BaseProvider
 
 
@@ -133,16 +133,15 @@ class JinaAIProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = self._make_request_with_retry(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = self._make_request_with_retry(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             input_count=len(params.inputs),
             input_type=params.input_type or "document",
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 
@@ -187,16 +186,15 @@ class JinaAIProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = await self._make_request_with_retry_async(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = await self._make_request_with_retry_async(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             input_count=len(params.inputs),
             input_type=params.input_type or "document",
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 

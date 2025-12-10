@@ -4,10 +4,10 @@ Provides integration with Google's Gemini API for embeddings, supporting gemini-
 and text-embedding models with retry logic, cost tracking, and local tokenization.
 """
 
-import time
 from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
+from ..utils import Timer
 from ..utils.errors import InvalidInputError
 from .base import BaseProvider
 
@@ -99,18 +99,17 @@ class GeminiProvider(BaseProvider):
         embeddings = [item["values"] for item in response_data.get("embeddings", [])]
         dimensions = len(embeddings[0]) if embeddings else 0
 
-        # Estimate token count from inputs (Gemini doesn't provide usage in response)
-        # ~1 token per 4 characters
-        total_chars = sum(len(text) for text in inputs)
-        estimated_tokens = max(1, total_chars // 4)
-        cost = self._calculate_cost(estimated_tokens, cost_per_million)
+        # Count tokens using local tokenizer (Gemini doesn't provide usage in response)
+        tokenizer = self._get_tokenizer(model)
+        total_tokens = sum(tokenizer.count_tokens(text) for text in inputs)
+        cost = self._calculate_cost(total_tokens, cost_per_million)
 
         return EmbedResponse(
             embeddings=embeddings,
             model=model,
             provider=self.PROVIDER_NAME,
             dimensions=dimensions,
-            usage=Usage(tokens=estimated_tokens, cost=cost),
+            usage=Usage(tokens=total_tokens, cost=cost),
             latency_ms=latency_ms,
             input_count=len(inputs),
             input_type=input_type,
@@ -152,16 +151,15 @@ class GeminiProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = self._make_request_with_retry(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = self._make_request_with_retry(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             inputs=params.inputs,
             input_type=params.input_type or "document",
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 
@@ -201,16 +199,15 @@ class GeminiProvider(BaseProvider):
         )
         headers = self._get_headers(api_key)
 
-        start_time = time.time()
-        response = await self._make_request_with_retry_async(url, payload, headers)
-        latency_ms = self._measure_latency(start_time)
+        with Timer() as timer:
+            response = await self._make_request_with_retry_async(url, payload, headers)
 
         return self._parse_response(
             response_data=response.json(),
             model=model,
             inputs=params.inputs,
             input_type=params.input_type or "document",
-            latency_ms=latency_ms,
+            latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
 
