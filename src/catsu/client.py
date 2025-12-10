@@ -11,7 +11,7 @@ import httpx
 
 from .catalog import ModelCatalog
 from .providers import BaseProvider, registry
-from .utils.errors import InvalidInputError, ModelNotFoundError
+from .utils.errors import InvalidInputError, ModelNotFoundError, UnsupportedFeatureError
 
 
 class Client:
@@ -109,6 +109,7 @@ class Client:
             "gemini": "GEMINI_API_KEY",
             "jinaai": "JINA_API_KEY",
             "mistral": "MISTRAL_API_KEY",
+            "nomic": "NOMIC_API_KEY",
         }
 
         env_var = env_var_map.get(provider)
@@ -198,6 +199,7 @@ class Client:
         input: Union[str, List[str]],
         provider: Optional[str] = None,
         input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
@@ -209,6 +211,7 @@ class Client:
             provider: Optional provider name (if not in model string)
             input_type: Optional input type hint ("query" or "document")
                        Used by some providers like VoyageAI
+            dimensions: Optional output dimensions (model must support this feature)
             api_key: Optional API key override for this specific request
             **kwargs: Additional provider-specific parameters
 
@@ -220,13 +223,15 @@ class Client:
             ProviderError: Provider-specific errors
             ModelNotFoundError: Model not found
             AmbiguousModelError: Model name is ambiguous
+            UnsupportedFeatureError: Model doesn't support requested feature
 
         Example:
             >>> client = Client()
             >>> result = client.embed(
             ...     model="voyage-3",
             ...     input="hello world",
-            ...     provider="voyageai"
+            ...     provider="voyageai",
+            ...     dimensions=512
             ... )
             >>> print(result.embeddings)  # [[0.1, 0.2, ...]]
             >>> print(result.usage.total_tokens)  # 2
@@ -239,6 +244,17 @@ class Client:
         if self.verbose:
             print(f"Using provider: {provider_name}, model: {model_name}")
 
+        # Validate dimensions support if dimensions is provided
+        if dimensions is not None:
+            model_info = self._catalog.get_model_info(provider_name, model_name)
+            if not model_info.supports_dimensions:
+                raise UnsupportedFeatureError(
+                    f"Model '{model_name}' does not support custom dimensions",
+                    model=model_name,
+                    provider=provider_name,
+                    feature="dimensions",
+                )
+
         # Get provider instance
         provider_instance = self._get_provider(provider_name)
 
@@ -250,6 +266,7 @@ class Client:
             model=model_name,
             inputs=inputs,
             input_type=input_type,
+            dimensions=dimensions,
             api_key=api_key,
             **kwargs,
         )
@@ -260,6 +277,7 @@ class Client:
         input: Union[str, List[str]],
         provider: Optional[str] = None,
         input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
@@ -272,11 +290,15 @@ class Client:
             input: Single text string or list of text strings
             provider: Optional provider name (if not in model string)
             input_type: Optional input type hint ("query" or "document")
+            dimensions: Optional output dimensions (model must support this feature)
             api_key: Optional API key override for this specific request
             **kwargs: Additional provider-specific parameters
 
         Returns:
             EmbedResponse with embeddings, usage, and metadata
+
+        Raises:
+            UnsupportedFeatureError: Model doesn't support requested feature
 
         Example:
             >>> import asyncio
@@ -284,7 +306,8 @@ class Client:
             >>> result = await client.aembed(
             ...     model="voyage-3",
             ...     input="hello world",
-            ...     provider="voyageai"
+            ...     provider="voyageai",
+            ...     dimensions=512
             ... )
 
         """
@@ -293,6 +316,17 @@ class Client:
 
         if self.verbose:
             print(f"Using provider: {provider_name}, model: {model_name}")
+
+        # Validate dimensions support if dimensions is provided
+        if dimensions is not None:
+            model_info = self._catalog.get_model_info(provider_name, model_name)
+            if not model_info.supports_dimensions:
+                raise UnsupportedFeatureError(
+                    f"Model '{model_name}' does not support custom dimensions",
+                    model=model_name,
+                    provider=provider_name,
+                    feature="dimensions",
+                )
 
         # Get provider instance
         provider_instance = self._get_provider(provider_name)
@@ -305,6 +339,7 @@ class Client:
             model=model_name,
             inputs=inputs,
             input_type=input_type,
+            dimensions=dimensions,
             api_key=api_key,
             **kwargs,
         )

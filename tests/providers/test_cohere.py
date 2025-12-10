@@ -55,11 +55,11 @@ class TestCohereProvider:
         payload = provider._build_request_payload(
             model="embed-english-v3.0",
             inputs=["hello", "world"],
-            input_type="search_query",
+            input_type="query",
         )
         assert payload["model"] == "embed-english-v3.0"
         assert payload["texts"] == ["hello", "world"]
-        assert payload["input_type"] == "search_query"
+        assert payload["input_type"] == "search_query"  # Mapped to Cohere's API value
         assert payload["embedding_types"] == ["float"]
 
     def test_build_request_payload_invalid_input_type(self, provider):
@@ -74,10 +74,11 @@ class TestCohereProvider:
         payload = provider._build_request_payload(
             model="embed-english-v3.0",
             inputs=["test"],
-            input_type="search_document",
+            input_type="document",
             truncate="END",
         )
         assert payload["truncate"] == "END"
+        assert payload["input_type"] == "search_document"  # Mapped to Cohere's API value
 
     def test_build_request_payload_invalid_truncate(self, provider):
         """Test that invalid truncate option raises error."""
@@ -95,7 +96,7 @@ class TestCohereProvider:
         response = provider.embed(
             model="embed-english-light-v3.0",
             inputs=["Hello, world!"],
-            input_type="search_query",
+            input_type="query",
         )
 
         assert isinstance(response, EmbedResponse)
@@ -118,7 +119,7 @@ class TestCohereProvider:
         response = provider.embed(
             model="embed-english-light-v3.0",
             inputs=texts,
-            input_type="search_document",
+            input_type="document",
         )
 
         assert isinstance(response, EmbedResponse)
@@ -130,37 +131,13 @@ class TestCohereProvider:
         not os.getenv("COHERE_API_KEY"),
         reason="Requires COHERE_API_KEY environment variable",
     )
-    def test_embed_with_different_input_types(self, skip_if_no_cohere_key, provider):
-        """Test embedding with different input types."""
-        text = ["Test classification"]
-
-        # Test classification input type (maps to "document")
-        response = provider.embed(
-            model="embed-english-light-v3.0",
-            inputs=text,
-            input_type="classification",
-        )
-        assert isinstance(response, EmbedResponse)
-        assert response.input_type == "document"
-
-        # Test clustering input type (maps to "document")
-        response = provider.embed(
-            model="embed-english-light-v3.0", inputs=text, input_type="clustering"
-        )
-        assert isinstance(response, EmbedResponse)
-        assert response.input_type == "document"
-
-    @pytest.mark.skipif(
-        not os.getenv("COHERE_API_KEY"),
-        reason="Requires COHERE_API_KEY environment variable",
-    )
     @pytest.mark.asyncio
     async def test_aembed_single_text(self, skip_if_no_cohere_key, provider):
         """Test async embedding."""
         response = await provider.aembed(
             model="embed-english-light-v3.0",
             inputs=["Async test"],
-            input_type="search_query",
+            input_type="query",
         )
 
         assert isinstance(response, EmbedResponse)

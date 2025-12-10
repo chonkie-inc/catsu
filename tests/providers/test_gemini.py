@@ -73,14 +73,14 @@ class TestGeminiProvider:
         payload = provider._build_request_payload(
             inputs=["test"],
             task_type="SEMANTIC_SIMILARITY",
-            output_dimensionality=768,
+            dimensions=768,
         )
         assert payload["requests"][0]["outputDimensionality"] == 768
 
     def test_build_request_payload_invalid_dimensions(self, provider):
-        """Test that invalid output_dimensionality raises error."""
+        """Test that invalid dimensions raises error."""
         with pytest.raises(InvalidInputError):
-            provider._build_request_payload(inputs=["test"], output_dimensionality=5000)
+            provider._build_request_payload(inputs=["test"], dimensions=5000)
 
     @pytest.mark.skipif(
         not os.getenv("GEMINI_API_KEY"),

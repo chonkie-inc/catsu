@@ -149,6 +149,7 @@ class VoyageAIProvider(BaseProvider):
         model: str,
         inputs: List[str],
         input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Build API request payload.
@@ -157,6 +158,7 @@ class VoyageAIProvider(BaseProvider):
             model: Model name
             inputs: List of input texts
             input_type: Input type ("query" or "document")
+            dimensions: Output dimensions (256, 512, 1024, 2048 for supported models)
             **kwargs: Additional parameters
 
         Returns:
@@ -176,6 +178,11 @@ class VoyageAIProvider(BaseProvider):
                     parameter="input_type",
                 )
             payload["input_type"] = input_type
+
+        # Add dimensions if provided
+        # Map from standard "dimensions" to VoyageAI's API parameter "output_dimension"
+        if dimensions is not None:
+            payload["output_dimension"] = dimensions
 
         # Add any additional parameters
         payload.update(kwargs)
@@ -354,6 +361,7 @@ class VoyageAIProvider(BaseProvider):
         model: str,
         inputs: List[str],
         input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -363,6 +371,7 @@ class VoyageAIProvider(BaseProvider):
             model: Model name (e.g., "voyage-3", "voyage-3-lite")
             inputs: List of input texts
             input_type: Input type ("query" or "document")
+            dimensions: Output dimensions (256, 512, 1024, 2048 for supported models)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -379,14 +388,15 @@ class VoyageAIProvider(BaseProvider):
             >>> response = provider.embed(
             ...     model="voyage-3",
             ...     inputs=["hello", "world"],
-            ...     input_type="query"
+            ...     input_type="query",
+            ...     dimensions=512
             ... )
             >>> print(response.embeddings[0][:5])
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -394,7 +404,7 @@ class VoyageAIProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
-        payload = self._build_request_payload(model, inputs, input_type, **kwargs)
+        payload = self._build_request_payload(model, params.inputs, params.input_type, params.dimensions, **kwargs)
         headers = self._get_headers(api_key)
 
         # Make request with retry logic
@@ -408,8 +418,8 @@ class VoyageAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -419,6 +429,7 @@ class VoyageAIProvider(BaseProvider):
         model: str,
         inputs: List[str],
         input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -428,6 +439,7 @@ class VoyageAIProvider(BaseProvider):
             model: Model name (e.g., "voyage-3", "voyage-3-lite")
             inputs: List of input texts
             input_type: Input type ("query" or "document")
+            dimensions: Output dimensions (256, 512, 1024, 2048 for supported models)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -438,12 +450,13 @@ class VoyageAIProvider(BaseProvider):
             >>> response = await provider.aembed(
             ...     model="voyage-3",
             ...     inputs=["hello", "world"],
-            ...     input_type="query"
+            ...     input_type="query",
+            ...     dimensions=512
             ... )
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -451,7 +464,7 @@ class VoyageAIProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
-        payload = self._build_request_payload(model, inputs, input_type, **kwargs)
+        payload = self._build_request_payload(model, params.inputs, params.input_type, params.dimensions, **kwargs)
         headers = self._get_headers(api_key)
 
         # Make async request with retry logic
@@ -465,8 +478,8 @@ class VoyageAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -504,14 +517,14 @@ class VoyageAIProvider(BaseProvider):
 
         """
         # Validate inputs
-        self._validate_inputs(inputs)
+        params = self._validate_inputs(inputs)
 
         # Get tokenizer
         tokenizer = self._get_tokenizer(model)
 
         # Tokenize all inputs and count tokens
         total_tokens = 0
-        for text in inputs:
+        for text in params.inputs:
             total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(

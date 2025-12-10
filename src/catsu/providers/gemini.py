@@ -150,7 +150,7 @@ class GeminiProvider(BaseProvider):
         self,
         inputs: List[str],
         task_type: Optional[str] = None,
-        output_dimensionality: Optional[int] = None,
+        dimensions: Optional[int] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Build API request payload.
@@ -158,7 +158,7 @@ class GeminiProvider(BaseProvider):
         Args:
             inputs: List of input texts
             task_type: Task type (e.g., "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT")
-            output_dimensionality: Output dimensions (128-3072)
+            dimensions: Output dimensions (128-3072)
             **kwargs: Additional parameters
 
         Returns:
@@ -189,14 +189,15 @@ class GeminiProvider(BaseProvider):
                     )
                 request["taskType"] = task_type
 
-            # Add output dimensionality if provided
-            if output_dimensionality:
-                if output_dimensionality < 128 or output_dimensionality > 3072:
+            # Add dimensions if provided
+            # Map from standard "dimensions" to Gemini's API parameter "outputDimensionality"
+            if dimensions:
+                if dimensions < 128 or dimensions > 3072:
                     raise InvalidInputError(
-                        f"output_dimensionality must be between 128 and 3072, got {output_dimensionality}",
-                        parameter="output_dimensionality",
+                        f"dimensions must be between 128 and 3072, got {dimensions}",
+                        parameter="dimensions",
                     )
-                request["outputDimensionality"] = output_dimensionality
+                request["outputDimensionality"] = dimensions
 
             requests.append(request)
 
@@ -381,7 +382,7 @@ class GeminiProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         task_type: Optional[str] = None,
-        output_dimensionality: Optional[int] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -392,7 +393,7 @@ class GeminiProvider(BaseProvider):
             inputs: List of input texts
             input_type: Input type ("query" or "document")
             task_type: Gemini task type (e.g., "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT")
-            output_dimensionality: Output dimensions (128-3072, recommended: 768, 1536, 3072)
+            dimensions: Output dimensions (128-3072, recommended: 768, 1536, 3072)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -415,8 +416,8 @@ class GeminiProvider(BaseProvider):
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -425,9 +426,9 @@ class GeminiProvider(BaseProvider):
         # Build request
         url = f"{self.API_BASE_URL}/models/{model}:batchEmbedContents"
         payload = self._build_request_payload(
-            inputs,
+            params.inputs,
             task_type=task_type,
-            output_dimensionality=output_dimensionality,
+            dimensions=params.dimensions,
             **kwargs,
         )
         headers = self._get_headers(api_key)
@@ -443,8 +444,8 @@ class GeminiProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -455,7 +456,7 @@ class GeminiProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         task_type: Optional[str] = None,
-        output_dimensionality: Optional[int] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -466,7 +467,7 @@ class GeminiProvider(BaseProvider):
             inputs: List of input texts
             input_type: Input type ("query" or "document")
             task_type: Gemini task type (e.g., "RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT")
-            output_dimensionality: Output dimensions (128-3072)
+            dimensions: Output dimensions (128-3072)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -481,8 +482,8 @@ class GeminiProvider(BaseProvider):
             ... )
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -491,9 +492,9 @@ class GeminiProvider(BaseProvider):
         # Build request
         url = f"{self.API_BASE_URL}/models/{model}:batchEmbedContents"
         payload = self._build_request_payload(
-            inputs,
+            params.inputs,
             task_type=task_type,
-            output_dimensionality=output_dimensionality,
+            dimensions=params.dimensions,
             **kwargs,
         )
         headers = self._get_headers(api_key)
@@ -509,8 +510,8 @@ class GeminiProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -548,14 +549,14 @@ class GeminiProvider(BaseProvider):
 
         """
         # Validate inputs
-        self._validate_inputs(inputs)
+        params = self._validate_inputs(inputs)
 
         # Get tokenizer
         tokenizer = self._get_tokenizer(model)
 
         # Tokenize all inputs and count tokens
         total_tokens = 0
-        for text in inputs:
+        for text in params.inputs:
             total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(

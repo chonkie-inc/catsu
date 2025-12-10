@@ -10,6 +10,7 @@ from .cohere import CohereProvider
 from .gemini import GeminiProvider
 from .jinaai import JinaAIProvider
 from .mistral import MistralProvider
+from .nomic import NomicProvider
 from .openai import OpenAIProvider
 from .voyageai import VoyageAIProvider
 
@@ -19,6 +20,7 @@ registry: Dict[str, Type[BaseProvider]] = {
     "gemini": GeminiProvider,
     "jinaai": JinaAIProvider,
     "mistral": MistralProvider,
+    "nomic": NomicProvider,
     "openai": OpenAIProvider,
     "voyageai": VoyageAIProvider,
 }

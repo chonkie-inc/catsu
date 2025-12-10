@@ -4,7 +4,7 @@ This module defines the response models and data structures used throughout
 the Catsu library, providing type safety and validation.
 """
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -41,6 +41,39 @@ class Usage(BaseModel):
         """Validate that cost is non-negative."""
         if v < 0:
             raise ValueError("cost must be non-negative")
+        return v
+
+
+class EmbedParams(BaseModel):
+    """Validation model for embedding request parameters.
+
+    Used internally by providers to validate input parameters before making API calls.
+    Provides centralized validation logic with type safety.
+
+    Attributes:
+        inputs: List of input texts to embed
+        input_type: Optional input type ("query" or "document")
+        dimensions: Optional output dimensions
+
+    """
+
+    inputs: List[str] = Field(..., min_length=1, description="List of input texts")
+    input_type: Optional[Literal["query", "document"]] = Field(
+        None, description='Input type: "query" or "document"'
+    )
+    dimensions: Optional[int] = Field(None, gt=0, description="Output dimensions (must be positive)")
+
+    @field_validator("inputs")
+    @classmethod
+    def validate_inputs_not_empty(cls, v: List[str]) -> List[str]:
+        """Validate that all inputs are non-empty strings."""
+        for i, text in enumerate(v):
+            if not isinstance(text, str):
+                raise ValueError(
+                    f"Input at index {i} must be a string, got {type(text).__name__}"
+                )
+            if not text.strip():
+                raise ValueError(f"Input at index {i} cannot be empty or whitespace only")
         return v
 
 

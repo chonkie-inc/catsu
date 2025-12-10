@@ -8,8 +8,9 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
 import httpx
+from pydantic import ValidationError
 
-from ..models import EmbedResponse, TokenizeResponse
+from ..models import EmbedParams, EmbedResponse, TokenizeResponse
 from ..utils.errors import (
     AuthenticationError,
     InvalidInputError,
@@ -139,37 +140,41 @@ class BaseProvider(ABC):
         """
         pass
 
-    def _validate_inputs(self, inputs: List[str]) -> None:
-        """Validate input texts.
+    def _validate_inputs(
+        self,
+        inputs: List[str],
+        input_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
+    ) -> "EmbedParams":
+        """Validate input parameters using Pydantic.
+
+        Validates inputs, input_type, and dimensions using the EmbedParams model.
+        Provides centralized, type-safe validation.
 
         Args:
             inputs: List of input texts
+            input_type: Optional input type ("query" or "document")
+            dimensions: Optional output dimensions
+
+        Returns:
+            Validated EmbedParams object
 
         Raises:
-            InvalidInputError: If inputs are invalid
+            InvalidInputError: If any parameter is invalid
 
         """
-        if not inputs:
-            raise InvalidInputError("inputs cannot be empty")
-
-        if not isinstance(inputs, list):
-            raise InvalidInputError(
-                "inputs must be a list",
-                parameter="inputs",
+        try:
+            return EmbedParams(
+                inputs=inputs,
+                input_type=input_type,
+                dimensions=dimensions,
             )
-
-        for i, text in enumerate(inputs):
-            if not isinstance(text, str):
-                raise InvalidInputError(
-                    f"Input at index {i} must be a string, got {type(text).__name__}",
-                    parameter=f"inputs[{i}]",
-                )
-
-            if not text.strip():
-                raise InvalidInputError(
-                    f"Input at index {i} cannot be empty or whitespace only",
-                    parameter=f"inputs[{i}]",
-                )
+        except ValidationError as e:
+            # Extract the first error for a cleaner message
+            error = e.errors()[0]
+            field = error["loc"][0] if error["loc"] else "parameter"
+            message = error["msg"]
+            raise InvalidInputError(message, parameter=str(field))
 
     def _validate_api_key(self, api_key: Optional[str] = None) -> None:
         """Validate that API key is present.

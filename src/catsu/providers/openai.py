@@ -387,8 +387,8 @@ class OpenAIProvider(BaseProvider):
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs and dimensions using Pydantic
+        params = self._validate_inputs(inputs, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -396,7 +396,7 @@ class OpenAIProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
-        payload = self._build_request_payload(model, inputs, dimensions, **kwargs)
+        payload = self._build_request_payload(model, params.inputs, params.dimensions, **kwargs)
         headers = self._get_headers(api_key)
 
         # Make request with retry logic
@@ -410,7 +410,7 @@ class OpenAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
+            input_count=len(params.inputs),
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -444,8 +444,8 @@ class OpenAIProvider(BaseProvider):
             ... )
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs and dimensions using Pydantic
+        params = self._validate_inputs(inputs, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -453,7 +453,7 @@ class OpenAIProvider(BaseProvider):
 
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
-        payload = self._build_request_payload(model, inputs, dimensions, **kwargs)
+        payload = self._build_request_payload(model, params.inputs, params.dimensions, **kwargs)
         headers = self._get_headers(api_key)
 
         # Make async request with retry logic
@@ -467,7 +467,7 @@ class OpenAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
+            input_count=len(params.inputs),
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -505,14 +505,14 @@ class OpenAIProvider(BaseProvider):
 
         """
         # Validate inputs
-        self._validate_inputs(inputs)
+        params = self._validate_inputs(inputs)
 
         # Get tokenizer
         tokenizer = self._get_tokenizer(model)
 
         # Tokenize all inputs and count tokens
         total_tokens = 0
-        for text in inputs:
+        for text in params.inputs:
             total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(

@@ -150,6 +150,7 @@ class MistralProvider(BaseProvider):
         model: str,
         inputs: List[str],
         encoding_format: Optional[str] = None,
+        dimensions: Optional[int] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Build API request payload.
@@ -158,6 +159,7 @@ class MistralProvider(BaseProvider):
             model: Model name
             inputs: List of input texts
             encoding_format: Output encoding format (e.g., "float", "int8")
+            dimensions: Output dimensions (up to 3072 for codestral-embed-2505)
             **kwargs: Additional parameters
 
         Returns:
@@ -172,6 +174,11 @@ class MistralProvider(BaseProvider):
         # Add encoding format if provided
         if encoding_format:
             payload["encoding_format"] = encoding_format
+
+        # Add dimensions if provided
+        # Map from standard "dimensions" to Mistral's API parameter "output_dimension"
+        if dimensions is not None:
+            payload["output_dimension"] = dimensions
 
         # Add any additional parameters
         payload.update(kwargs)
@@ -351,6 +358,7 @@ class MistralProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         encoding_format: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -361,6 +369,7 @@ class MistralProvider(BaseProvider):
             inputs: List of input texts (up to 512 texts for batch)
             input_type: Input type ("query" or "document")
             encoding_format: Output encoding format (e.g., "float", "int8")
+            dimensions: Output dimensions (up to 3072 for codestral-embed-2505)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -375,15 +384,16 @@ class MistralProvider(BaseProvider):
 
         Example:
             >>> response = provider.embed(
-            ...     model="mistral-embed",
-            ...     inputs=["hello", "world"]
+            ...     model="codestral-embed-2505",
+            ...     inputs=["hello", "world"],
+            ...     dimensions=1024
             ... )
             >>> print(response.embeddings[0][:5])
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs and dimensions using Pydantic
+        params = self._validate_inputs(inputs, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -392,7 +402,7 @@ class MistralProvider(BaseProvider):
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
         payload = self._build_request_payload(
-            model, inputs, encoding_format=encoding_format, **kwargs
+            model, params.inputs, encoding_format=encoding_format, dimensions=params.dimensions, **kwargs
         )
         headers = self._get_headers(api_key)
 
@@ -407,8 +417,8 @@ class MistralProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -419,6 +429,7 @@ class MistralProvider(BaseProvider):
         inputs: List[str],
         input_type: Optional[str] = None,
         encoding_format: Optional[str] = None,
+        dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
@@ -429,6 +440,7 @@ class MistralProvider(BaseProvider):
             inputs: List of input texts (up to 512 texts for batch)
             input_type: Input type ("query" or "document")
             encoding_format: Output encoding format (e.g., "float", "int8")
+            dimensions: Output dimensions (up to 3072 for codestral-embed-2505)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -437,13 +449,14 @@ class MistralProvider(BaseProvider):
 
         Example:
             >>> response = await provider.aembed(
-            ...     model="mistral-embed",
-            ...     inputs=["hello", "world"]
+            ...     model="codestral-embed-2505",
+            ...     inputs=["hello", "world"],
+            ...     dimensions=1024
             ... )
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs and dimensions using Pydantic
+        params = self._validate_inputs(inputs, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -452,7 +465,7 @@ class MistralProvider(BaseProvider):
         # Build request
         url = f"{self.API_BASE_URL}/embeddings"
         payload = self._build_request_payload(
-            model, inputs, encoding_format=encoding_format, **kwargs
+            model, params.inputs, encoding_format=encoding_format, dimensions=params.dimensions, **kwargs
         )
         headers = self._get_headers(api_key)
 
@@ -467,8 +480,8 @@ class MistralProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -506,14 +519,14 @@ class MistralProvider(BaseProvider):
 
         """
         # Validate inputs
-        self._validate_inputs(inputs)
+        params = self._validate_inputs(inputs)
 
         # Get tokenizer
         tokenizer = self._get_tokenizer(model)
 
         # Tokenize all inputs and count tokens
         total_tokens = 0
-        for text in inputs:
+        for text in params.inputs:
             total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(

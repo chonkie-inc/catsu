@@ -1,7 +1,7 @@
-"""Cohere embedding provider implementation.
+"""Nomic embedding provider implementation.
 
-Provides integration with Cohere's embedding API, supporting all Cohere embedding models
-with retry logic, cost tracking, and local tokenization via HuggingFace.
+Provides integration with Nomic's embedding API, supporting nomic-embed-text-v1
+and nomic-embed-text-v1.5 models with retry logic, cost tracking, and local tokenization.
 """
 
 import time
@@ -21,38 +21,47 @@ from ..utils.errors import InvalidInputError, NetworkError, ProviderError, Timeo
 from .base import BaseProvider
 
 
-class CohereProvider(BaseProvider):
-    """Cohere embedding provider.
+class NomicProvider(BaseProvider):
+    """Nomic embedding provider.
 
-    Implements the Cohere embeddings API with support for all Cohere embedding models,
-    including embed-english-v3.0, embed-multilingual-v3.0, and their light variants.
+    Implements the Nomic embeddings API with support for nomic-embed-text-v1
+    and nomic-embed-text-v1.5 models.
 
     Features:
     - Sync and async embedding generation
     - Local tokenization (HuggingFace tokenizers)
     - Automatic retry with exponential backoff
     - Cost and latency tracking
-    - Input type specification (search_document, search_query, classification, clustering)
-    - Truncation options
+    - Task type specification (search_document, search_query, clustering, classification)
+    - Dimension configuration for v1.5 (64-768 dimensions)
+    - Long context support (8192 tokens)
 
-    API Documentation: https://docs.cohere.com/reference/embed
+    API Documentation: https://docs.nomic.ai/reference/api/embed-text-v-1-embedding-text-post
 
     Example:
-        >>> provider = CohereProvider(
+        >>> provider = NomicProvider(
         ...     http_client=httpx.Client(),
         ...     async_http_client=httpx.AsyncClient(),
         ...     api_key="your-api-key",
         ... )
         >>> response = provider.embed(
-        ...     model="embed-english-v3.0",
+        ...     model="nomic-embed-text-v1.5",
         ...     inputs=["hello world"],
-        ...     input_type="search_query"
+        ...     task_type="search_document"
         ... )
 
     """
 
-    API_BASE_URL = "https://api.cohere.com/v1"
-    PROVIDER_NAME = "cohere"
+    API_BASE_URL = "https://api-atlas.nomic.ai/v1"
+    PROVIDER_NAME = "nomic"
+
+    # Valid task types for Nomic API
+    VALID_TASK_TYPES = {
+        "search_document",
+        "search_query",
+        "clustering",
+        "classification",
+    }
 
     def __init__(
         self,
@@ -62,12 +71,12 @@ class CohereProvider(BaseProvider):
         max_retries: int = 3,
         verbose: bool = False,
     ) -> None:
-        """Initialize Cohere provider.
+        """Initialize Nomic provider.
 
         Args:
             http_client: Synchronous HTTP client
             async_http_client: Asynchronous HTTP client
-            api_key: Cohere API key (or set COHERE_API_KEY env var)
+            api_key: Nomic API key (or set NOMIC_API_KEY env var)
             max_retries: Maximum retry attempts (default: 3)
             verbose: Enable verbose logging (default: False)
 
@@ -146,12 +155,32 @@ class CohereProvider(BaseProvider):
             "Content-Type": "application/json",
         }
 
+    def _map_input_type_to_task_type(self, input_type: Optional[str]) -> str:
+        """Map generic input_type to Nomic task_type.
+
+        Args:
+            input_type: Generic input type ("query" or "document")
+
+        Returns:
+            Nomic-specific task type
+
+        """
+        if input_type == "query":
+            return "search_query"
+        elif input_type == "document":
+            return "search_document"
+        else:
+            # Default to search_document
+            return "search_document"
+
     def _build_request_payload(
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
-        truncate: Optional[str] = None,
+        task_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
+        long_text_mode: str = "mean",
+        max_tokens_per_text: int = 8192,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Build API request payload.
@@ -159,41 +188,53 @@ class CohereProvider(BaseProvider):
         Args:
             model: Model name
             inputs: List of input texts
-            input_type: Input type ("query" or "document")
-            truncate: Truncation option ("NONE", "START", "END")
+            task_type: Task type (search_document, search_query, clustering, classification)
+            dimensions: Output dimensions (for v1.5 only, 64-768)
+            long_text_mode: How to handle long text ("truncate" or "mean")
+            max_tokens_per_text: Maximum tokens per text (default: 8192)
             **kwargs: Additional parameters
 
         Returns:
             Request payload dictionary
 
+        Raises:
+            InvalidInputError: If task_type or dimensions is invalid
+
         """
         payload: Dict[str, Any] = {
             "texts": inputs,
             "model": model,
-            "embedding_types": ["float"],
         }
 
-        # Add input_type if provided
-        # Map standard input_type values to Cohere's API values
-        if input_type:
-            if input_type not in ("query", "document"):
+        # Add task_type if provided
+        if task_type:
+            if task_type not in self.VALID_TASK_TYPES:
                 raise InvalidInputError(
-                    f"input_type must be 'query' or 'document', got '{input_type}'",
-                    parameter="input_type",
+                    f"Invalid task_type '{task_type}'. Must be one of: {', '.join(self.VALID_TASK_TYPES)}",
+                    parameter="task_type",
                 )
-            # Map to Cohere's API values
-            cohere_input_type = "search_query" if input_type == "query" else "search_document"
-            payload["input_type"] = cohere_input_type
+            payload["task_type"] = task_type
 
-        # Add truncate option if provided
-        if truncate:
-            valid_truncate = ("NONE", "START", "END")
-            if truncate not in valid_truncate:
+        # Add dimensions if provided (only for v1.5)
+        # Map from standard "dimensions" to Nomic's API parameter "dimensionality"
+        if dimensions is not None:
+            if "v1.5" not in model:
                 raise InvalidInputError(
-                    f"truncate must be one of {valid_truncate}, got '{truncate}'",
-                    parameter="truncate",
+                    "dimensions parameter is only supported for nomic-embed-text-v1.5",
+                    parameter="dimensions",
                 )
-            payload["truncate"] = truncate
+            if not (64 <= dimensions <= 768):
+                raise InvalidInputError(
+                    "dimensions must be between 64 and 768",
+                    parameter="dimensions",
+                )
+            payload["dimensionality"] = dimensions
+
+        # Add long_text_mode
+        payload["long_text_mode"] = long_text_mode
+
+        # Add max_tokens_per_text
+        payload["max_tokens_per_text"] = max_tokens_per_text
 
         # Add any additional parameters
         payload.update(kwargs)
@@ -335,16 +376,15 @@ class CohereProvider(BaseProvider):
             EmbedResponse object
 
         """
-        # Extract embeddings from the "float" embedding type
-        embeddings = response_data.get("embeddings", {}).get("float", [])
+        # Extract embeddings
+        embeddings = response_data.get("embeddings", [])
 
         # Get dimensions from first embedding
         dimensions = len(embeddings[0]) if embeddings else 0
 
-        # Extract usage information (Cohere provides token count in meta)
-        meta = response_data.get("meta", {})
-        billed_units = meta.get("billed_units", {})
-        total_tokens = billed_units.get("input_tokens", 0)
+        # Extract usage information
+        usage_data = response_data.get("usage", {})
+        total_tokens = usage_data.get("total_tokens", 0)
 
         # Calculate cost
         cost = self._calculate_cost(total_tokens, cost_per_million)
@@ -371,17 +411,23 @@ class CohereProvider(BaseProvider):
         model: str,
         inputs: List[str],
         input_type: Optional[str] = None,
-        truncate: Optional[str] = None,
+        task_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
+        long_text_mode: str = "mean",
+        max_tokens_per_text: int = 8192,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """Generate embeddings using Cohere API (synchronous).
+        """Generate embeddings using Nomic API (synchronous).
 
         Args:
-            model: Model name (e.g., "embed-english-v3.0", "embed-multilingual-v3.0")
+            model: Model name (e.g., "nomic-embed-text-v1", "nomic-embed-text-v1.5")
             inputs: List of input texts
             input_type: Input type ("query" or "document")
-            truncate: Truncation option ("NONE", "START", "END")
+            task_type: Nomic task type (search_document, search_query, clustering, classification)
+            dimensions: Output dimensions (v1.5 only, 64-768)
+            long_text_mode: How to handle long text ("truncate" or "mean", default: "mean")
+            max_tokens_per_text: Maximum tokens per text (default: 8192)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -396,25 +442,36 @@ class CohereProvider(BaseProvider):
 
         Example:
             >>> response = provider.embed(
-            ...     model="embed-english-v3.0",
+            ...     model="nomic-embed-text-v1.5",
             ...     inputs=["hello", "world"],
-            ...     input_type="query"
+            ...     task_type="search_query",
+            ...     dimensions=256
             ... )
             >>> print(response.embeddings[0][:5])
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs and input_type using Pydantic
-        params = self._validate_inputs(inputs, input_type=input_type)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
         model_info = catalog.get_model_info(self.PROVIDER_NAME, model)
 
+        # If task_type not provided but input_type is, map it
+        if task_type is None and params.input_type is not None:
+            task_type = self._map_input_type_to_task_type(params.input_type)
+
         # Build request
-        url = f"{self.API_BASE_URL}/embed"
+        url = f"{self.API_BASE_URL}/embedding/text"
         payload = self._build_request_payload(
-            model, params.inputs, params.input_type, truncate, **kwargs
+            model,
+            params.inputs,
+            task_type=task_type,
+            dimensions=params.dimensions,
+            long_text_mode=long_text_mode,
+            max_tokens_per_text=max_tokens_per_text,
+            **kwargs,
         )
         headers = self._get_headers(api_key)
 
@@ -440,17 +497,23 @@ class CohereProvider(BaseProvider):
         model: str,
         inputs: List[str],
         input_type: Optional[str] = None,
-        truncate: Optional[str] = None,
+        task_type: Optional[str] = None,
+        dimensions: Optional[int] = None,
+        long_text_mode: str = "mean",
+        max_tokens_per_text: int = 8192,
         api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
-        """Generate embeddings using Cohere API (asynchronous).
+        """Generate embeddings using Nomic API (asynchronous).
 
         Args:
-            model: Model name (e.g., "embed-english-v3.0", "embed-multilingual-v3.0")
+            model: Model name (e.g., "nomic-embed-text-v1", "nomic-embed-text-v1.5")
             inputs: List of input texts
             input_type: Input type ("query" or "document")
-            truncate: Truncation option ("NONE", "START", "END")
+            task_type: Nomic task type (search_document, search_query, clustering, classification)
+            dimensions: Output dimensions (v1.5 only, 64-768)
+            long_text_mode: How to handle long text ("truncate" or "mean", default: "mean")
+            max_tokens_per_text: Maximum tokens per text (default: 8192)
             api_key: Optional API key override for this request
             **kwargs: Additional API parameters
 
@@ -459,23 +522,33 @@ class CohereProvider(BaseProvider):
 
         Example:
             >>> response = await provider.aembed(
-            ...     model="embed-english-v3.0",
+            ...     model="nomic-embed-text-v1.5",
             ...     inputs=["hello", "world"],
-            ...     input_type="search_query"
+            ...     task_type="search_query"
             ... )
 
         """
-        # Validate inputs and input_type using Pydantic
-        params = self._validate_inputs(inputs, input_type=input_type)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
         model_info = catalog.get_model_info(self.PROVIDER_NAME, model)
 
+        # If task_type not provided but input_type is, map it
+        if task_type is None and params.input_type is not None:
+            task_type = self._map_input_type_to_task_type(params.input_type)
+
         # Build request
-        url = f"{self.API_BASE_URL}/embed"
+        url = f"{self.API_BASE_URL}/embedding/text"
         payload = self._build_request_payload(
-            model, params.inputs, params.input_type, truncate, **kwargs
+            model,
+            params.inputs,
+            task_type=task_type,
+            dimensions=params.dimensions,
+            long_text_mode=long_text_mode,
+            max_tokens_per_text=max_tokens_per_text,
+            **kwargs,
         )
         headers = self._get_headers(api_key)
 
@@ -521,7 +594,7 @@ class CohereProvider(BaseProvider):
 
         Example:
             >>> response = provider.tokenize(
-            ...     model="embed-english-v3.0",
+            ...     model="nomic-embed-text-v1.5",
             ...     inputs=["hello world", "foo bar"]
             ... )
             >>> print(response.token_count)

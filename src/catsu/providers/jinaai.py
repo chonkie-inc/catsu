@@ -400,8 +400,8 @@ class JinaAIProvider(BaseProvider):
             [0.1, 0.2, 0.3, 0.4, 0.5]
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -411,9 +411,9 @@ class JinaAIProvider(BaseProvider):
         url = f"{self.API_BASE_URL}/embeddings"
         payload = self._build_request_payload(
             model,
-            inputs,
+            params.inputs,
             task=task,
-            dimensions=dimensions,
+            dimensions=params.dimensions,
             normalized=normalized,
             **kwargs,
         )
@@ -430,8 +430,8 @@ class JinaAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -470,8 +470,8 @@ class JinaAIProvider(BaseProvider):
             ... )
 
         """
-        # Validate inputs
-        self._validate_inputs(inputs)
+        # Validate inputs, input_type, and dimensions using Pydantic
+        params = self._validate_inputs(inputs, input_type=input_type, dimensions=dimensions)
 
         # Get model info for cost calculation
         catalog = ModelCatalog()
@@ -481,9 +481,9 @@ class JinaAIProvider(BaseProvider):
         url = f"{self.API_BASE_URL}/embeddings"
         payload = self._build_request_payload(
             model,
-            inputs,
+            params.inputs,
             task=task,
-            dimensions=dimensions,
+            dimensions=params.dimensions,
             normalized=normalized,
             **kwargs,
         )
@@ -500,8 +500,8 @@ class JinaAIProvider(BaseProvider):
         return self._parse_response(
             response_data=response_data,
             model=model,
-            input_count=len(inputs),
-            input_type=input_type or "document",
+            input_count=len(params.inputs),
+            input_type=params.input_type or "document",
             latency_ms=latency_ms,
             cost_per_million=model_info.cost_per_million_tokens,
         )
@@ -539,14 +539,14 @@ class JinaAIProvider(BaseProvider):
 
         """
         # Validate inputs
-        self._validate_inputs(inputs)
+        params = self._validate_inputs(inputs)
 
         # Get tokenizer
         tokenizer = self._get_tokenizer(model)
 
         # Tokenize all inputs and count tokens
         total_tokens = 0
-        for text in inputs:
+        for text in params.inputs:
             total_tokens += tokenizer.count_tokens(text)
 
         return TokenizeResponse(

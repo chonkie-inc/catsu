@@ -116,3 +116,22 @@ def skip_if_no_mistral_key():
     """Skip test if Mistral API key is not set."""
     if not os.getenv("MISTRAL_API_KEY"):
         pytest.skip("MISTRAL_API_KEY not set")
+
+
+@pytest.fixture
+def nomic_api_key():
+    """Get Nomic API key from environment."""
+    return os.getenv("NOMIC_API_KEY")
+
+
+@pytest.fixture
+def has_nomic_api_key():
+    """Check if Nomic API key is available."""
+    return os.getenv("NOMIC_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_nomic_key():
+    """Skip test if Nomic API key is not set."""
+    if not os.getenv("NOMIC_API_KEY"):
+        pytest.skip("NOMIC_API_KEY not set")

@@ -9,6 +9,7 @@ from catsu.models import EmbedResponse
 from catsu.utils.errors import (
     InvalidInputError,
     ModelNotFoundError,
+    UnsupportedFeatureError,
 )
 
 
@@ -175,6 +176,36 @@ class TestClientEmbedding:
         response = await client.aembed(model="voyage-3-lite", input="Async test")
         assert isinstance(response, EmbedResponse)
         await client.aclose()
+
+    def test_embed_unsupported_dimensions(self):
+        """Test that using dimensions on unsupported model raises error."""
+        client = Client()
+        # text-embedding-ada-002 does not support custom dimensions
+        with pytest.raises(UnsupportedFeatureError) as exc_info:
+            client.embed(
+                model="openai:text-embedding-ada-002",
+                input="test",
+                dimensions=512,
+            )
+        assert "does not support custom dimensions" in str(exc_info.value)
+        assert exc_info.value.model == "text-embedding-ada-002"
+        assert exc_info.value.provider == "openai"
+        assert exc_info.value.feature == "dimensions"
+
+    @pytest.mark.skipif(
+        not os.getenv("VOYAGE_API_KEY"),
+        reason="Requires VOYAGE_API_KEY environment variable",
+    )
+    def test_embed_with_dimensions_supported(self, skip_if_no_voyage_key):
+        """Test that dimensions works on supported model."""
+        client = Client()
+        response = client.embed(
+            model="voyage-3-lite",
+            input="Test with dimensions",
+            dimensions=512,
+        )
+        assert isinstance(response, EmbedResponse)
+        assert response.dimensions == 512
 
 
 class TestClientListModels:

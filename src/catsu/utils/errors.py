@@ -333,3 +333,48 @@ class NetworkError(ProviderError):
             provider=provider,
             details=details,
         )
+
+
+class UnsupportedFeatureError(CatsuError):
+    """Exception raised when a feature is not supported by a model or provider.
+
+    Raised when attempting to use a feature (like custom dimensions) with a model
+    that doesn't support it.
+
+    Example:
+        >>> client.embed(model="text-embedding-ada-002", input="test", dimensions=512)
+        UnsupportedFeatureError: Model 'text-embedding-ada-002' does not support custom dimensions
+
+    """
+
+    def __init__(
+        self,
+        message: str,
+        model: Optional[str] = None,
+        provider: Optional[str] = None,
+        feature: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Initialize UnsupportedFeatureError.
+
+        Args:
+            message: Error message
+            model: Model name
+            provider: Provider name
+            feature: Feature name (e.g., "dimensions", "input_type")
+            details: Optional additional error details
+
+        """
+        self.model = model
+        self.provider = provider
+        self.feature = feature
+
+        details = details or {}
+        if model:
+            details["model"] = model
+        if provider:
+            details["provider"] = provider
+        if feature:
+            details["feature"] = feature
+
+        super().__init__(message, details)

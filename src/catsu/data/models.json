@@ -284,6 +284,104 @@
       }
     }
   ],
+  "mistral": [
+    {
+      "name": "codestral-embed-2505",
+      "provider": "mistral",
+      "dimensions": 1536,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.15,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-05-28",
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    },
+    {
+      "name": "mistral-embed",
+      "provider": "mistral",
+      "dimensions": 1024,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2023-12-11",
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    }
+  ],
+  "nomic": [
+    {
+      "name": "nomic-embed-text-v1.5",
+      "provider": "nomic",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 62.2,
+      "rteb_score": null,
+      "release_date": "2024-02-14",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "nomic-ai/nomic-embed-text-v1.5"
+      }
+    },
+    {
+      "name": "nomic-embed-text-v1",
+      "provider": "nomic",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 63.6,
+      "rteb_score": null,
+      "release_date": "2024-02-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "nomic-ai/nomic-embed-text-v1"
+      }
+    }
+  ],
   "openai": [
     {
       "name": "text-embedding-3-large",
@@ -611,56 +709,6 @@
         "float"
       ],
       "release_date": "2024-11-12"
-    }
-  ],
-  "mistral": [
-    {
-      "name": "codestral-embed-2505",
-      "provider": "mistral",
-      "dimensions": 1536,
-      "max_input_tokens": 32768,
-      "cost_per_million_tokens": 0.15,
-      "modalities": [
-        "text"
-      ],
-      "quantizations": [
-        "float",
-        "int8",
-        "binary"
-      ],
-      "supports_batching": true,
-      "supports_input_type": false,
-      "supports_dimensions": true,
-      "mteb_score": null,
-      "rteb_score": null,
-      "release_date": "2025-05-28",
-      "tokenizer": {
-        "engine": "tiktoken",
-        "name": "cl100k_base"
-      }
-    },
-    {
-      "name": "mistral-embed",
-      "provider": "mistral",
-      "dimensions": 1024,
-      "max_input_tokens": 8192,
-      "cost_per_million_tokens": 0.01,
-      "modalities": [
-        "text"
-      ],
-      "quantizations": [
-        "float"
-      ],
-      "supports_batching": true,
-      "supports_input_type": false,
-      "supports_dimensions": false,
-      "mteb_score": null,
-      "rteb_score": null,
-      "release_date": "2023-12-11",
-      "tokenizer": {
-        "engine": "tiktoken",
-        "name": "cl100k_base"
-      }
     }
   ]
 }
