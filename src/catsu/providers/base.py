@@ -171,18 +171,43 @@ class BaseProvider(ABC):
                     parameter=f"inputs[{i}]",
                 )
 
-    def _validate_api_key(self) -> None:
+    def _validate_api_key(self, api_key: Optional[str] = None) -> None:
         """Validate that API key is present.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
 
         Raises:
             AuthenticationError: If API key is missing
 
         """
-        if not self.api_key:
+        effective_key = api_key if api_key is not None else self.api_key
+        if not effective_key:
             raise AuthenticationError(
                 f"API key is required for {self.__class__.__name__}. "
                 f"Set it via the Client or environment variable."
             )
+
+    def _get_effective_api_key(self, api_key: Optional[str] = None) -> str:
+        """Get the effective API key, validating it exists.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
+
+        Returns:
+            The effective API key to use
+
+        Raises:
+            AuthenticationError: If no API key is available
+
+        """
+        effective_key = api_key if api_key is not None else self.api_key
+        if not effective_key:
+            raise AuthenticationError(
+                f"API key is required for {self.__class__.__name__}. "
+                f"Set it via the Client or environment variable."
+            )
+        return effective_key
 
     def _log(self, message: str) -> None:
         """Log message if verbose mode is enabled.

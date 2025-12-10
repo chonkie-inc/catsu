@@ -198,6 +198,7 @@ class Client:
         input: Union[str, List[str]],
         provider: Optional[str] = None,
         input_type: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
         """Generate embeddings for input text(s).
@@ -208,6 +209,7 @@ class Client:
             provider: Optional provider name (if not in model string)
             input_type: Optional input type hint ("query" or "document")
                        Used by some providers like VoyageAI
+            api_key: Optional API key override for this specific request
             **kwargs: Additional provider-specific parameters
 
         Returns:
@@ -248,6 +250,7 @@ class Client:
             model=model_name,
             inputs=inputs,
             input_type=input_type,
+            api_key=api_key,
             **kwargs,
         )
 
@@ -257,6 +260,7 @@ class Client:
         input: Union[str, List[str]],
         provider: Optional[str] = None,
         input_type: Optional[str] = None,
+        api_key: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:  # -> EmbedResponse
         """Async version of embed().
@@ -268,6 +272,7 @@ class Client:
             input: Single text string or list of text strings
             provider: Optional provider name (if not in model string)
             input_type: Optional input type hint ("query" or "document")
+            api_key: Optional API key override for this specific request
             **kwargs: Additional provider-specific parameters
 
         Returns:
@@ -300,6 +305,7 @@ class Client:
             model=model_name,
             inputs=inputs,
             input_type=input_type,
+            api_key=api_key,
             **kwargs,
         )
 
