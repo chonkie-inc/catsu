@@ -14,11 +14,12 @@ class TestMistralProvider:
     """Tests for Mistral AI provider."""
 
     @pytest.fixture
-    def provider(self, mistral_api_key):
+    def provider(self, mistral_api_key, catalog):
         """Create Mistral AI provider instance."""
         return MistralProvider(
             http_client=httpx.Client(timeout=30),
             async_http_client=httpx.AsyncClient(timeout=30),
+            catalog=catalog,
             api_key=mistral_api_key,
             max_retries=3,
             verbose=False,

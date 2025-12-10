@@ -14,11 +14,12 @@ class TestJinaAIProvider:
     """Tests for Jina AI provider."""
 
     @pytest.fixture
-    def provider(self, jina_api_key):
+    def provider(self, jina_api_key, catalog):
         """Create Jina AI provider instance."""
         return JinaAIProvider(
             http_client=httpx.Client(timeout=30),
             async_http_client=httpx.AsyncClient(timeout=30),
+            catalog=catalog,
             api_key=jina_api_key,
             max_retries=3,
             verbose=False,

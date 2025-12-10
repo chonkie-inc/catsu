@@ -2,7 +2,28 @@
 
 import os
 
+import httpx
 import pytest
+
+from catsu.catalog import ModelCatalog
+
+
+@pytest.fixture
+def catalog():
+    """Create a ModelCatalog instance for tests."""
+    return ModelCatalog()
+
+
+@pytest.fixture
+def http_client():
+    """Create a synchronous HTTP client for tests."""
+    return httpx.Client(timeout=30.0)
+
+
+@pytest.fixture
+def async_http_client():
+    """Create an asynchronous HTTP client for tests."""
+    return httpx.AsyncClient(timeout=30.0)
 
 
 def pytest_addoption(parser):

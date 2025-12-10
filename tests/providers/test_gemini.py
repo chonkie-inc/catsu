@@ -14,11 +14,12 @@ class TestGeminiProvider:
     """Tests for Gemini API provider."""
 
     @pytest.fixture
-    def provider(self, gemini_api_key):
+    def provider(self, gemini_api_key, catalog):
         """Create Gemini API provider instance."""
         return GeminiProvider(
             http_client=httpx.Client(timeout=30),
             async_http_client=httpx.AsyncClient(timeout=30),
+            catalog=catalog,
             api_key=gemini_api_key,
             max_retries=3,
             verbose=False,

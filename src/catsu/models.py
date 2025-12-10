@@ -61,7 +61,9 @@ class EmbedParams(BaseModel):
     input_type: Optional[Literal["query", "document"]] = Field(
         None, description='Input type: "query" or "document"'
     )
-    dimensions: Optional[int] = Field(None, gt=0, description="Output dimensions (must be positive)")
+    dimensions: Optional[int] = Field(
+        None, gt=0, description="Output dimensions (must be positive)"
+    )
 
     @field_validator("inputs")
     @classmethod
@@ -73,7 +75,9 @@ class EmbedParams(BaseModel):
                     f"Input at index {i} must be a string, got {type(text).__name__}"
                 )
             if not text.strip():
-                raise ValueError(f"Input at index {i} cannot be empty or whitespace only")
+                raise ValueError(
+                    f"Input at index {i} cannot be empty or whitespace only"
+                )
         return v
 
 

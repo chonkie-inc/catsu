@@ -14,11 +14,12 @@ class TestCohereProvider:
     """Tests for Cohere provider."""
 
     @pytest.fixture
-    def provider(self, cohere_api_key):
+    def provider(self, cohere_api_key, catalog):
         """Create Cohere provider instance."""
         return CohereProvider(
             http_client=httpx.Client(timeout=30),
             async_http_client=httpx.AsyncClient(timeout=30),
+            catalog=catalog,
             api_key=cohere_api_key,
             max_retries=3,
             verbose=False,
@@ -78,7 +79,9 @@ class TestCohereProvider:
             truncate="END",
         )
         assert payload["truncate"] == "END"
-        assert payload["input_type"] == "search_document"  # Mapped to Cohere's API value
+        assert (
+            payload["input_type"] == "search_document"
+        )  # Mapped to Cohere's API value
 
     def test_build_request_payload_invalid_truncate(self, provider):
         """Test that invalid truncate option raises error."""

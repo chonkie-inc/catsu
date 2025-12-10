@@ -5,18 +5,29 @@ Defines the abstract interface that all embedding providers must implement.
 
 import time
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import httpx
 from pydantic import ValidationError
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from ..models import EmbedParams, EmbedResponse, TokenizeResponse
 from ..utils.errors import (
     AuthenticationError,
     InvalidInputError,
+    NetworkError,
     ProviderError,
     RateLimitError,
+    TimeoutError,
 )
+
+if TYPE_CHECKING:
+    from ..catalog import ModelCatalog
 
 
 class BaseProvider(ABC):
@@ -28,16 +39,22 @@ class BaseProvider(ABC):
     Attributes:
         http_client: Synchronous HTTP client for API requests
         async_http_client: Asynchronous HTTP client for API requests
+        catalog: Model catalog for metadata lookup
         api_key: API key for authentication
         max_retries: Maximum number of retry attempts
         verbose: Enable verbose logging
 
     """
 
+    # Subclasses must define these
+    PROVIDER_NAME: str = ""
+    API_BASE_URL: str = ""
+
     def __init__(
         self,
         http_client: httpx.Client,
         async_http_client: httpx.AsyncClient,
+        catalog: "ModelCatalog",
         api_key: Optional[str] = None,
         max_retries: int = 3,
         verbose: bool = False,
@@ -47,6 +64,7 @@ class BaseProvider(ABC):
         Args:
             http_client: Synchronous HTTP client
             async_http_client: Asynchronous HTTP client
+            catalog: Model catalog for metadata lookup
             api_key: API key for authentication
             max_retries: Maximum retry attempts (default: 3)
             verbose: Enable verbose logging (default: False)
@@ -54,9 +72,11 @@ class BaseProvider(ABC):
         """
         self.http_client = http_client
         self.async_http_client = async_http_client
+        self.catalog = catalog
         self.api_key = api_key
         self.max_retries = max_retries
         self.verbose = verbose
+        self._tokenizers: Dict[str, Any] = {}  # Cache for loaded tokenizers
 
     @abstractmethod
     def embed(
@@ -176,23 +196,6 @@ class BaseProvider(ABC):
             message = error["msg"]
             raise InvalidInputError(message, parameter=str(field))
 
-    def _validate_api_key(self, api_key: Optional[str] = None) -> None:
-        """Validate that API key is present.
-
-        Args:
-            api_key: Optional override API key (uses self.api_key if not provided)
-
-        Raises:
-            AuthenticationError: If API key is missing
-
-        """
-        effective_key = api_key if api_key is not None else self.api_key
-        if not effective_key:
-            raise AuthenticationError(
-                f"API key is required for {self.__class__.__name__}. "
-                f"Set it via the Client or environment variable."
-            )
-
     def _get_effective_api_key(self, api_key: Optional[str] = None) -> str:
         """Get the effective API key, validating it exists.
 
@@ -305,3 +308,184 @@ class BaseProvider(ABC):
             f"max_retries={self.max_retries}, "
             f"verbose={self.verbose})"
         )
+
+    def _get_tokenizer(self, model: str) -> Any:
+        """Get or load tokenizer for a model.
+
+        Args:
+            model: Model name
+
+        Returns:
+            Tokenizer wrapper instance (HuggingFace or tiktoken)
+
+        Raises:
+            ImportError: If required tokenizer library not installed
+            ProviderError: If tokenizer cannot be loaded
+
+        """
+        from catsu.utils import load_tokenizer
+
+        # Check cache first
+        if model in self._tokenizers:
+            return self._tokenizers[model]
+
+        try:
+            model_info = self.catalog.get_model_info(self.PROVIDER_NAME, model)
+        except Exception as e:
+            raise ProviderError(
+                message=f"Could not find model info for '{model}'",
+                provider=self.PROVIDER_NAME,
+            ) from e
+
+        if not model_info.tokenizer:
+            raise ProviderError(
+                message=f"No tokenizer configured for model '{model}'",
+                provider=self.PROVIDER_NAME,
+            )
+
+        # Load tokenizer using unified utility
+        try:
+            self._log(f"Loading tokenizer for {model}")
+            tokenizer = load_tokenizer(model_info.tokenizer)
+            self._tokenizers[model] = tokenizer
+            return tokenizer
+        except Exception as e:
+            raise ProviderError(
+                message=f"Failed to load tokenizer for '{model}': {str(e)}",
+                provider=self.PROVIDER_NAME,
+            ) from e
+
+    def _get_headers(self, api_key: Optional[str] = None) -> Dict[str, str]:
+        """Get HTTP headers for API requests.
+
+        Default implementation uses Bearer token auth. Override in subclasses
+        if the provider uses a different auth scheme.
+
+        Args:
+            api_key: Optional override API key (uses self.api_key if not provided)
+
+        Returns:
+            Dictionary of headers including authorization
+
+        """
+        effective_key = self._get_effective_api_key(api_key)
+        return {
+            "Authorization": f"Bearer {effective_key}",
+            "Content-Type": "application/json",
+        }
+
+    def _make_request_with_retry(
+        self,
+        url: str,
+        payload: Dict[str, Any],
+        headers: Dict[str, str],
+    ) -> httpx.Response:
+        """Make HTTP request with exponential backoff retry logic.
+
+        Uses tenacity for automatic retry with exponential backoff.
+
+        Args:
+            url: API endpoint URL
+            payload: Request payload
+            headers: Request headers
+
+        Returns:
+            HTTP response
+
+        Raises:
+            NetworkError: For network-related errors
+            TimeoutError: For timeout errors
+            ProviderError: For API errors
+
+        """
+
+        @retry(
+            retry=retry_if_exception_type(
+                (httpx.TimeoutException, httpx.NetworkError, RateLimitError)
+            ),
+            stop=stop_after_attempt(self.max_retries),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            reraise=True,
+        )
+        def _do_request() -> httpx.Response:
+            response = self.http_client.post(url, json=payload, headers=headers)
+
+            if response.status_code == 200:
+                return response
+
+            # Handle HTTP errors
+            self._handle_http_error(response, self.PROVIDER_NAME)
+            return response  # Won't reach here due to exception
+
+        try:
+            return _do_request()
+        except httpx.TimeoutException as e:
+            raise TimeoutError(
+                message=f"Request timed out after {self.max_retries} attempts",
+                provider=self.PROVIDER_NAME,
+                timeout=self.http_client.timeout.read,
+            ) from e
+        except httpx.NetworkError as e:
+            raise NetworkError(
+                message=f"Network error: {str(e)}",
+                provider=self.PROVIDER_NAME,
+            ) from e
+
+    async def _make_request_with_retry_async(
+        self,
+        url: str,
+        payload: Dict[str, Any],
+        headers: Dict[str, str],
+    ) -> httpx.Response:
+        """Make async HTTP request with exponential backoff retry logic.
+
+        Uses tenacity for automatic retry with exponential backoff.
+
+        Args:
+            url: API endpoint URL
+            payload: Request payload
+            headers: Request headers
+
+        Returns:
+            HTTP response
+
+        Raises:
+            NetworkError: For network-related errors
+            TimeoutError: For timeout errors
+            ProviderError: For API errors
+
+        """
+
+        @retry(
+            retry=retry_if_exception_type(
+                (httpx.TimeoutException, httpx.NetworkError, RateLimitError)
+            ),
+            stop=stop_after_attempt(self.max_retries),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            reraise=True,
+        )
+        async def _do_request() -> httpx.Response:
+            response = await self.async_http_client.post(
+                url, json=payload, headers=headers
+            )
+
+            if response.status_code == 200:
+                return response
+
+            # Handle HTTP errors
+            self._handle_http_error(response, self.PROVIDER_NAME)
+            return response  # Won't reach here due to exception
+
+        try:
+            return await _do_request()
+        except httpx.TimeoutException as e:
+            raise TimeoutError(
+                message=f"Request timed out after {self.max_retries} attempts",
+                provider=self.PROVIDER_NAME,
+                timeout=self.async_http_client.timeout.read,
+            ) from e
+        except httpx.NetworkError as e:
+            raise NetworkError(
+                message=f"Network error: {str(e)}",
+                provider=self.PROVIDER_NAME,
+            ) from e

@@ -82,6 +82,7 @@ class Client:
             self._providers[provider_name] = provider_class(
                 http_client=self._http_client,
                 async_http_client=self._async_http_client,
+                catalog=self._catalog,
                 api_key=self._get_api_key(provider_name),
                 max_retries=self.max_retries,
                 verbose=self.verbose,
@@ -244,15 +245,27 @@ class Client:
         if self.verbose:
             print(f"Using provider: {provider_name}, model: {model_name}")
 
+        # Get model info for feature validation
+        model_info = self._catalog.get_model_info(provider_name, model_name)
+
         # Validate dimensions support if dimensions is provided
         if dimensions is not None:
-            model_info = self._catalog.get_model_info(provider_name, model_name)
             if not model_info.supports_dimensions:
                 raise UnsupportedFeatureError(
                     f"Model '{model_name}' does not support custom dimensions",
                     model=model_name,
                     provider=provider_name,
                     feature="dimensions",
+                )
+
+        # Validate input_type support if input_type is provided
+        if input_type is not None:
+            if not model_info.supports_input_type:
+                raise UnsupportedFeatureError(
+                    f"Model '{model_name}' does not support input_type parameter",
+                    model=model_name,
+                    provider=provider_name,
+                    feature="input_type",
                 )
 
         # Get provider instance
@@ -317,15 +330,27 @@ class Client:
         if self.verbose:
             print(f"Using provider: {provider_name}, model: {model_name}")
 
+        # Get model info for feature validation
+        model_info = self._catalog.get_model_info(provider_name, model_name)
+
         # Validate dimensions support if dimensions is provided
         if dimensions is not None:
-            model_info = self._catalog.get_model_info(provider_name, model_name)
             if not model_info.supports_dimensions:
                 raise UnsupportedFeatureError(
                     f"Model '{model_name}' does not support custom dimensions",
                     model=model_name,
                     provider=provider_name,
                     feature="dimensions",
+                )
+
+        # Validate input_type support if input_type is provided
+        if input_type is not None:
+            if not model_info.supports_input_type:
+                raise UnsupportedFeatureError(
+                    f"Model '{model_name}' does not support input_type parameter",
+                    model=model_name,
+                    provider=provider_name,
+                    feature="input_type",
                 )
 
         # Get provider instance
@@ -365,11 +390,11 @@ class Client:
         return [model.model_dump() for model in models]
 
     def close(self) -> None:
-        """Close HTTP clients and cleanup resources."""
+        """Close sync HTTP client."""
         self._http_client.close()
 
     async def aclose(self) -> None:
-        """Async version of close()."""
+        """Close async HTTP client."""
         await self._async_http_client.aclose()
 
     def __enter__(self) -> "Client":

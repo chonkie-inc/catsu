@@ -14,11 +14,12 @@ class TestVoyageAIProvider:
     """Tests for VoyageAI provider."""
 
     @pytest.fixture
-    def provider(self, voyage_api_key):
+    def provider(self, voyage_api_key, catalog):
         """Create VoyageAI provider instance."""
         return VoyageAIProvider(
             http_client=httpx.Client(timeout=30),
             async_http_client=httpx.AsyncClient(timeout=30),
+            catalog=catalog,
             api_key=voyage_api_key,
             max_retries=3,
             verbose=False,
