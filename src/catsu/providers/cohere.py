@@ -5,7 +5,7 @@ with retry logic, cost tracking, and local tokenization via HuggingFace.
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..utils.errors import InvalidInputError
@@ -37,7 +37,7 @@ class CohereProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         truncate: Optional[str] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
@@ -107,7 +107,7 @@ class CohereProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         truncate: Optional[str] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
@@ -152,7 +152,7 @@ class CohereProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         truncate: Optional[str] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,

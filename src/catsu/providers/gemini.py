@@ -5,7 +5,7 @@ and text-embedding models with retry logic, cost tracking, and local tokenizatio
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..utils.errors import InvalidInputError
@@ -120,7 +120,7 @@ class GeminiProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         task_type: Optional[str] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
@@ -169,7 +169,7 @@ class GeminiProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         task_type: Optional[str] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,

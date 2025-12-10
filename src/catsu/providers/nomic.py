@@ -5,7 +5,7 @@ and nomic-embed-text-v1.5 models with retry logic, cost tracking, and local toke
 """
 
 import time
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Literal, Optional, Set
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..utils.errors import InvalidInputError
@@ -122,7 +122,7 @@ class NomicProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         task_type: Optional[str] = None,
         dimensions: Optional[int] = None,
         long_text_mode: str = "mean",
@@ -185,7 +185,7 @@ class NomicProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         task_type: Optional[str] = None,
         dimensions: Optional[int] = None,
         long_text_mode: str = "mean",

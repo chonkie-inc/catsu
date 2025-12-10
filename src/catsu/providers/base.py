@@ -5,7 +5,7 @@ Defines the abstract interface that all embedding providers must implement.
 
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 import httpx
 from pydantic import ValidationError
@@ -83,7 +83,7 @@ class BaseProvider(ABC):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings for input texts (synchronous).
@@ -111,7 +111,7 @@ class BaseProvider(ABC):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings for input texts (asynchronous).
@@ -163,7 +163,7 @@ class BaseProvider(ABC):
     def _validate_inputs(
         self,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
     ) -> "EmbedParams":
         """Validate input parameters using Pydantic.

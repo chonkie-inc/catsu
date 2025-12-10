@@ -5,7 +5,7 @@ and codestral-embed models with retry logic, cost tracking, and local tokenizati
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from .base import BaseProvider
@@ -88,7 +88,7 @@ class MistralProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         encoding_format: Optional[str] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
@@ -142,7 +142,7 @@ class MistralProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         encoding_format: Optional[str] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,

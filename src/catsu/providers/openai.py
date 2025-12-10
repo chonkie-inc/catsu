@@ -6,7 +6,7 @@ cost tracking, and local tokenization via tiktoken.
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from ..utils.errors import InvalidInputError
@@ -93,7 +93,7 @@ class OpenAIProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
@@ -140,7 +140,7 @@ class OpenAIProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,

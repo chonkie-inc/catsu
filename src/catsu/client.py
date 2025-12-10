@@ -5,7 +5,7 @@ providers through a single API.
 """
 
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import httpx
 
@@ -199,7 +199,7 @@ class Client:
         model: str,
         input: Union[str, List[str]],
         provider: Optional[str] = None,
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,
@@ -289,7 +289,7 @@ class Client:
         model: str,
         input: Union[str, List[str]],
         provider: Optional[str] = None,
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
         **kwargs: Any,

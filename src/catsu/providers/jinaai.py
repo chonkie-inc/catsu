@@ -5,7 +5,7 @@ with retry logic, cost tracking, and local tokenization via HuggingFace.
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
 from .base import BaseProvider
@@ -96,7 +96,7 @@ class JinaAIProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         normalized: bool = True,
         api_key: Optional[str] = None,
@@ -150,7 +150,7 @@ class JinaAIProvider(BaseProvider):
         self,
         model: str,
         inputs: List[str],
-        input_type: Optional[str] = None,
+        input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         normalized: bool = True,
         api_key: Optional[str] = None,
