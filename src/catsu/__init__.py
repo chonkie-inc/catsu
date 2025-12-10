@@ -9,7 +9,7 @@ from .catalog import ModelCatalog
 from .client import Client
 from .models import EmbedResponse, ModelInfo, TokenizeResponse, Usage
 
-__version__ = "0.0.1a1"
+__version__ = "0.0.1a2"
 __author__ = "Chonkie, Inc."
 
 __all__ = [

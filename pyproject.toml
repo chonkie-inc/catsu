@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "catsu"
-version = "0.0.1a1"
+version = "0.0.1a2"
 description = "🐱 The embedding client that always lands on its feet 🚀"
 readme = "README.md"
 requires-python = ">=3.10"
