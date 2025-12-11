@@ -75,7 +75,6 @@
     border-spacing: 0;
     font-size: 0.875rem;
     width: 100%;
-    min-height: 100%;
   }
 
   /* Sticky table header - fixed relative to viewport */
