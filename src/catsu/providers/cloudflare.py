@@ -110,6 +110,7 @@ class CloudflareProvider(BaseProvider):
         self,
         response_data: Dict[str, Any],
         model: str,
+        inputs: List[str],
         input_count: int,
         latency_ms: float,
         cost_per_million: float,
@@ -119,22 +120,17 @@ class CloudflareProvider(BaseProvider):
         shape = response_data.get("result", {}).get("shape", [])
         dimensions = shape[1] if len(shape) > 1 else (len(embeddings[0]) if embeddings else 0)
 
-        # Cloudflare doesn't return token usage, estimate from input
-        # Using simple estimation: ~1.3 tokens per word
+        # Cloudflare doesn't return token usage, calculate from inputs using tokenizer
         tokenizer = self._get_tokenizer(model)
-        total_tokens = sum(tokenizer.count_tokens(text) for text in range(input_count))
-
-        # For now, use a simple estimation since we don't have actual token counts
-        # We'll need the actual inputs to count properly, but this is a conservative estimate
-        estimated_tokens = input_count * 100  # Conservative estimate
-        cost = self._calculate_cost(estimated_tokens, cost_per_million)
+        total_tokens = sum(tokenizer.count_tokens(text) for text in inputs)
+        cost = self._calculate_cost(total_tokens, cost_per_million)
 
         return EmbedResponse(
             embeddings=embeddings,
             model=model,
             provider=self.PROVIDER_NAME,
             dimensions=dimensions,
-            usage=Usage(tokens=estimated_tokens, cost=cost),
+            usage=Usage(tokens=total_tokens, cost=cost),
             latency_ms=latency_ms,
             input_count=input_count,
             input_type="document",
@@ -185,6 +181,7 @@ class CloudflareProvider(BaseProvider):
         return self._parse_response(
             response_data=response.json(),
             model=model,
+            inputs=params.inputs,
             input_count=len(params.inputs),
             latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
@@ -235,6 +232,7 @@ class CloudflareProvider(BaseProvider):
         return self._parse_response(
             response_data=response.json(),
             model=model,
+            inputs=params.inputs,
             input_count=len(params.inputs),
             latency_ms=timer.elapsed_ms,
             cost_per_million=model_info.cost_per_million_tokens,
