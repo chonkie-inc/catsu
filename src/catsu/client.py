@@ -5,7 +5,7 @@ providers through a single API.
 """
 
 import os
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import httpx
 
@@ -122,7 +122,7 @@ class Client:
 
     def _parse_model_string(
         self, model: str, provider: Optional[str] = None
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
         """Parse model string to extract provider and model name.
 
         Supports three formats:
