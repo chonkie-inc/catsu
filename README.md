@@ -84,3 +84,9 @@ response = await client.aembed(model="voyage-3", input="Hello, async world!")
 ```
 
 📖 **Want to learn more?** Check out the [complete documentation](https://docs.catsu.dev) for detailed guides on all providers, parameters, and best practices.
+
+## 🤝 Contributing
+
+Can't find your favorite model or provider? **Open an issue** and we will promptly try to add it! We're constantly expanding support for new embedding providers and models.
+
+For guidelines on contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
