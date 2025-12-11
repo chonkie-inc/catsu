@@ -1,7 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export function AboutModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Track when component is mounted (client-side only)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -16,10 +35,10 @@ export function AboutModal() {
         </svg>
       </button>
 
-      {/* Modal */}
-      {isOpen && (
+      {/* Modal - render as portal at body level */}
+      {mounted && isOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
           <div
@@ -93,7 +112,8 @@ print(f"Cost: \${response.usage.cost:.6f}")`}</code>
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
