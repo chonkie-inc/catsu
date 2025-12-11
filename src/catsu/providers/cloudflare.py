@@ -118,7 +118,9 @@ class CloudflareProvider(BaseProvider):
         """Parse API response into EmbedResponse."""
         embeddings = response_data.get("result", {}).get("data", [])
         shape = response_data.get("result", {}).get("shape", [])
-        dimensions = shape[1] if len(shape) > 1 else (len(embeddings[0]) if embeddings else 0)
+        dimensions = (
+            shape[1] if len(shape) > 1 else (len(embeddings[0]) if embeddings else 0)
+        )
 
         # Cloudflare doesn't return token usage, calculate from inputs using tokenizer
         tokenizer = self._get_tokenizer(model)

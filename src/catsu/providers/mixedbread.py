@@ -87,7 +87,9 @@ class MixedbreadProvider(BaseProvider):
     ) -> EmbedResponse:
         """Parse API response into EmbedResponse."""
         embeddings = [item["embedding"] for item in response_data.get("data", [])]
-        dimensions = response_data.get("dimensions", len(embeddings[0]) if embeddings else 0)
+        dimensions = response_data.get(
+            "dimensions", len(embeddings[0]) if embeddings else 0
+        )
 
         usage_data = response_data.get("usage", {})
         total_tokens = usage_data.get("total_tokens", 0)

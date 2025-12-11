@@ -54,7 +54,9 @@ class TestMixedbreadProvider:
     def test_map_input_type_to_prompt(self, provider):
         """Test mapping generic input_type to Mixedbread prompt."""
         query_prompt = provider._map_input_type_to_prompt("query")
-        assert query_prompt == "Represent this sentence for searching relevant passages: "
+        assert (
+            query_prompt == "Represent this sentence for searching relevant passages: "
+        )
         assert provider._map_input_type_to_prompt("document") is None
         assert provider._map_input_type_to_prompt(None) is None
 
@@ -76,7 +78,10 @@ class TestMixedbreadProvider:
             inputs=["test query"],
             input_type="query",
         )
-        assert payload["prompt"] == "Represent this sentence for searching relevant passages: "
+        assert (
+            payload["prompt"]
+            == "Represent this sentence for searching relevant passages: "
+        )
 
     def test_build_request_payload_with_input_type_document(self, provider):
         """Test building request payload with input_type=document."""
