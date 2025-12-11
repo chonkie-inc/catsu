@@ -68,10 +68,10 @@ export function ModelsTable({ models, filterValue = '', onRowCountChange, onProv
       const aVal = a[sortKey];
       const bVal = b[sortKey];
 
-      // Handle null values
+      // Handle null values - always push them to the bottom
       if (aVal === null && bVal === null) return 0;
-      if (aVal === null) return sortDirection === 'asc' ? 1 : -1;
-      if (bVal === null) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal === null) return 1;  // a goes to bottom
+      if (bVal === null) return -1; // b goes to bottom
 
       // Compare values
       if (typeof aVal === 'string' && typeof bVal === 'string') {
@@ -95,25 +95,25 @@ export function ModelsTable({ models, filterValue = '', onRowCountChange, onProv
   // Handle column header click for sorting
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
-      // Cycle through: asc -> desc -> null
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
+      // Cycle through: desc -> asc -> null
+      if (sortDirection === 'desc') {
+        setSortDirection('asc');
+      } else if (sortDirection === 'asc') {
         setSortDirection(null);
         setSortKey(null);
       } else {
-        setSortDirection('asc');
+        setSortDirection('desc');
       }
     } else {
       setSortKey(key);
-      setSortDirection('asc');
+      setSortDirection('desc');
     }
   };
 
-  // Get sort indicator
-  const getSortIndicator = (key: SortKey) => {
-    if (sortKey !== key) return '';
-    return sortDirection === 'asc' ? ' ↑' : sortDirection === 'desc' ? ' ↓' : '';
+  // Get sort direction for data attribute
+  const getSortDirection = (key: SortKey) => {
+    if (sortKey !== key) return undefined;
+    return sortDirection || undefined;
   };
 
   // Notify parent of counts
@@ -132,40 +132,37 @@ export function ModelsTable({ models, filterValue = '', onRowCountChange, onProv
     <table>
       <thead>
         <tr>
-          <th className="sortable" onClick={() => handleSort('provider')}>
-            Provider{getSortIndicator('provider')}
+          <th className="sortable" onClick={() => handleSort('provider')} data-sort={getSortDirection('provider')}>
+            Provider
           </th>
-          <th className="sortable" onClick={() => handleSort('name')}>
-            Model{getSortIndicator('name')}
+          <th className="sortable" onClick={() => handleSort('name')} data-sort={getSortDirection('name')}>
+            Model
           </th>
-          <th className="sortable" onClick={() => handleSort('dimensions')}>
-            Dimensions{getSortIndicator('dimensions')}
+          <th className="sortable" onClick={() => handleSort('dimensions')} data-sort={getSortDirection('dimensions')}>
+            Dimensions
           </th>
-          <th className="sortable" onClick={() => handleSort('max_input_tokens')}>
-            Max Tokens{getSortIndicator('max_input_tokens')}
+          <th className="sortable" onClick={() => handleSort('max_input_tokens')} data-sort={getSortDirection('max_input_tokens')}>
+            Max Tokens
           </th>
-          <th className="sortable" onClick={() => handleSort('cost_per_million_tokens')}>
-            Cost/1M{getSortIndicator('cost_per_million_tokens')}
+          <th className="sortable" onClick={() => handleSort('cost_per_million_tokens')} data-sort={getSortDirection('cost_per_million_tokens')}>
+            Cost/1M
           </th>
-          <th className="sortable" onClick={() => handleSort('mteb_score')}>
-            MTEB{getSortIndicator('mteb_score')}
+          <th className="sortable" onClick={() => handleSort('mteb_score')} data-sort={getSortDirection('mteb_score')}>
+            MTEB
           </th>
-          <th className="sortable" onClick={() => handleSort('rteb_score')}>
-            RTEB{getSortIndicator('rteb_score')}
+          <th className="sortable" onClick={() => handleSort('rteb_score')} data-sort={getSortDirection('rteb_score')}>
+            RTEB
           </th>
           <th>Modality</th>
           <th>Quant</th>
-          <th className="sortable" onClick={() => handleSort('supports_batching')}>
-            Batching{getSortIndicator('supports_batching')}
+          <th className="sortable" onClick={() => handleSort('supports_input_type')} data-sort={getSortDirection('supports_input_type')}>
+            Input Type
           </th>
-          <th className="sortable" onClick={() => handleSort('supports_input_type')}>
-            Input Type{getSortIndicator('supports_input_type')}
+          <th className="sortable" onClick={() => handleSort('supports_dimensions')} data-sort={getSortDirection('supports_dimensions')}>
+            Config Dims
           </th>
-          <th className="sortable" onClick={() => handleSort('supports_dimensions')}>
-            Config Dims{getSortIndicator('supports_dimensions')}
-          </th>
-          <th className="sortable" onClick={() => handleSort('release_date')}>
-            Released{getSortIndicator('release_date')}
+          <th className="sortable" onClick={() => handleSort('release_date')} data-sort={getSortDirection('release_date')}>
+            Released
           </th>
         </tr>
       </thead>
@@ -199,7 +196,6 @@ export function ModelsTable({ models, filterValue = '', onRowCountChange, onProv
                 ))}
               </div>
             </td>
-            <td>{model.supports_batching ? 'Yes' : 'No'}</td>
             <td>{model.supports_input_type ? 'Yes' : 'No'}</td>
             <td>{model.supports_dimensions ? 'Yes' : 'No'}</td>
             <td>{formatDate(model.release_date)}</td>
