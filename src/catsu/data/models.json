@@ -1,4 +1,167 @@
 {
+  "cloudflare": [
+    {
+      "name": "@cf/baai/bge-small-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 64.3,
+      "rteb_score": 47.26,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-small-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-base-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.067,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-large-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.204,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-m3",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "@cf/qwen/qwen3-embedding-0.6b",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 70.47,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-0.6B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "@cf/google/embeddinggemma-300m",
+      "provider": "cloudflare",
+      "dimensions": 768,
+      "max_input_tokens": 2048,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 69.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "google/embeddinggemma-300m"
+      },
+      "release_date": "2025-03-25"
+    },
+    {
+      "name": "@cf/pfnet/plamo-embedding-1b",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.019,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "pfnet/plamo-1.0-embedding"
+      },
+      "release_date": "2024-10-01"
+    }
+  ],
   "cohere": [
     {
       "name": "embed-v4.0",
@@ -702,6 +865,103 @@
         "engine": "tiktoken",
         "name": "cl100k_base"
       }
+    }
+  ],
+  "mixedbread": [
+    {
+      "name": "mxbai-embed-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 66.26,
+      "rteb_score": 50.39,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-large-v1"
+      },
+      "release_date": "2024-03-01"
+    },
+    {
+      "name": "mxbai-embed-2d-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-2d-large-v1"
+      },
+      "release_date": "2024-06-01"
+    },
+    {
+      "name": "deepset-mxbai-embed-de-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
+      },
+      "release_date": "2024-05-01"
+    },
+    {
+      "name": "mxbai-embed-xsmall-v1",
+      "provider": "mixedbread",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-xsmall-v1"
+      },
+      "release_date": "2024-08-01"
     }
   ],
   "nomic": [

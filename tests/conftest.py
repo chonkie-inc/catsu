@@ -194,3 +194,47 @@ def skip_if_no_togetherai_key():
     """Skip test if Together AI API key is not set."""
     if not os.getenv("TOGETHER_API_KEY"):
         pytest.skip("TOGETHER_API_KEY not set")
+
+
+@pytest.fixture
+def mixedbread_api_key():
+    """Get Mixedbread AI API key from environment."""
+    return os.getenv("MIXEDBREAD_API_KEY")
+
+
+@pytest.fixture
+def has_mixedbread_api_key():
+    """Check if Mixedbread AI API key is available."""
+    return os.getenv("MIXEDBREAD_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_mixedbread_key():
+    """Skip test if Mixedbread AI API key is not set."""
+    if not os.getenv("MIXEDBREAD_API_KEY"):
+        pytest.skip("MIXEDBREAD_API_KEY not set")
+
+
+@pytest.fixture
+def cloudflare_api_key():
+    """Get Cloudflare API key from environment."""
+    return os.getenv("CLOUDFLARE_API_KEY")
+
+
+@pytest.fixture
+def cloudflare_account_id():
+    """Get Cloudflare Account ID from environment."""
+    return os.getenv("CLOUDFLARE_ACCOUNT_ID")
+
+
+@pytest.fixture
+def has_cloudflare_api_key():
+    """Check if Cloudflare API key is available."""
+    return os.getenv("CLOUDFLARE_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_cloudflare_key():
+    """Skip test if Cloudflare API key is not set."""
+    if not os.getenv("CLOUDFLARE_API_KEY") or not os.getenv("CLOUDFLARE_ACCOUNT_ID"):
+        pytest.skip("CLOUDFLARE_API_KEY or CLOUDFLARE_ACCOUNT_ID not set")
