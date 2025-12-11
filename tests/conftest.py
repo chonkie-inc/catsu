@@ -156,3 +156,41 @@ def skip_if_no_nomic_key():
     """Skip test if Nomic API key is not set."""
     if not os.getenv("NOMIC_API_KEY"):
         pytest.skip("NOMIC_API_KEY not set")
+
+
+@pytest.fixture
+def deepinfra_api_key():
+    """Get DeepInfra API key from environment."""
+    return os.getenv("DEEPINFRA_API_KEY")
+
+
+@pytest.fixture
+def has_deepinfra_api_key():
+    """Check if DeepInfra API key is available."""
+    return os.getenv("DEEPINFRA_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_deepinfra_key():
+    """Skip test if DeepInfra API key is not set."""
+    if not os.getenv("DEEPINFRA_API_KEY"):
+        pytest.skip("DEEPINFRA_API_KEY not set")
+
+
+@pytest.fixture
+def togetherai_api_key():
+    """Get Together AI API key from environment."""
+    return os.getenv("TOGETHER_API_KEY")
+
+
+@pytest.fixture
+def has_togetherai_api_key():
+    """Check if Together AI API key is available."""
+    return os.getenv("TOGETHER_API_KEY") is not None
+
+
+@pytest.fixture
+def skip_if_no_togetherai_key():
+    """Skip test if Together AI API key is not set."""
+    if not os.getenv("TOGETHER_API_KEY"):
+        pytest.skip("TOGETHER_API_KEY not set")

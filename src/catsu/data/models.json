@@ -118,6 +118,376 @@
       "release_date": "2023-11-02"
     }
   ],
+  "deepinfra": [
+    {
+      "name": "Qwen/Qwen3-Embedding-8B",
+      "provider": "deepinfra",
+      "dimensions": 4096,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 75.23,
+      "rteb_score": 73.15,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-8B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "Qwen/Qwen3-Embedding-4B",
+      "provider": "deepinfra",
+      "dimensions": 2560,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 74.61,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-4B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "Qwen/Qwen3-Embedding-0.6B",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 70.47,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-0.6B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "BAAI/bge-m3",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "BAAI/bge-base-en-v1.5",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-large-en-v1.5",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-en-icl",
+      "provider": "deepinfra",
+      "dimensions": 4096,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-en-icl"
+      },
+      "release_date": "2024-09-06"
+    },
+    {
+      "name": "intfloat/e5-base-v2",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 62.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/e5-base-v2"
+      },
+      "release_date": "2023-06-23"
+    },
+    {
+      "name": "intfloat/e5-large-v2",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 514,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 62.79,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/e5-large-v2"
+      },
+      "release_date": "2023-06-23"
+    },
+    {
+      "name": "intfloat/multilingual-e5-large",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 514,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/multilingual-e5-large"
+      },
+      "release_date": "2024-01-10"
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L6-v2",
+      "provider": "deepinfra",
+      "dimensions": 384,
+      "max_input_tokens": 256,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 59.03,
+      "rteb_score": 44.55,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-MiniLM-L6-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L12-v2",
+      "provider": "deepinfra",
+      "dimensions": 384,
+      "max_input_tokens": 256,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 44.95,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-MiniLM-L12-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "sentence-transformers/all-mpnet-base-v2",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 384,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 49.79,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-mpnet-base-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "thenlper/gte-base",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 63.9,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "thenlper/gte-base"
+      },
+      "release_date": "2023-08-14"
+    },
+    {
+      "name": "thenlper/gte-large",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 64.77,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "thenlper/gte-large"
+      },
+      "release_date": "2023-08-14"
+    },
+    {
+      "name": "google/embeddinggemma-300m",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 2048,
+      "cost_per_million_tokens": 0.002,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 69.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "google/EmbeddingGemma-300m"
+      },
+      "release_date": "2025-03-25"
+    }
+  ],
   "gemini": [
     {
       "name": "gemini-embedding-001",
@@ -451,6 +821,169 @@
         "float"
       ],
       "release_date": "2022-12-15"
+    }
+  ],
+  "togetherai": [
+    {
+      "name": "BAAI/bge-base-en-v1.5",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-large-en-v1.5",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-m3",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "WhereIsAI/UAE-Large-V1",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 66.4,
+      "rteb_score": 50.65,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "WhereIsAI/UAE-Large-V1"
+      },
+      "release_date": "2023-10-01"
+    },
+    {
+      "name": "togethercomputer/m2-bert-80M-8k-retrieval",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "togethercomputer/m2-bert-80M-8k-retrieval"
+      },
+      "release_date": "2024-01-01"
+    },
+    {
+      "name": "Alibaba-NLP/gte-Qwen2-7B-instruct",
+      "provider": "togetherai",
+      "dimensions": 3584,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 70.72,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Alibaba-NLP/gte-Qwen2-7B-instruct"
+      },
+      "release_date": "2024-06-01"
+    },
+    {
+      "name": "Alibaba-NLP/gte-modernbert-base",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.08,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Alibaba-NLP/gte-modernbert-base"
+      },
+      "release_date": "2024-11-01"
     }
   ],
   "voyageai": [
