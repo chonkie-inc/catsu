@@ -80,7 +80,7 @@ export function AboutModal() {
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Installation</h3>
                 <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
-                  <code>uv add catsu</code>
+                  <code>uv pip install catsu</code>
                 </pre>
               </div>
 
