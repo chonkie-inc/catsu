@@ -19,9 +19,9 @@ While each provider has unique features, Catsu supports several common parameter
 
 ## Core Parameters
 
-### [input_type](/parameters/input-type)
+### input_type
 
-Optimize embeddings for queries or documents:
+Optimize embeddings for queries or documents. [Learn more →](/parameters/input-type)
 
 ```python
 # For search queries
@@ -41,9 +41,9 @@ response = client.embed(
 
 **Supported by**: Voyage AI, Cohere, Gemini, Jina AI, Mistral AI, Nomic, Mixed Bread
 
-### [dimensions](/parameters/dimensions)
+### dimensions
 
-Control embedding dimensions with Matryoshka embeddings:
+Control embedding dimensions with Matryoshka embeddings. [Learn more →](/parameters/dimensions)
 
 ```python
 response = client.embed(
@@ -55,9 +55,9 @@ response = client.embed(
 
 **Supported by**: Voyage AI, OpenAI (text-embedding-3), Gemini, Jina AI, Mistral (select models), Nomic (v1.5), DeepInfra (Qwen3), Mixed Bread
 
-### [api_key](/parameters/api-key)
+### api_key
 
-Override API key per request:
+Override API key per request. [Learn more →](/parameters/api-key)
 
 ```python
 response = client.embed(
