@@ -274,7 +274,13 @@ class BaseProvider(ABC):
         elif status_code == 429:
             # Try to get retry_after header
             retry_after = response.headers.get("Retry-After")
-            retry_after_seconds = int(retry_after) if retry_after else None
+            retry_after_seconds = None
+            if retry_after:
+                try:
+                    retry_after_seconds = int(retry_after)
+                except ValueError:
+                    # Header might be HTTP-date format, ignore and let caller handle
+                    pass
 
             raise RateLimitError(
                 message=f"Rate limit exceeded: {error_message}",
