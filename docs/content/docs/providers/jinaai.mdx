@@ -1,0 +1,95 @@
+---
+title: Jina AI
+description: Jina AI embedding provider documentation
+---
+
+# Jina AI
+
+Jina AI provides multimodal and code-specific embedding models with extremely long context support.
+
+## Overview
+
+- **Models**: 6 models (v4 multimodal, v3, code models, v2 variants)
+- **Key Features**: Multimodal (text+image), code-optimized, up to 32,768 tokens context
+- **API Docs**: [Jina AI Embeddings](https://jina.ai/embeddings/)
+
+## Environment Variable
+
+```bash
+export JINA_API_KEY="your-jina-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `input_type` | str | No | `"query"` or `"document"` |
+| `task` | str | No | `retrieval.query`, `retrieval.passage`, `text-matching`, `classification`, `separation` |
+| `dimensions` | int | No | Output dimensions (model-dependent) |
+| `normalized` | bool | No | L2 normalize embeddings (default: True) |
+| `api_key` | str | No | Override API key |
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="jina-embeddings-v3",
+    input="Hello, Jina!"
+)
+```
+
+### Multimodal (v4)
+
+```python
+response = client.embed(
+    model="jina-embeddings-v4",
+    input="Text that could be paired with images"
+)
+```
+
+### Code Embeddings
+
+```python
+response = client.embed(
+    model="jina-code-embeddings-1.5b",
+    input="def calculate_similarity(a, b): return cosine(a, b)"
+)
+```
+
+### With Task Type
+
+```python
+response = client.embed(
+    model="jina-embeddings-v3",
+    input="Search query",
+    task="retrieval.query"
+)
+```
+
+### Long Context
+
+```python
+# Jina supports up to 32,768 tokens
+very_long_text = "..." * 10000
+
+response = client.embed(
+    model="jina-embeddings-v3",
+    input=very_long_text
+)
+```
+
+## Special Notes
+
+- ✅ Multimodal support in v4 (text + images)
+- ✅ Code-specific models for software development
+- Up to **32,768 tokens** context (industry-leading)
+- Normalized embeddings by default
+- Supports Matryoshka dimensions (model-dependent)
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - View all Jina AI models

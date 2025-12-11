@@ -1,0 +1,122 @@
+---
+title: Common Parameters
+description: Understanding parameters shared across providers
+---
+
+# Common Parameters
+
+While each provider has unique features, Catsu supports several common parameters across multiple providers.
+
+## Parameter Support Matrix
+
+| Parameter | Voyage | OpenAI | Cohere | Gemini | Jina | Mistral | Nomic | Cloudflare | DeepInfra | Mixed Bread | Together |
+|-----------|--------|--------|--------|--------|------|---------|-------|------------|-----------|-------------|----------|
+| **input_type** | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ |
+| **dimensions** | ✅ | ✅* | ❌ | ✅ | ✅* | ✅* | ✅* | ❌ | ✅* | ✅ | ❌ |
+| **api_key** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+\* Supported by select models only
+
+## Core Parameters
+
+### [input_type](/parameters/input-type)
+
+Optimize embeddings for queries or documents:
+
+```python
+# For search queries
+response = client.embed(
+    model="voyage-3",
+    input="What is machine learning?",
+    input_type="query"
+)
+
+# For documents/passages
+response = client.embed(
+    model="voyage-3",
+    input="Machine learning is a subset of AI...",
+    input_type="document"
+)
+```
+
+**Supported by**: Voyage AI, Cohere, Gemini, Jina AI, Mistral AI, Nomic, Mixed Bread
+
+### [dimensions](/parameters/dimensions)
+
+Control embedding dimensions with Matryoshka embeddings:
+
+```python
+response = client.embed(
+    model="voyage-3",
+    input="Sample text",
+    dimensions=512  # vs default 1024
+)
+```
+
+**Supported by**: Voyage AI, OpenAI (text-embedding-3), Gemini, Jina AI, Mistral (select models), Nomic (v1.5), DeepInfra (Qwen3), Mixed Bread
+
+### [api_key](/parameters/api-key)
+
+Override API key per request:
+
+```python
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="custom-api-key"
+)
+```
+
+**Supported by**: All providers
+
+## Provider-Specific Parameters
+
+Some providers offer unique parameters:
+
+- **Cohere**: `truncate` - Control text truncation (NONE/START/END)
+- **Gemini**: `task_type` - Task-specific optimization (RETRIEVAL_QUERY, CLASSIFICATION, etc.)
+- **Jina AI**: `task`, `normalized` - Task type and normalization
+- **Nomic**: `task_type`, `long_text_mode`, `max_tokens_per_text` - Advanced text handling
+- **Cloudflare**: `pooling`, `account_id` - Pooling strategy and account
+- **Mixed Bread**: `encoding_format`, `prompt`, `normalized` - Quantization and custom prompts
+
+See individual [provider documentation](/providers) for details.
+
+## Parameter Precedence
+
+When the same parameter is specified multiple ways:
+
+1. **Method parameter** (highest priority)
+2. **Client configuration**
+3. **Environment variables** (lowest priority)
+
+Example:
+
+```python
+# Environment: VOYAGE_API_KEY="env-key"
+
+client = catsu.Client(
+    api_keys={"voyageai": "client-key"}
+)
+
+# Uses "request-key" (method parameter wins)
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="request-key"
+)
+```
+
+## Learn More
+
+<Cards>
+  <Card title="input_type" href="/parameters/input-type">
+    Optimize for queries vs documents
+  </Card>
+  <Card title="dimensions" href="/parameters/dimensions">
+    Matryoshka embeddings explained
+  </Card>
+  <Card title="api_key" href="/parameters/api-key">
+    API key management and overrides
+  </Card>
+</Cards>

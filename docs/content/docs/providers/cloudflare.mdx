@@ -1,0 +1,90 @@
+---
+title: Cloudflare
+description: Cloudflare Workers AI embedding provider documentation
+---
+
+# Cloudflare
+
+Cloudflare Workers AI provides edge-based embedding inference with BGE and other open-source models.
+
+## Overview
+
+- **Models**: 7 models (BGE variants, Qwen3, others)
+- **Key Features**: Edge inference, low latency, open-source models
+- **API Docs**: [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)
+
+## Environment Variables
+
+```bash
+export CLOUDFLARE_API_KEY="your-cloudflare-api-key"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier (e.g., `@cf/baai/bge-base-en-v1.5`) |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `pooling` | str | No | `"mean"` or `"cls"` (for BGE models) |
+| `api_key` | str | No | Override API key |
+| `account_id` | str | No | Override account ID |
+
+**Note**: Cloudflare **does not support** `input_type` or `dimensions` parameters.
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="@cf/baai/bge-base-en-v1.5",
+    input="Hello, Cloudflare!"
+)
+```
+
+### With Account ID
+
+```python
+client = catsu.Client(
+    api_keys={
+        "cloudflare": "your-api-key"
+    }
+)
+
+response = client.embed(
+    model="@cf/baai/bge-base-en-v1.5",
+    input="Text",
+    account_id="your-account-id"  # If not in env
+)
+```
+
+### With Pooling (BGE models)
+
+```python
+# Mean pooling (default)
+response = client.embed(
+    model="@cf/baai/bge-base-en-v1.5",
+    input="Text",
+    pooling="mean"
+)
+
+# CLS token pooling
+response = client.embed(
+    model="@cf/baai/bge-base-en-v1.5",
+    input="Text",
+    pooling="cls"
+)
+```
+
+## Special Notes
+
+- ⚠️ **`input_type` and `dimensions` are NOT supported**
+- Requires `CLOUDFLARE_ACCOUNT_ID` in addition to API key
+- Edge-based inference for low latency
+- BGE models support pooling parameter
+- Model names use `@cf/` prefix
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - View all Cloudflare models

@@ -1,0 +1,152 @@
+---
+title: Context Managers
+description: Using Catsu with context managers for automatic cleanup
+---
+
+# Context Managers
+
+Catsu supports Python context managers (the `with` statement) for automatic resource cleanup.
+
+## Why Use Context Managers?
+
+Context managers ensure:
+- Automatic cleanup of resources
+- Proper connection closing
+- Exception-safe code
+- Cleaner, more Pythonic syntax
+
+## Synchronous Context Manager
+
+```python
+import catsu
+
+with catsu.Client() as client:
+    response = client.embed(
+        model="voyage-3",
+        input="Hello, world!"
+    )
+    print(response.embeddings)
+
+# Client is automatically cleaned up here
+```
+
+## Asynchronous Context Manager
+
+```python
+import asyncio
+import catsu
+
+async def main():
+    async with catsu.Client() as client:
+        response = await client.aembed(
+            model="voyage-3",
+            input="Hello, async world!"
+        )
+        print(response.embeddings)
+
+    # Client is automatically cleaned up here
+
+asyncio.run(main())
+```
+
+## Configuration with Context Managers
+
+You can still pass configuration parameters:
+
+```python
+with catsu.Client(verbose=True, max_retries=5, timeout=60) as client:
+    response = client.embed(model="voyage-3", input="Text")
+```
+
+## Multiple Requests
+
+```python
+with catsu.Client() as client:
+    # Process multiple requests
+    response1 = client.embed(model="voyage-3", input="Text 1")
+    response2 = client.embed(model="openai:text-embedding-3-small", input="Text 2")
+    response3 = client.embed(model="cohere:embed-v4.0", input="Text 3")
+
+    total_cost = sum([
+        response1.usage.cost,
+        response2.usage.cost,
+        response3.usage.cost
+    ])
+
+    print(f"Total cost: ${total_cost:.6f}")
+```
+
+## Async with asyncio.gather()
+
+```python
+import asyncio
+import catsu
+
+async def main():
+    async with catsu.Client() as client:
+        # Parallel requests with context manager
+        responses = await asyncio.gather(
+            client.aembed(model="voyage-3", input="Query 1"),
+            client.aembed(model="voyage-3", input="Query 2"),
+            client.aembed(model="voyage-3", input="Query 3"),
+        )
+
+        for i, response in enumerate(responses):
+            print(f"Query {i+1}: {len(response.embeddings[0])} dimensions")
+
+asyncio.run(main())
+```
+
+## Exception Handling with Context Managers
+
+Context managers work seamlessly with exception handling:
+
+```python
+from catsu.exceptions import CatsuError
+
+try:
+    with catsu.Client() as client:
+        response = client.embed(model="voyage-3", input="Text")
+        print(response.embeddings)
+except CatsuError as e:
+    print(f"Error: {e}")
+finally:
+    print("Cleanup guaranteed")
+```
+
+## When to Use Context Managers
+
+**Use context managers when:**
+- You want automatic cleanup
+- Working with limited-scope operations
+- Following Python best practices
+- Need exception-safe code
+
+**Regular initialization is fine for:**
+- Long-lived applications
+- Reusing the same client across multiple functions
+- When cleanup isn't critical
+
+## Best Practices
+
+```python
+# Good: Context manager for scoped operations
+def embed_batch(texts):
+    with catsu.Client() as client:
+        return client.embed(model="voyage-3", input=texts)
+
+# Also good: Reuse client for multiple operations
+client = catsu.Client()
+
+def embed_query(text):
+    return client.embed(model="voyage-3", input=text, input_type="query")
+
+def embed_document(text):
+    return client.embed(model="voyage-3", input=text, input_type="document")
+```
+
+## Next Steps
+
+- [embed() Method](/client-api/embed-method) - Synchronous embedding generation
+- [aembed() Method](/client-api/aembed-method) - Asynchronous embedding generation
+- [Best Practices](/best-practices) - Optimize your usage

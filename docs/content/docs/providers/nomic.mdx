@@ -1,0 +1,134 @@
+---
+title: Nomic
+description: Nomic embedding provider documentation
+---
+
+# Nomic
+
+Nomic provides embedding models with Matryoshka support and advanced long text handling.
+
+## Overview
+
+- **Models**: 2 models (nomic-embed-text-v1.5, nomic-embed-text-v1)
+- **Key Features**: Matryoshka embeddings, long text modes, task-specific optimization
+- **API Docs**: [Nomic Documentation](https://docs.nomic.ai/)
+
+## Environment Variable
+
+```bash
+export NOMIC_API_KEY="your-nomic-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `input_type` | str | No | `"query"` or `"document"` (mapped to search_*) |
+| `task_type` | str | No | `search_document`, `search_query`, `clustering`, `classification` |
+| `dimensions` | int | No | 64-768 (v1.5 only, Matryoshka) |
+| `long_text_mode` | str | No | `"truncate"` or `"mean"` (default: "mean") |
+| `max_tokens_per_text` | int | No | Default: 8192 |
+| `api_key` | str | No | Override API key |
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Hello, Nomic!"
+)
+```
+
+### With input_type
+
+Like Cohere, Nomic maps `input_type` to `search_query`/`search_document`:
+
+```python
+# Query
+query_response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="What is AI?",
+    input_type="query"  # → search_query
+)
+
+# Document
+doc_response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="AI is...",
+    input_type="document"  # → search_document
+)
+```
+
+### With Matryoshka Dimensions (v1.5 only)
+
+```python
+# Smaller dimensions
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Sample text",
+    dimensions=256  # 64-768 supported
+)
+
+print(f"Dimensions: {response.dimensions}")  # 256
+```
+
+### With Long Text Handling
+
+```python
+# Mean pooling for long texts (default)
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Very long text..." * 1000,
+    long_text_mode="mean"
+)
+
+# Truncate long texts
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Very long text..." * 1000,
+    long_text_mode="truncate",
+    max_tokens_per_text=4096
+)
+```
+
+### With Task Type
+
+```python
+# Clustering
+cluster_response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Group similar documents",
+    task_type="clustering"
+)
+
+# Classification
+classify_response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Classify this text",
+    task_type="classification"
+)
+```
+
+## Model Variants
+
+- **nomic-embed-text-v1.5** - Latest, Matryoshka support (64-768d)
+- **nomic-embed-text-v1** - Previous version, fixed 768d
+
+For pricing, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- ✅ `input_type` mapped to search_query/search_document (like Cohere)
+- ✅ Matryoshka dimensions (64-768) for v1.5 only
+- Long text handling: "mean" (average) or "truncate"
+- Configurable max_tokens_per_text
+- v1 model has fixed 768 dimensions
+
+## Next Steps
+
+- [Common Parameters: dimensions](/parameters/dimensions) - Matryoshka embeddings
+- [Common Parameters: input_type](/parameters/input-type) - Query vs document

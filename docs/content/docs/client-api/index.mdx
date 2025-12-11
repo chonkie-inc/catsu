@@ -1,0 +1,112 @@
+---
+title: Client API
+description: Complete reference for the Catsu Client class
+---
+
+# Client API
+
+The `Client` class is the main interface for interacting with embedding providers through Catsu.
+
+## Overview
+
+The Client class provides a unified interface for:
+- Generating embeddings (sync and async)
+- Listing available models
+- Managing API keys and configuration
+- Handling retries and timeouts
+
+## Quick Reference
+
+```python
+from catsu import Client
+
+# Initialize client
+client = Client(
+    verbose=False,      # Enable debug logging
+    max_retries=3,      # Retry attempts
+    timeout=30,         # Request timeout (seconds)
+    api_keys={}         # Optional API key dict
+)
+
+# Generate embeddings (sync)
+response = client.embed(model="voyage-3", input="Text")
+
+# Generate embeddings (async)
+response = await client.aembed(model="voyage-3", input="Text")
+
+# List available models
+models = client.list_models(provider="voyageai")  # Optional filter
+```
+
+## Available Methods
+
+### Core Methods
+
+- **[`embed()`](/client-api/embed-method)** - Generate embeddings (synchronous)
+- **[`aembed()`](/client-api/aembed-method)** - Generate embeddings (asynchronous)
+- **[`list_models()`](/client-api/list-models)** - List available models
+
+### Configuration
+
+- **[Initialization](/client-api/initialization)** - Client constructor parameters
+- **[Context Managers](/client-api/context-managers)** - Using `with` statements
+
+## Response Structure
+
+All `embed()` and `aembed()` methods return an `EmbedResponse` object:
+
+```python
+class EmbedResponse:
+    embeddings: List[List[float]]  # List of embedding vectors
+    dimensions: int                 # Embedding dimensions
+    usage: Usage                    # Token usage and cost info
+
+class Usage:
+    tokens: int       # Total tokens processed
+    cost: float       # Cost in USD
+    latency: float    # Request latency in seconds
+```
+
+## Example Usage
+
+```python
+import catsu
+
+# Initialize with configuration
+client = catsu.Client(
+    verbose=True,
+    max_retries=5,
+    timeout=60
+)
+
+# Generate embeddings
+response = client.embed(
+    model="voyage-3",
+    input=["Query 1", "Query 2"],
+    input_type="query"
+)
+
+# Access results
+for i, embedding in enumerate(response.embeddings):
+    print(f"Embedding {i+1}: {len(embedding)} dimensions")
+
+print(f"Total cost: ${response.usage.cost:.6f}")
+print(f"Latency: {response.usage.latency:.3f}s")
+```
+
+## Learn More
+
+<Cards>
+  <Card title="Initialization" href="/client-api/initialization">
+    Configure the Client with custom settings
+  </Card>
+  <Card title="embed() Method" href="/client-api/embed-method">
+    Generate embeddings synchronously
+  </Card>
+  <Card title="aembed() Method" href="/client-api/aembed-method">
+    Generate embeddings asynchronously
+  </Card>
+  <Card title="Context Managers" href="/client-api/context-managers">
+    Use with statements for automatic cleanup
+  </Card>
+</Cards>

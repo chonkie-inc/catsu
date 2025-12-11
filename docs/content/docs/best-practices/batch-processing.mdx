@@ -1,0 +1,145 @@
+---
+title: Batch Processing
+description: Optimize throughput with efficient batching strategies
+---
+
+# Batch Processing
+
+Batching multiple texts into a single API request significantly improves efficiency and reduces costs.
+
+## Why Batch?
+
+**Benefits:**
+- Fewer API calls = lower overhead
+- Better throughput
+- Reduced latency per text
+- Often lower cost per token
+
+## Basic Batching
+
+```python
+# ❌ Inefficient: Individual requests
+embeddings = []
+for text in texts:
+    response = client.embed(model="voyage-3", input=text)
+    embeddings.append(response.embeddings[0])
+
+# ✅ Efficient: Single batch request
+response = client.embed(model="voyage-3", input=texts)
+embeddings = response.embeddings
+```
+
+## Provider Batch Limits
+
+Different providers have different batch size limits:
+
+| Provider | Max Batch Size | Notes |
+|----------|----------------|-------|
+| Mistral AI | 512 | Largest batch support |
+| Cohere | 96 | Per request |
+| Most others | Varies | Check provider docs |
+
+**Recommendation**: Start with batches of 32-50 texts and adjust based on your provider.
+
+## Optimal Batch Sizes
+
+```python
+def process_in_batches(texts, batch_size=50):
+    results = []
+
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        response = client.embed(model="voyage-3", input=batch)
+        results.extend(response.embeddings)
+
+    return results
+
+# Usage
+all_embeddings = process_in_batches(large_text_list, batch_size=50)
+```
+
+## Async Batch Processing
+
+For maximum throughput, combine batching with async:
+
+```python
+import asyncio
+
+async def process_large_dataset(texts, batch_size=50):
+    client = catsu.Client()
+
+    # Split into batches
+    batches = [
+        texts[i:i + batch_size]
+        for i in range(0, len(texts), batch_size)
+    ]
+
+    # Process all batches in parallel
+    responses = await asyncio.gather(*[
+        client.aembed(model="voyage-3", input=batch)
+        for batch in batches
+    ])
+
+    # Combine results
+    all_embeddings = []
+    for response in responses:
+        all_embeddings.extend(response.embeddings)
+
+    return all_embeddings
+
+# Process 1000 texts in batches of 50, in parallel
+embeddings = asyncio.run(process_large_dataset(texts, batch_size=50))
+```
+
+## Performance Comparison
+
+```python
+import time
+
+texts = ["Sample text"] * 100
+
+# Method 1: Individual requests
+start = time.time()
+for text in texts:
+    response = client.embed(model="voyage-3", input=text)
+individual_time = time.time() - start
+
+# Method 2: Batch request
+start = time.time()
+response = client.embed(model="voyage-3", input=texts)
+batch_time = time.time() - start
+
+print(f"Individual: {individual_time:.2f}s")
+print(f"Batch: {batch_time:.2f}s")
+print(f"Speedup: {individual_time / batch_time:.1f}x")
+```
+
+## Batch Size Recommendations
+
+**Small batches (10-20):**
+- Faster response time per batch
+- Better for real-time applications
+- More frequent progress updates
+
+**Medium batches (50-100):**
+- Good balance of speed and responsiveness
+- Recommended for most use cases
+- Works well with most providers
+
+**Large batches (200+):**
+- Maximum throughput
+- Best for offline processing
+- Check provider limits first
+
+## Best Practices
+
+- Use batch sizes of 32-50 for most providers
+- Combine batching with async for large datasets
+- Monitor batch performance and adjust
+- Respect provider batch limits
+- Consider rate limits when sizing batches
+
+## Next Steps
+
+- [Async Usage](/best-practices/async-usage) - Combine with async for maximum performance
+- [Rate Limiting](/best-practices/rate-limiting) - Handle limits when batching

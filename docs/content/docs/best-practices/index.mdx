@@ -1,0 +1,144 @@
+---
+title: Best Practices
+description: Optimize your Catsu usage for performance and cost
+---
+
+# Best Practices
+
+Learn how to get the most out of Catsu with these expert tips and recommendations.
+
+## Quick Tips
+
+- **Batch your requests** - Process multiple texts together for better efficiency
+- **Use async for parallel requests** - Leverage `aembed()` and `asyncio.gather()`
+- **Choose the right model** - Consider use case, cost, and features
+- **Track your costs** - Monitor token usage and expenses
+- **Handle rate limits gracefully** - Use Catsu's built-in retry logic
+
+## Topics
+
+<Cards>
+  <Card title="Batch Processing" href="/best-practices/batch-processing">
+    Optimize throughput with batching
+  </Card>
+  <Card title="Async Usage" href="/best-practices/async-usage">
+    Maximize performance with async methods
+  </Card>
+  <Card title="Model Selection" href="/best-practices/model-selection">
+    Choose the right model for your use case
+  </Card>
+  <Card title="Cost Tracking" href="/best-practices/cost-tracking">
+    Monitor and optimize costs
+  </Card>
+  <Card title="Rate Limiting" href="/best-practices/rate-limiting">
+    Handle rate limits effectively
+  </Card>
+</Cards>
+
+## Performance Optimization
+
+### Use Batching
+
+```python
+# ❌ Inefficient: One request per text
+for text in texts:
+    response = client.embed(model="voyage-3", input=text)
+
+# ✅ Efficient: Batch request
+response = client.embed(model="voyage-3", input=texts)
+```
+
+### Use Async for Parallel Requests
+
+```python
+import asyncio
+
+# ✅ Process multiple batches in parallel
+async def process_batches():
+    responses = await asyncio.gather(
+        client.aembed(model="voyage-3", input=batch1),
+        client.aembed(model="voyage-3", input=batch2),
+        client.aembed(model="voyage-3", input=batch3),
+    )
+    return responses
+```
+
+## Cost Optimization
+
+### Monitor Usage
+
+```python
+response = client.embed(model="voyage-3", input=texts)
+
+print(f"Tokens: {response.usage.tokens}")
+print(f"Cost: ${response.usage.cost:.6f}")
+print(f"Cost per text: ${response.usage.cost / len(texts):.8f}")
+```
+
+### Choose Cost-Effective Models
+
+Different providers and models have varying costs:
+- Compare pricing on [catsu.dev](https://catsu.dev)
+- Consider lite/small variants for non-critical use cases
+- Use Matryoshka dimensions to reduce costs
+
+## Quality Optimization
+
+### Use input_type Correctly
+
+```python
+# For queries
+query_emb = client.embed(
+    model="voyage-3",
+    input="search query",
+    input_type="query"
+)
+
+# For documents
+doc_emb = client.embed(
+    model="voyage-3",
+    input="document content",
+    input_type="document"
+)
+```
+
+### Choose Domain-Specific Models
+
+```python
+# For code
+code_emb = client.embed(model="voyage-code-3", input="def hello(): pass")
+
+# For finance
+finance_emb = client.embed(model="voyage-finance-2", input="Q4 earnings...")
+
+# For legal
+law_emb = client.embed(model="voyage-law-2", input="Section 12(a)...")
+```
+
+## Reliability
+
+### Use Automatic Retries
+
+```python
+# Configure retry behavior
+client = catsu.Client(
+    max_retries=5,      # Retry up to 5 times
+    timeout=60          # 60 second timeout
+)
+```
+
+### Handle Errors Gracefully
+
+```python
+from catsu.exceptions import CatsuError
+
+try:
+    response = client.embed(model="voyage-3", input="Text")
+except CatsuError as e:
+    # Log error and handle gracefully
+    print(f"Error: {e}")
+```
+
+## Next Steps
+
+Explore detailed guides for each topic above to master Catsu usage.

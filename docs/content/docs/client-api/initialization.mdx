@@ -1,0 +1,136 @@
+---
+title: Client Initialization
+description: Configure the Catsu Client with custom settings
+---
+
+# Client Initialization
+
+The `Client` class accepts several configuration parameters to customize behavior.
+
+## Constructor Parameters
+
+```python
+from catsu import Client
+
+client = Client(
+    verbose=False,      # Enable debug logging
+    max_retries=3,      # Maximum retry attempts
+    timeout=30,         # Request timeout in seconds
+    api_keys={}         # Optional API keys dictionary
+)
+```
+
+## Parameters
+
+### `verbose` (bool, default: `False`)
+
+Enable verbose logging to see detailed request/response information:
+
+```python
+client = Client(verbose=True)
+
+# Logs will show:
+# - Request parameters
+# - API endpoints called
+# - Retry attempts
+# - Response metadata
+# - Token usage and costs
+```
+
+### `max_retries` (int, default: `3`)
+
+Maximum number of retry attempts for failed requests:
+
+```python
+client = Client(max_retries=5)
+
+# Retries are automatic for:
+# - Rate limit errors (with exponential backoff)
+# - Network timeouts
+# - Temporary server errors (5xx)
+```
+
+### `timeout` (int, default: `30`)
+
+Request timeout in seconds:
+
+```python
+client = Client(timeout=60)  # 60 second timeout
+
+# Raises TimeoutError if request exceeds timeout
+```
+
+### `api_keys` (dict, optional)
+
+Override environment variable API keys:
+
+```python
+client = Client(
+    api_keys={
+        "voyageai": "your-voyage-key",
+        "openai": "your-openai-key",
+        "cohere": "your-cohere-key",
+    }
+)
+```
+
+Provider names for `api_keys`:
+- `"voyageai"` - Voyage AI
+- `"openai"` - OpenAI
+- `"cohere"` - Cohere
+- `"gemini"` - Google Gemini
+- `"jinaai"` - Jina AI
+- `"mistral"` - Mistral AI
+- `"nomic"` - Nomic
+- `"cloudflare"` - Cloudflare Workers AI
+- `"deepinfra"` - DeepInfra
+- `"mixedbread"` - Mixed Bread
+- `"togetherai"` - Together AI
+
+## API Key Priority
+
+Catsu resolves API keys in this order (highest to lowest priority):
+
+1. **Per-request `api_key` parameter**
+   ```python
+   client.embed(model="voyage-3", input="Text", api_key="request-key")
+   ```
+
+2. **Client `api_keys` dictionary**
+   ```python
+   client = Client(api_keys={"voyageai": "client-key"})
+   ```
+
+3. **Environment variables**
+   ```bash
+   export VOYAGE_API_KEY="env-key"
+   ```
+
+## Complete Example
+
+```python
+import catsu
+import os
+
+# Production configuration
+client = catsu.Client(
+    verbose=False,          # Disable logging in production
+    max_retries=5,          # More retries for reliability
+    timeout=60,             # Longer timeout for large batches
+    api_keys={
+        "voyageai": os.getenv("VOYAGE_KEY"),
+        "openai": os.getenv("OPENAI_KEY"),
+    }
+)
+
+response = client.embed(
+    model="voyage-3",
+    input="Production embedding request"
+)
+```
+
+## Next Steps
+
+- [embed() Method](/client-api/embed-method) - Generate embeddings synchronously
+- [aembed() Method](/client-api/aembed-method) - Generate embeddings asynchronously
+- [Error Handling](/error-handling) - Handle exceptions and retries

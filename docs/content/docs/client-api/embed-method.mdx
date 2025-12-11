@@ -1,0 +1,195 @@
+---
+title: embed() Method
+description: Generate embeddings synchronously
+---
+
+# embed() Method
+
+The `embed()` method generates embeddings synchronously using the specified model and provider.
+
+## Signature
+
+```python
+def embed(
+    self,
+    *,
+    model: str,
+    input: Union[str, List[str]],
+    provider: Optional[str] = None,
+    **kwargs
+) -> EmbedResponse
+```
+
+## Parameters
+
+### Required Parameters
+
+#### `model` (str)
+
+The model identifier. Can be specified in three ways:
+
+```python
+# 1. Model name only (auto-detect provider)
+client.embed(model="voyage-3", input="Text")
+
+# 2. Provider prefix
+client.embed(model="voyageai:voyage-3", input="Text")
+
+# 3. With explicit provider parameter
+client.embed(provider="voyageai", model="voyage-3", input="Text")
+```
+
+#### `input` (str | List[str])
+
+The text(s) to embed:
+
+```python
+# Single text
+client.embed(model="voyage-3", input="Single text")
+
+# Multiple texts (batch)
+client.embed(model="voyage-3", input=["Text 1", "Text 2", "Text 3"])
+```
+
+### Optional Parameters
+
+#### `provider` (str, optional)
+
+Explicitly specify the provider:
+
+```python
+client.embed(
+    provider="voyageai",
+    model="voyage-3",
+    input="Text"
+)
+```
+
+#### `**kwargs` (provider-specific)
+
+Additional provider-specific parameters:
+
+```python
+# Voyage AI with input_type
+client.embed(
+    model="voyage-3",
+    input="What is AI?",
+    input_type="query"
+)
+
+# Gemini with dimensions
+client.embed(
+    model="gemini-embedding-001",
+    input="Text",
+    dimensions=512
+)
+
+# Per-request API key override
+client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="custom-api-key"
+)
+```
+
+See [Provider Documentation](/providers) for provider-specific parameters.
+
+## Return Value
+
+Returns an `EmbedResponse` object:
+
+```python
+class EmbedResponse:
+    embeddings: List[List[float]]  # List of embedding vectors
+    dimensions: int                 # Embedding dimensions
+    usage: Usage                    # Usage information
+
+class Usage:
+    tokens: int       # Total tokens processed
+    cost: float       # Cost in USD
+    latency: float    # Request latency in seconds
+```
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="voyage-3",
+    input="Hello, world!"
+)
+
+print(response.embeddings[0][:5])  # [0.123, 0.456, ...]
+print(response.dimensions)          # 1024
+print(response.usage.cost)          # 0.0000002
+```
+
+### Batch Processing
+
+```python
+texts = [
+    "First document",
+    "Second document",
+    "Third document"
+]
+
+response = client.embed(
+    model="voyage-3",
+    input=texts
+)
+
+# Process each embedding
+for i, embedding in enumerate(response.embeddings):
+    print(f"Document {i+1}: {len(embedding)} dimensions")
+
+print(f"Total cost: ${response.usage.cost:.6f}")
+```
+
+### With Provider-Specific Parameters
+
+```python
+# Voyage AI with input_type
+response = client.embed(
+    model="voyage-3",
+    input="What is machine learning?",
+    input_type="query"  # vs "document"
+)
+
+# Nomic with task_type and dimensions
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Clustering sample",
+    task_type="clustering",
+    dimensions=256  # Matryoshka embeddings
+)
+
+# Cohere with truncate
+response = client.embed(
+    model="embed-v4.0",
+    input="Very long text...",
+    truncate="END"  # or "START" or "NONE"
+)
+```
+
+## Error Handling
+
+```python
+from catsu.exceptions import CatsuError
+
+try:
+    response = client.embed(
+        model="voyage-3",
+        input="Text"
+    )
+except CatsuError as e:
+    print(f"Error: {e}")
+```
+
+See [Error Handling](/error-handling) for complete exception reference.
+
+## Next Steps
+
+- [aembed() Method](/client-api/aembed-method) - Async version for better performance
+- [Providers](/providers) - Learn about provider-specific parameters
+- [Common Parameters](/parameters) - Understanding input_type, dimensions, etc.

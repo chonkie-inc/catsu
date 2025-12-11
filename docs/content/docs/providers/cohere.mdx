@@ -1,0 +1,176 @@
+---
+title: Cohere
+description: Cohere embedding provider documentation
+---
+
+# Cohere
+
+Cohere provides multilingual embedding models with truncation support.
+
+## Overview
+
+- **Models**: 5 models (embed-v4.0, english v3, multilingual v3, light variants)
+- **Key Features**: Multilingual support, configurable truncation, input type mapping
+- **API Docs**: [Cohere Embeddings](https://docs.cohere.com/docs/embeddings)
+
+## Environment Variable
+
+```bash
+export COHERE_API_KEY="your-cohere-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed (called `inputs` in Cohere API) |
+| `input_type` | str | No | `"query"` or `"document"` (mapped to `search_query`/`search_document`) |
+| `truncate` | str | No | `"NONE"`, `"START"`, or `"END"` |
+| `api_key` | str | No | Override API key for this request |
+
+**Note**: Cohere **does not support** `dimensions` parameter.
+
+## Examples
+
+### Basic Usage
+
+```python
+import catsu
+
+client = catsu.Client()
+
+response = client.embed(
+    model="embed-v4.0",
+    input="Hello, Cohere!"
+)
+
+print(f"Dimensions: {response.dimensions}")  # 1536
+```
+
+### With input_type
+
+Catsu automatically maps `input_type` to Cohere's `search_query`/`search_document`:
+
+```python
+# For search queries
+query_response = client.embed(
+    model="embed-v4.0",
+    input="What is natural language processing?",
+    input_type="query"  # → search_query in Cohere API
+)
+
+# For documents
+doc_response = client.embed(
+    model="embed-v4.0",
+    input="NLP is a field of AI that focuses on...",
+    input_type="document"  # → search_document in Cohere API
+)
+```
+
+### With Truncation
+
+Control how long texts are truncated:
+
+```python
+# Truncate from the end (keep beginning)
+response = client.embed(
+    model="embed-v4.0",
+    input="Very long text that exceeds the token limit...",
+    truncate="END"
+)
+
+# Truncate from the start (keep ending)
+response = client.embed(
+    model="embed-v4.0",
+    input="Long text...",
+    truncate="START"
+)
+
+# Don't truncate (raises error if too long)
+response = client.embed(
+    model="embed-v4.0",
+    input="Text",
+    truncate="NONE"
+)
+```
+
+### Multilingual Models
+
+```python
+# English-only model
+english_response = client.embed(
+    model="embed-english-v3.0",
+    input="English text only"
+)
+
+# Multilingual model
+multilingual_response = client.embed(
+    model="embed-multilingual-v3.0",
+    input="Texto en español"  # Spanish text
+)
+
+# Light multilingual model (faster, smaller)
+light_response = client.embed(
+    model="embed-multilingual-light-v3.0",
+    input="Texte en français"  # French text
+)
+```
+
+### Batch Processing
+
+```python
+texts = ["Document 1", "Document 2", "Document 3"]
+
+response = client.embed(
+    model="embed-v4.0",
+    input=texts,
+    input_type="document"
+)
+
+print(f"Embedded {len(response.embeddings)} documents")
+```
+
+### Async Usage
+
+```python
+import asyncio
+
+async def main():
+    client = catsu.Client()
+
+    response = await client.aembed(
+        model="embed-v4.0",
+        input="Async Cohere embedding",
+        input_type="query"
+    )
+
+    print(response.embeddings)
+
+asyncio.run(main())
+```
+
+## Model Variants
+
+Cohere offers several embedding models:
+
+- **embed-v4.0** - Latest version, 1536 dimensions
+- **embed-english-v3.0** - English-only, 1024 dimensions
+- **embed-english-light-v3.0** - Lightweight English, 384 dimensions
+- **embed-multilingual-v3.0** - Multilingual, 1024 dimensions
+- **embed-multilingual-light-v3.0** - Lightweight multilingual, 384 dimensions
+
+For pricing and benchmarks, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- ⚠️ **`dimensions` parameter is NOT supported** - Cohere models have fixed dimensions
+- ✅ `input_type` is mapped to Cohere's `search_query`/`search_document`
+- Truncation is configurable (NONE/START/END)
+- Float embeddings only (no int8 or binary quantization yet)
+- Maximum 96 texts per batch
+
+## Next Steps
+
+- [Common Parameters: input_type](/parameters/input-type) - Learn about query vs document
+- [Best Practices: Batch Processing](/best-practices/batch-processing) - Optimize batch sizes

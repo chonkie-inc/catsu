@@ -1,0 +1,121 @@
+---
+title: Mixed Bread
+description: Mixed Bread embedding provider documentation
+---
+
+# Mixed Bread
+
+Mixed Bread (mxbai) provides multilingual embedding models with comprehensive quantization support.
+
+## Overview
+
+- **Models**: 4 models (large variants, German-specific models)
+- **Key Features**: Multilingual, quantization (float/int8/binary), custom prompts
+- **API Docs**: [Mixed Bread Documentation](https://www.mixedbread.ai/docs)
+
+## Environment Variable
+
+```bash
+export MIXEDBREAD_API_KEY="your-mixedbread-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `input_type` | str | No | `"query"` or `"document"` (prompt injection) |
+| `dimensions` | int | No | Output dimensions (Matryoshka) |
+| `normalized` | bool | No | L2 normalize embeddings (default: True) |
+| `encoding_format` | str | No | `"float"`, `"binary"`, `"int8"`, etc. |
+| `prompt` | str | No | Custom prompt for embedding |
+| `api_key` | str | No | Override API key |
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="Hello, Mixed Bread!"
+)
+```
+
+### With input_type
+
+```python
+# Query embeddings
+query_response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="What is NLP?",
+    input_type="query"
+)
+
+# Document embeddings
+doc_response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="NLP stands for...",
+    input_type="document"
+)
+```
+
+### With Quantization
+
+```python
+# Int8 quantization
+int8_response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="Text",
+    encoding_format="int8"
+)
+
+# Binary quantization
+binary_response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="Text",
+    encoding_format="binary"
+)
+```
+
+### German-Specific Models
+
+```python
+# German language model
+response = client.embed(
+    model="deepset-mxbai-embed-de-large-v1",
+    input="Hallo, wie geht es dir?"
+)
+```
+
+### With Custom Dimensions (Matryoshka)
+
+```python
+response = client.embed(
+    model="mxbai-embed-large-v1",
+    input="Sample text",
+    dimensions=512
+)
+```
+
+## Model Variants
+
+- **mxbai-embed-large-v1** - General-purpose, 1024d
+- **mxbai-embed-2d-large-v1** - 2D variant, 768d
+- **deepset-mxbai-embed-de-large-v1** - German-specific, 1024d
+- **deepset-mxbai-embed-de-large-en-v1** - German-English bilingual
+
+For pricing, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- ✅ Comprehensive quantization support (float, int8, binary, and more)
+- ✅ Matryoshka embeddings
+- input_type used for prompt injection
+- Normalized embeddings by default
+- German language support
+
+## Next Steps
+
+- [Common Parameters](/parameters) - Learn about all supported parameters

@@ -1,0 +1,137 @@
+---
+title: Providers
+description: Overview of all 11 supported embedding providers
+---
+
+# Embedding Providers
+
+Catsu supports **11 major embedding providers** with a unified, consistent API.
+
+## Supported Providers
+
+| Provider | Models | Key Features | Environment Variable |
+|----------|--------|--------------|---------------------|
+| [Voyage AI](/providers/voyageai) | 11 | Domain-specific, multimodal, quantization | `VOYAGE_API_KEY` |
+| [OpenAI](/providers/openai) | 3 | Industry standard, Matryoshka | `OPENAI_API_KEY` |
+| [Cohere](/providers/cohere) | 5 | Multilingual, truncation | `COHERE_API_KEY` |
+| [Gemini](/providers/gemini) | 1 | Long context, Matryoshka | `GEMINI_API_KEY` |
+| [Jina AI](/providers/jinaai) | 6 | Multimodal, code-specific, long context | `JINA_API_KEY` |
+| [Mistral AI](/providers/mistral) | 2 | Code-optimized, quantization | `MISTRAL_API_KEY` |
+| [Nomic](/providers/nomic) | 2 | Long text handling, Matryoshka | `NOMIC_API_KEY` |
+| [Cloudflare](/providers/cloudflare) | 7 | Edge inference, BGE models | `CLOUDFLARE_API_KEY` |
+| [DeepInfra](/providers/deepinfra) | 16 | Open-source models, Qwen3 | `DEEPINFRA_API_KEY` |
+| [Mixed Bread](/providers/mixedbread) | 4 | Multilingual, quantization | `MIXEDBREAD_API_KEY` |
+| [Together AI](/providers/togetherai) | 7 | Open-source, long context | `TOGETHERAI_API_KEY` |
+
+For detailed model information including pricing and benchmarks, visit the [Models Catalog](https://catsu.dev).
+
+## Feature Comparison
+
+### Input Type Support
+
+Providers that support `input_type="query"` or `input_type="document"`:
+
+- ✅ Voyage AI, Cohere, Gemini, Jina AI, Mistral AI, Nomic, Mixed Bread
+- ❌ OpenAI, Cloudflare, DeepInfra, Together AI (parameter ignored)
+
+### Matryoshka Embeddings (dimensions)
+
+Providers that support custom embedding dimensions:
+
+- ✅ Voyage AI, Gemini, Jina AI, Mistral AI (select models), Nomic, OpenAI (text-embedding-3), DeepInfra (Qwen3), Mixed Bread
+- ❌ Cohere, Cloudflare, Together AI
+
+### Quantization Support
+
+Providers that support binary or int8 embeddings:
+
+- ✅ Voyage AI (voyage-3.5), Mistral AI (codestral-embed-2505), Mixed Bread
+- Partial: Jina AI, OpenAI
+- ❌ Most other providers (float only)
+
+## Quick Examples
+
+### Using Different Providers
+
+```python
+import catsu
+
+client = catsu.Client()
+
+# Voyage AI
+voyage_response = client.embed(model="voyage-3", input="Text")
+
+# OpenAI
+openai_response = client.embed(model="text-embedding-3-small", input="Text")
+
+# Cohere
+cohere_response = client.embed(model="embed-v4.0", input="Text")
+```
+
+### Provider-Specific Features
+
+```python
+# Voyage AI with domain-specific model
+finance = client.embed(model="voyage-finance-2", input="Financial text")
+
+# Jina AI with multimodal
+multimodal = client.embed(model="jina-embeddings-v4", input="Text with image support")
+
+# Gemini with long context (2048 tokens)
+long_text = client.embed(model="gemini-embedding-001", input="Very long document...")
+
+# Mistral with code optimization
+code = client.embed(model="codestral-embed-2505", input="def hello(): pass")
+```
+
+## Choosing a Provider
+
+Consider these factors:
+
+- **Use case**: General retrieval, code search, multilingual, etc.
+- **Features needed**: input_type, dimensions, quantization
+- **Cost**: varies significantly by provider
+- **Performance**: latency and throughput requirements
+- **Context length**: maximum input tokens
+
+See [Best Practices: Model Selection](/best-practices/model-selection) for detailed guidance.
+
+## Provider Links
+
+Explore detailed documentation for each provider:
+
+<Cards>
+  <Card title="Voyage AI" href="/providers/voyageai">
+    11 models including domain-specific variants
+  </Card>
+  <Card title="OpenAI" href="/providers/openai">
+    Industry-standard embedding models
+  </Card>
+  <Card title="Cohere" href="/providers/cohere">
+    Multilingual embedding models
+  </Card>
+  <Card title="Gemini" href="/providers/gemini">
+    Google's embedding model with long context
+  </Card>
+  <Card title="Jina AI" href="/providers/jinaai">
+    Multimodal and code-specific models
+  </Card>
+  <Card title="Mistral AI" href="/providers/mistral">
+    Code-optimized with quantization
+  </Card>
+  <Card title="Nomic" href="/providers/nomic">
+    Matryoshka embeddings with long text support
+  </Card>
+  <Card title="Cloudflare" href="/providers/cloudflare">
+    Edge-based inference with Workers AI
+  </Card>
+  <Card title="DeepInfra" href="/providers/deepinfra">
+    Open-source models including Qwen3
+  </Card>
+  <Card title="Mixed Bread" href="/providers/mixedbread">
+    Multilingual with quantization support
+  </Card>
+  <Card title="Together AI" href="/providers/togetherai">
+    Open-source models with long context
+  </Card>
+</Cards>

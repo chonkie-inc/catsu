@@ -1,0 +1,103 @@
+---
+title: Mistral AI
+description: Mistral AI embedding provider documentation
+---
+
+# Mistral AI
+
+Mistral AI offers code-optimized embedding models with quantization support.
+
+## Overview
+
+- **Models**: 2 models (codestral-embed-2505, mistral-embed)
+- **Key Features**: Code optimization, binary quantization, batch processing up to 512 texts
+- **API Docs**: [Mistral Embeddings](https://docs.mistral.ai/capabilities/embeddings/)
+
+## Environment Variable
+
+```bash
+export MISTRAL_API_KEY="your-mistral-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed (up to 512 texts) |
+| `input_type` | str | No | `"query"` or `"document"` |
+| `encoding_format` | str | No | e.g., `"float"`, `"int8"` |
+| `dimensions` | int | No | Custom dimensions (codestral-embed-2505 only) |
+| `api_key` | str | No | Override API key |
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="mistral-embed",
+    input="Hello, Mistral!"
+)
+```
+
+### Code Embeddings
+
+```python
+response = client.embed(
+    model="codestral-embed-2505",
+    input="def fibonacci(n): return n if n <= 1 else fibonacci(n-1) + fibonacci(n-2)"
+)
+```
+
+### With Dimensions (codestral-embed-2505)
+
+```python
+response = client.embed(
+    model="codestral-embed-2505",
+    input="Code snippet",
+    dimensions=512
+)
+```
+
+### With Quantization
+
+```python
+response = client.embed(
+    model="codestral-embed-2505",
+    input="Code",
+    encoding_format="int8"  # or "binary"
+)
+```
+
+### Large Batch (up to 512 texts)
+
+```python
+# Mistral supports large batches
+large_batch = [f"Document {i}" for i in range(500)]
+
+response = client.embed(
+    model="mistral-embed",
+    input=large_batch
+)
+
+print(f"Processed {len(response.embeddings)} texts")
+```
+
+## Model Variants
+
+- **codestral-embed-2505** - Code-optimized, 1536d, quantization support
+- **mistral-embed** - General-purpose, 1024d
+
+For pricing, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- ✅ codestral-embed-2505 supports dimensions and quantization (float, int8, binary)
+- ✅ Large batch support (up to 512 texts per request)
+- Code-optimized models for software development
+- mistral-embed has fixed 1024 dimensions
+
+## Next Steps
+
+- [Common Parameters](/parameters) - Learn about dimensions and input_type

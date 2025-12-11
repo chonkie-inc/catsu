@@ -1,0 +1,64 @@
+---
+title: Welcome to Catsu
+description: A unified Python client for embedding APIs
+---
+
+<div className="flex justify-center my-8">
+  <img src="/catsu-logo.png" alt="Catsu Logo" className="h-24 dark:invert" />
+</div>
+
+# Catsu Documentation
+
+**A unified Python client for embedding APIs**
+
+Catsu is a unified Python client for accessing multiple embedding providers through a single, consistent API. It supports **11 major embedding providers** with over 50 models, providing:
+
+- **Unified Interface**: Single API for all providers
+- **Automatic Retry Logic**: Built-in exponential backoff
+- **Cost Tracking**: Automatic usage and cost calculation
+- **Local Tokenization**: Count tokens without API calls
+- **Type Safety**: Full type hints and validation
+- **Async Support**: Both sync and async methods
+
+## Quick Example
+
+```python
+import catsu
+
+# Initialize the client
+client = catsu.Client()
+
+# Generate embeddings (auto-detects provider from model name)
+response = client.embed(
+    model="voyage-3",
+    input="Hello, embeddings!"
+)
+
+# Access your results
+print(f"Dimensions: {response.dimensions}")
+print(f"Tokens used: {response.usage.tokens}")
+print(f"Cost: ${response.usage.cost:.6f}")
+```
+
+## Get Started
+
+<Cards>
+  <Card title="Installation" href="/installation">
+    Install Catsu and configure API keys
+  </Card>
+  <Card title="Quick Start" href="/quick-start">
+    Generate your first embeddings in minutes
+  </Card>
+  <Card title="Client API" href="/client-api">
+    Learn about the Client class and methods
+  </Card>
+  <Card title="Providers" href="/providers">
+    Explore all 11 supported providers
+  </Card>
+</Cards>
+
+## Why Catsu?
+
+The world of embedding API clients is fragmented. Catsu provides a clean, consistent interface across all major providers while handling the complexity of retries, error handling, and cost tracking for you.
+
+Ready to get started? Head to the [Installation](/installation) page!

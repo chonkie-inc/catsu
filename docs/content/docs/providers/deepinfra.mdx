@@ -1,0 +1,90 @@
+---
+title: DeepInfra
+description: DeepInfra embedding provider documentation
+---
+
+# DeepInfra
+
+DeepInfra provides access to open-source embedding models with OpenAI-compatible API.
+
+## Overview
+
+- **Models**: 16 models (Qwen3, BGE, E5, GTE, and more)
+- **Key Features**: Open-source models, Qwen3 Matryoshka support, competitive pricing
+- **API Docs**: [DeepInfra Embeddings](https://deepinfra.com/docs/embeddings)
+
+## Environment Variable
+
+```bash
+export DEEPINFRA_API_KEY="your-deepinfra-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `dimensions` | int | No | Output dimensions (Qwen3 models only, 32-8192) |
+| `api_key` | str | No | Override API key |
+
+**Note**: DeepInfra **does not support** `input_type` parameter.
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="Qwen/Qwen3-Embedding-8B",
+    input="Hello, DeepInfra!"
+)
+```
+
+### With Dimensions (Qwen3 models)
+
+```python
+# Qwen3 models support Matryoshka (32-8192)
+response = client.embed(
+    model="Qwen/Qwen3-Embedding-8B",
+    input="Sample text",
+    dimensions=1024  # vs default 4096
+)
+
+print(f"Dimensions: {response.dimensions}")  # 1024
+```
+
+### Different Model Sizes
+
+```python
+# Large model (8B parameters, 4096 dimensions)
+large_response = client.embed(
+    model="Qwen/Qwen3-Embedding-8B",
+    input="Text"
+)
+
+# Medium model (4B parameters, 2560 dimensions)
+medium_response = client.embed(
+    model="Qwen/Qwen3-Embedding-4B",
+    input="Text"
+)
+
+# Small model (0.6B parameters, 1024 dimensions)
+small_response = client.embed(
+    model="Qwen/Qwen3-Embedding-0.6B",
+    input="Text"
+)
+```
+
+## Special Notes
+
+- ⚠️ **`input_type` is NOT supported**
+- ✅ Matryoshka dimensions (32-8192) for Qwen3 models only
+- OpenAI-compatible endpoint
+- Open-source models (BAAI, Qwen, UAE, etc.)
+- Model names use provider prefix (e.g., `Qwen/`, `BAAI/`)
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - View all DeepInfra models
+- [Common Parameters: dimensions](/parameters/dimensions) - Matryoshka embeddings

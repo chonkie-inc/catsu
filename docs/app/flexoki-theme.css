@@ -1,0 +1,132 @@
+/* Flexoki Color Theme for Fumadocs */
+/* Based on https://stephango.com/flexoki */
+
+:root {
+  /* Flexoki Base Colors - Light Theme */
+  --flexoki-paper: #FFFCF0;
+  --flexoki-base-50: #F2F0E5;
+  --flexoki-base-100: #E6E4D9;
+  --flexoki-base-150: #DAD8CE;
+  --flexoki-base-200: #CECDC3;
+  --flexoki-base-300: #B7B5AC;
+  --flexoki-base-400: #9F9D96;
+  --flexoki-base-500: #878580;
+  --flexoki-base-600: #6F6E69;
+  --flexoki-base-700: #575653;
+  --flexoki-base-800: #403E3C;
+  --flexoki-base-850: #343331;
+  --flexoki-base-900: #282726;
+  --flexoki-base-950: #1C1B1A;
+  --flexoki-black: #100F0F;
+
+  /* Flexoki Accent Colors - Light Theme (600 series) */
+  --flexoki-red: #AF3029;
+  --flexoki-orange: #BC5215;
+  --flexoki-yellow: #AD8301;
+  --flexoki-green: #66800B;
+  --flexoki-cyan: #24837B;
+  --flexoki-blue: #205EA6;
+  --flexoki-purple: #5E409D;
+  --flexoki-magenta: #A02F6F;
+
+  /* Fumadocs CSS Variable Mapping */
+  --fd-background: var(--flexoki-paper);
+  --fd-foreground: var(--flexoki-base-950);
+
+  --fd-card: var(--flexoki-base-50);
+  --fd-card-foreground: var(--flexoki-base-900);
+
+  --fd-popover: var(--flexoki-base-50);
+  --fd-popover-foreground: var(--flexoki-base-950);
+
+  --fd-primary: var(--flexoki-blue);
+  --fd-primary-foreground: var(--flexoki-paper);
+
+  --fd-secondary: var(--flexoki-base-100);
+  --fd-secondary-foreground: var(--flexoki-base-900);
+
+  --fd-muted: var(--flexoki-base-150);
+  --fd-muted-foreground: var(--flexoki-base-600);
+
+  --fd-accent: var(--flexoki-cyan);
+  --fd-accent-foreground: var(--flexoki-paper);
+
+  --fd-destructive: var(--flexoki-red);
+  --fd-destructive-foreground: var(--flexoki-paper);
+
+  --fd-border: var(--flexoki-base-200);
+  --fd-input: var(--flexoki-base-200);
+  --fd-ring: var(--flexoki-blue);
+
+  --fd-radius: 0.5rem;
+}
+
+.dark {
+  /* Flexoki Accent Colors - Dark Theme (400 series) */
+  --flexoki-red-dark: #D14D41;
+  --flexoki-orange-dark: #DA702C;
+  --flexoki-yellow-dark: #D0A215;
+  --flexoki-green-dark: #879A39;
+  --flexoki-cyan-dark: #3AA99F;
+  --flexoki-blue-dark: #4385BE;
+  --flexoki-purple-dark: #8B7EC8;
+  --flexoki-magenta-dark: #CE5D97;
+
+  /* Fumadocs CSS Variable Mapping - Dark Theme */
+  --fd-background: var(--flexoki-black);
+  --fd-foreground: var(--flexoki-base-100);
+
+  --fd-card: var(--flexoki-base-950);
+  --fd-card-foreground: var(--flexoki-base-100);
+
+  --fd-popover: var(--flexoki-base-950);
+  --fd-popover-foreground: var(--flexoki-base-100);
+
+  --fd-primary: var(--flexoki-blue-dark);
+  --fd-primary-foreground: var(--flexoki-black);
+
+  --fd-secondary: var(--flexoki-base-900);
+  --fd-secondary-foreground: var(--flexoki-base-100);
+
+  --fd-muted: var(--flexoki-base-900);
+  --fd-muted-foreground: var(--flexoki-base-400);
+
+  --fd-accent: var(--flexoki-cyan-dark);
+  --fd-accent-foreground: var(--flexoki-black);
+
+  --fd-destructive: var(--flexoki-red-dark);
+  --fd-destructive-foreground: var(--flexoki-base-100);
+
+  --fd-border: var(--flexoki-base-850);
+  --fd-input: var(--flexoki-base-850);
+  --fd-ring: var(--flexoki-blue-dark);
+}
+
+/* Code Block Syntax Highlighting - Flexoki Colors */
+.dark code[class*="language-"],
+.dark pre[class*="language-"] {
+  --shiki-color-text: var(--flexoki-base-100);
+  --shiki-color-background: var(--flexoki-base-950);
+  --shiki-token-constant: var(--flexoki-cyan-dark);
+  --shiki-token-string: var(--flexoki-green-dark);
+  --shiki-token-comment: var(--flexoki-base-500);
+  --shiki-token-keyword: var(--flexoki-purple-dark);
+  --shiki-token-parameter: var(--flexoki-orange-dark);
+  --shiki-token-function: var(--flexoki-blue-dark);
+  --shiki-token-string-expression: var(--flexoki-yellow-dark);
+  --shiki-token-punctuation: var(--flexoki-base-300);
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+  --shiki-color-text: var(--flexoki-base-900);
+  --shiki-color-background: var(--flexoki-base-50);
+  --shiki-token-constant: var(--flexoki-cyan);
+  --shiki-token-string: var(--flexoki-green);
+  --shiki-token-comment: var(--flexoki-base-500);
+  --shiki-token-keyword: var(--flexoki-purple);
+  --shiki-token-parameter: var(--flexoki-orange);
+  --shiki-token-function: var(--flexoki-blue);
+  --shiki-token-string-expression: var(--flexoki-yellow);
+  --shiki-token-punctuation: var(--flexoki-base-600);
+}

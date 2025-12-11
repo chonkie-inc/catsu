@@ -1,0 +1,197 @@
+---
+title: api_key Parameter
+description: Override API keys per request
+---
+
+# api_key Parameter
+
+The `api_key` parameter allows you to override the default API key for individual requests.
+
+## Overview
+
+Catsu resolves API keys in this order (highest to lowest priority):
+
+1. **Request-level `api_key` parameter**
+2. **Client initialization `api_keys` dict**
+3. **Environment variables**
+
+## Basic Usage
+
+### Per-Request Override
+
+```python
+import catsu
+
+client = catsu.Client()
+
+# Override API key for this specific request
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="custom-voyage-key"
+)
+```
+
+### Multiple Keys Per Provider
+
+```python
+# Use different API keys for different requests
+response1 = client.embed(
+    model="voyage-3",
+    input="Text for user A",
+    api_key="user-a-voyage-key"
+)
+
+response2 = client.embed(
+    model="voyage-3",
+    input="Text for user B",
+    api_key="user-b-voyage-key"
+)
+```
+
+## Use Cases
+
+### Multi-Tenant Applications
+
+```python
+def embed_for_user(user_id: str, text: str):
+    # Fetch user's API key from database
+    user_api_key = get_user_api_key(user_id)
+
+    client = catsu.Client()
+    return client.embed(
+        model="voyage-3",
+        input=text,
+        api_key=user_api_key  # User's own key
+    )
+```
+
+### API Key Rotation
+
+```python
+api_keys = ["key1", "key2", "key3"]
+current_key_index = 0
+
+def embed_with_rotation(text: str):
+    global current_key_index
+
+    try:
+        response = client.embed(
+            model="voyage-3",
+            input=text,
+            api_key=api_keys[current_key_index]
+        )
+        return response
+    except RateLimitError:
+        # Rotate to next key
+        current_key_index = (current_key_index + 1) % len(api_keys)
+        return embed_with_rotation(text)
+```
+
+### Testing with Different Keys
+
+```python
+# Production key
+prod_client = catsu.Client()
+
+# Test with development key
+test_response = prod_client.embed(
+    model="voyage-3",
+    input="Test embedding",
+    api_key="dev-api-key"
+)
+```
+
+## Priority Examples
+
+```python
+import os
+
+# Environment variable
+os.environ["VOYAGE_API_KEY"] = "env-key"
+
+# Client-level keys
+client = catsu.Client(
+    api_keys={"voyageai": "client-key"}
+)
+
+# Request uses "request-key" (highest priority)
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="request-key"
+)
+
+# Request uses "client-key" (no request-level override)
+response = client.embed(
+    model="voyage-3",
+    input="Text"
+)
+```
+
+## Security Considerations
+
+### Don't Hardcode Keys
+
+```python
+# ❌ Bad: Hardcoded keys
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key="sk-1234567890"  # Never do this!
+)
+
+# ✅ Good: Load from environment or secure storage
+import os
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key=os.getenv("VOYAGE_API_KEY")
+)
+```
+
+### Secure Storage
+
+```python
+# Load keys from secure vault/secrets manager
+from your_secrets_manager import get_secret
+
+api_key = get_secret("voyage_api_key")
+
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    api_key=api_key
+)
+```
+
+## Per-Provider Keys
+
+API key parameter works for all providers:
+
+```python
+# Voyage AI
+client.embed(model="voyage-3", input="Text", api_key="voyage-key")
+
+# OpenAI
+client.embed(model="text-embedding-3-small", input="Text", api_key="openai-key")
+
+# Cohere
+client.embed(model="embed-v4.0", input="Text", api_key="cohere-key")
+
+# Works for all 11 providers
+```
+
+## Best Practices
+
+- Store keys in environment variables or secrets managers
+- Use per-request overrides for multi-tenant applications
+- Never commit API keys to version control
+- Rotate keys regularly
+- Use different keys for development and production
+- Monitor usage per key
+
+## Next Steps
+
+- [Client API: Initialization](/client-api/initialization) - Configure client-level API keys
+- [Error Handling](/error-handling) - Handle AuthenticationError exceptions

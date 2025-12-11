@@ -1,0 +1,118 @@
+---
+title: Together AI
+description: Together AI embedding provider documentation
+---
+
+# Together AI
+
+Together AI provides access to open-source embedding models via OpenAI-compatible API.
+
+## Overview
+
+- **Models**: 7 models (BGE, UAE, M2-BERT, GTE)
+- **Key Features**: Open-source models, long context (up to 32K tokens), competitive pricing
+- **API Docs**: [Together AI Documentation](https://docs.together.ai/)
+
+## Environment Variable
+
+```bash
+export TOGETHERAI_API_KEY="your-together-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `api_key` | str | No | Override API key |
+
+**Note**: Together AI **does not support** `input_type` or `dimensions` parameters.
+
+## Examples
+
+### Basic Usage
+
+```python
+response = client.embed(
+    model="BAAI/bge-base-en-v1.5",
+    input="Hello, Together AI!"
+)
+```
+
+### Different Models
+
+```python
+# BGE Large
+large_response = client.embed(
+    model="BAAI/bge-large-en-v1.5",
+    input="Text for large model"
+)
+
+# M3 (multilingual)
+m3_response = client.embed(
+    model="BAAI/bge-m3",
+    input="Multilingual text"
+)
+
+# UAE Large
+uae_response = client.embed(
+    model="WhereIsAI/UAE-Large-V1",
+    input="Text"
+)
+```
+
+### Long Context
+
+```python
+# Some models support up to 32K tokens
+long_text = "..." * 10000
+
+response = client.embed(
+    model="BAAI/bge-large-en-v1.5",
+    input=long_text
+)
+```
+
+### Async Usage
+
+```python
+import asyncio
+
+async def main():
+    client = catsu.Client()
+
+    response = await client.aembed(
+        model="BAAI/bge-base-en-v1.5",
+        input="Async Together AI embedding"
+    )
+
+    print(response.embeddings)
+
+asyncio.run(main())
+```
+
+## Model Variants
+
+Together AI hosts several open-source models:
+
+- **BAAI/bge-base-en-v1.5** - Base BGE model, 768d
+- **BAAI/bge-large-en-v1.5** - Large BGE model, 1024d
+- **BAAI/bge-m3** - Multilingual BGE, 1024d
+- **WhereIsAI/UAE-Large-V1** - UAE model, 1024d
+- **togethercomputer/m2-bert-80M-*-retrieval** - M2-BERT variants
+
+For complete list and pricing, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- ⚠️ **`input_type` and `dimensions` are NOT supported**
+- OpenAI-compatible endpoint
+- Open-source models (BAAI, WhereIsAI, togethercomputer)
+- Long context support (up to 32K tokens for some models)
+- Model names use provider/organization prefixes
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - View all Together AI models
+- [Providers](/providers) - Explore other providers with more features

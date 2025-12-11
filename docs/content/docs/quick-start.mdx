@@ -1,0 +1,159 @@
+---
+title: Quick Start
+description: Generate your first embeddings with Catsu
+---
+
+# Quick Start
+
+Get started with Catsu in just a few steps!
+
+## Step 1: Import and Initialize
+
+```python
+import catsu
+
+# Initialize the client (picks up API keys from environment)
+client = catsu.Client()
+```
+
+## Step 2: Generate Embeddings
+
+```python
+# Generate embeddings (auto-detects provider from model name)
+response = client.embed(
+    model="voyage-3",
+    input="Hello, world!"
+)
+```
+
+## Step 3: Access Results
+
+```python
+# Access embeddings
+print(response.embeddings)      # [[0.1, 0.2, 0.3, ...]]
+print(response.dimensions)      # 1024
+
+# Check usage and cost
+print(response.usage.tokens)    # 2
+print(response.usage.cost)      # 0.0000002
+print(response.usage.latency)   # 0.123 (seconds)
+```
+
+## Multiple Ways to Specify Provider
+
+### Method 1: Auto-detection (Recommended)
+
+Catsu automatically detects the provider from the model name:
+
+```python
+response = client.embed(model="voyage-3", input="Hello!")
+```
+
+### Method 2: Explicit Provider Parameter
+
+```python
+response = client.embed(
+    provider="voyageai",
+    model="voyage-3",
+    input="Hello!"
+)
+```
+
+### Method 3: Provider Prefix
+
+```python
+response = client.embed(model="voyageai:voyage-3", input="Hello!")
+```
+
+## Working with Multiple Inputs
+
+```python
+# Batch processing (more efficient)
+response = client.embed(
+    model="voyage-3",
+    input=["Text 1", "Text 2", "Text 3"]
+)
+
+# Results include all embeddings
+print(len(response.embeddings))  # 3
+print(response.usage.tokens)      # Total tokens for all inputs
+```
+
+## Async Usage
+
+For better performance with multiple requests:
+
+```python
+import asyncio
+import catsu
+
+async def main():
+    client = catsu.Client()
+
+    # Single async request
+    response = await client.aembed(
+        model="voyage-3",
+        input="Hello, async world!"
+    )
+
+    # Parallel requests
+    responses = await asyncio.gather(
+        client.aembed(model="voyage-3", input="Query 1"),
+        client.aembed(model="voyage-3", input="Query 2"),
+        client.aembed(model="voyage-3", input="Query 3"),
+    )
+
+    print(f"Processed {len(responses)} requests in parallel")
+
+asyncio.run(main())
+```
+
+## Using Context Managers
+
+Context managers ensure proper cleanup:
+
+```python
+# Sync context manager
+with catsu.Client() as client:
+    response = client.embed(model="voyage-3", input="Hello!")
+    print(response.embeddings)
+
+# Async context manager
+async with catsu.Client() as client:
+    response = await client.aembed(model="voyage-3", input="Hello!")
+    print(response.embeddings)
+```
+
+## Provider-Specific Parameters
+
+Different providers support different parameters:
+
+```python
+# Voyage AI with input_type
+response = client.embed(
+    model="voyage-3",
+    input="What is machine learning?",
+    input_type="query"  # or "document"
+)
+
+# Gemini with dimensions (Matryoshka)
+response = client.embed(
+    model="gemini-embedding-001",
+    input="Sample text",
+    dimensions=512  # 128-3072 supported
+)
+
+# Nomic with task_type
+response = client.embed(
+    model="nomic-embed-text-v1.5",
+    input="Cluster this text",
+    task_type="clustering"
+)
+```
+
+## Next Steps
+
+- [Client API](/client-api) - Learn about all client methods and configuration
+- [Providers](/providers) - Explore all 11 supported providers and their parameters
+- [Common Parameters](/parameters) - Understand input_type, dimensions, and more
+- [Best Practices](/best-practices) - Optimize your usage with expert tips

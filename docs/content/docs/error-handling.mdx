@@ -1,0 +1,192 @@
+---
+title: Error Handling
+description: Handle exceptions and errors in Catsu
+---
+
+# Error Handling
+
+Catsu provides structured exception handling with a clear hierarchy of error types.
+
+## Exception Hierarchy
+
+All Catsu exceptions inherit from `CatsuError`:
+
+```python
+from catsu.exceptions import (
+    CatsuError,              # Base exception
+    AuthenticationError,     # Invalid API key
+    RateLimitError,          # Rate limit exceeded
+    InvalidInputError,       # Invalid parameters
+    ModelNotFoundError,      # Unknown model
+    UnsupportedFeatureError, # Feature not supported by provider
+    ProviderError,           # Provider-specific error
+    NetworkError,            # Connection issues
+    TimeoutError,            # Request timeout
+)
+```
+
+## Basic Error Handling
+
+```python
+import catsu
+from catsu.exceptions import CatsuError, AuthenticationError
+
+client = catsu.Client()
+
+try:
+    response = client.embed(
+        model="voyage-3",
+        input="Hello, world!"
+    )
+except AuthenticationError as e:
+    print(f"Invalid API key: {e}")
+except CatsuError as e:
+    print(f"Catsu error: {e}")
+```
+
+## Handling Rate Limits
+
+Rate limit errors include retry information:
+
+```python
+from catsu.exceptions import RateLimitError
+import time
+
+try:
+    response = client.embed(model="voyage-3", input="Text")
+except RateLimitError as e:
+    print(f"Rate limited. Retry after: {e.retry_after} seconds")
+    time.sleep(e.retry_after)
+    # Retry the request
+    response = client.embed(model="voyage-3", input="Text")
+```
+
+Catsu automatically retries rate-limited requests with exponential backoff (configurable via `max_retries`).
+
+## Handling Invalid Input
+
+```python
+from catsu.exceptions import InvalidInputError
+
+try:
+    response = client.embed(
+        model="unknown-model",  # Invalid model
+        input=""  # Empty input
+    )
+except InvalidInputError as e:
+    print(f"Invalid input: {e}")
+    print(f"Details: {e.details}")  # Additional error context
+```
+
+## Handling Unsupported Features
+
+Some providers don't support certain features:
+
+```python
+from catsu.exceptions import UnsupportedFeatureError
+
+try:
+    response = client.embed(
+        model="text-embedding-3-small",  # OpenAI
+        input="Text",
+        input_type="query"  # OpenAI ignores this parameter
+    )
+except UnsupportedFeatureError as e:
+    print(f"Feature not supported: {e}")
+```
+
+Note: Catsu will warn you but not raise an error for ignored parameters.
+
+## Handling Network Errors
+
+```python
+from catsu.exceptions import NetworkError, TimeoutError
+
+try:
+    response = client.embed(model="voyage-3", input="Text")
+except TimeoutError as e:
+    print(f"Request timed out after {e.timeout} seconds")
+except NetworkError as e:
+    print(f"Network error: {e}")
+```
+
+## Automatic Retry Logic
+
+Catsu automatically retries failed requests with exponential backoff:
+
+```python
+# Configure retry behavior
+client = catsu.Client(
+    max_retries=5,   # Maximum retry attempts (default: 3)
+    timeout=60,      # Request timeout in seconds (default: 30)
+)
+```
+
+Retryable errors:
+- Rate limit errors (with `retry_after` header)
+- Network timeouts
+- Temporary server errors (5xx)
+
+Non-retryable errors:
+- Authentication errors (invalid API key)
+- Invalid input errors (malformed parameters)
+- Model not found errors
+
+## Complete Example
+
+```python
+import catsu
+from catsu.exceptions import (
+    AuthenticationError,
+    RateLimitError,
+    InvalidInputError,
+    CatsuError,
+)
+
+def safe_embed(text: str, model: str = "voyage-3"):
+    client = catsu.Client(max_retries=3, timeout=30)
+
+    try:
+        response = client.embed(model=model, input=text)
+        return response.embeddings[0]
+
+    except AuthenticationError:
+        print("ERROR: Invalid API key. Check your environment variables.")
+        return None
+
+    except RateLimitError as e:
+        print(f"ERROR: Rate limited. Try again in {e.retry_after}s")
+        return None
+
+    except InvalidInputError as e:
+        print(f"ERROR: Invalid input - {e.details}")
+        return None
+
+    except CatsuError as e:
+        print(f"ERROR: {e}")
+        return None
+
+# Usage
+embedding = safe_embed("Sample text")
+if embedding:
+    print(f"Got embedding with {len(embedding)} dimensions")
+```
+
+## Logging and Debugging
+
+Enable verbose logging to see request details:
+
+```python
+client = catsu.Client(verbose=True)
+
+# Logs will show:
+# - Request parameters
+# - API calls being made
+# - Retry attempts
+# - Response metadata
+```
+
+## Next Steps
+
+- [Client API](/client-api/initialization) - Learn about client configuration options
+- [Best Practices](/best-practices) - Optimize error handling and retries

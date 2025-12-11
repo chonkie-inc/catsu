@@ -1,0 +1,95 @@
+---
+title: Installation
+description: Install Catsu and configure API keys
+---
+
+# Installation
+
+## Install with pip
+
+```bash
+pip install catsu
+```
+
+Or with uv (recommended):
+
+```bash
+uv pip install catsu
+```
+
+## Requirements
+
+- Python 3.10 or higher
+- API keys for the providers you want to use
+
+## API Key Configuration
+
+Catsu automatically picks up API keys from environment variables. Configure the providers you need:
+
+### Core Providers
+
+```bash
+export VOYAGE_API_KEY="your-voyage-key"
+export OPENAI_API_KEY="your-openai-key"
+export COHERE_API_KEY="your-cohere-key"
+export GEMINI_API_KEY="your-gemini-key"
+export JINA_API_KEY="your-jina-key"
+export MISTRAL_API_KEY="your-mistral-key"
+export NOMIC_API_KEY="your-nomic-key"
+```
+
+### Additional Providers
+
+```bash
+export CLOUDFLARE_API_KEY="your-cloudflare-key"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+export DEEPINFRA_API_KEY="your-deepinfra-key"
+export MIXEDBREAD_API_KEY="your-mixedbread-key"
+export TOGETHERAI_API_KEY="your-together-key"
+```
+
+## Alternative: Pass Keys Directly
+
+You can also pass API keys when initializing the client:
+
+```python
+import catsu
+
+client = catsu.Client(
+    api_keys={
+        "voyageai": "your-voyage-key",
+        "openai": "your-openai-key",
+    }
+)
+```
+
+Or override per request:
+
+```python
+response = client.embed(
+    model="voyage-3",
+    input="Hello!",
+    api_key="request-specific-key"
+)
+```
+
+## Verify Installation
+
+Test your installation:
+
+```python
+import catsu
+
+client = catsu.Client()
+print("Catsu installed successfully!")
+
+# List available models (requires at least one API key)
+models = client.list_models()
+print(f"Found {len(models)} models across {len(set(m.provider for m in models))} providers")
+```
+
+## Next Steps
+
+- [Quick Start](/quick-start) - Generate your first embeddings
+- [Client API](/client-api) - Learn about client configuration
+- [Providers](/providers) - Explore supported providers

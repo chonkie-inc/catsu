@@ -1,0 +1,196 @@
+---
+title: Cost Tracking
+description: Monitor and optimize your embedding costs
+---
+
+# Cost Tracking
+
+Catsu automatically tracks token usage and costs for all embedding requests.
+
+## Accessing Usage Data
+
+Every `embed()` and `aembed()` response includes usage information:
+
+```python
+response = client.embed(
+    model="voyage-3",
+    input="Sample text"
+)
+
+# Access usage data
+print(f"Tokens: {response.usage.tokens}")
+print(f"Cost: ${response.usage.cost:.6f}")
+print(f"Latency: {response.usage.latency:.3f}s")
+```
+
+## Cost Components
+
+```python
+class Usage:
+    tokens: int       # Total tokens processed
+    cost: float       # Cost in USD
+    latency: float    # Request latency in seconds
+```
+
+## Tracking Batch Costs
+
+```python
+texts = ["Text 1", "Text 2", "Text 3"]
+
+response = client.embed(model="voyage-3", input=texts)
+
+# Total cost for batch
+total_cost = response.usage.cost
+print(f"Total: ${total_cost:.6f}")
+
+# Cost per text
+cost_per_text = total_cost / len(texts)
+print(f"Per text: ${cost_per_text:.8f}")
+
+# Tokens per text (approximate)
+tokens_per_text = response.usage.tokens / len(texts)
+print(f"Avg tokens per text: {tokens_per_text:.1f}")
+```
+
+## Accumulating Costs
+
+Track costs across multiple requests:
+
+```python
+total_cost = 0
+total_tokens = 0
+
+for batch in batches:
+    response = client.embed(model="voyage-3", input=batch)
+
+    total_cost += response.usage.cost
+    total_tokens += response.usage.tokens
+
+print(f"Total cost: ${total_cost:.4f}")
+print(f"Total tokens: {total_tokens:,}")
+```
+
+## Local Tokenization
+
+Estimate costs before making API calls using local tokenization:
+
+```python
+from transformers import AutoTokenizer
+
+# Load tokenizer for your model
+tokenizer = AutoTokenizer.from_pretrained("model-name")
+
+# Count tokens locally (no API call)
+text = "Sample text to estimate cost"
+tokens = len(tokenizer.encode(text))
+
+# Estimate cost (example for voyage-3 at $0.12/M tokens)
+estimated_cost = (tokens / 1_000_000) * 0.12
+print(f"Estimated cost: ${estimated_cost:.8f}")
+```
+
+For current pricing, check [catsu.dev](https://catsu.dev).
+
+## Cost Comparison
+
+Compare costs across providers:
+
+```python
+models_to_compare = ["voyage-3", "text-embedding-3-small", "embed-v4.0"]
+sample_text = "Compare embedding costs across providers"
+
+for model in models_to_compare:
+    response = client.embed(model=model, input=sample_text)
+
+    print(f"{model}:")
+    print(f"  Cost: ${response.usage.cost:.8f}")
+    print(f"  Tokens: {response.usage.tokens}")
+    print(f"  Dimensions: {response.dimensions}")
+```
+
+## Cost Optimization Strategies
+
+### Use Matryoshka Dimensions
+
+```python
+# Full dimensions
+full_response = client.embed(
+    model="voyage-3",
+    input="Text"
+)
+
+# Reduced dimensions (same API cost, lower storage/compute)
+small_response = client.embed(
+    model="voyage-3",
+    input="Text",
+    dimensions=256
+)
+
+print(f"API cost: same")
+print(f"Storage cost: 75% reduction (256 vs 1024 dimensions)")
+```
+
+### Choose Cost-Effective Providers
+
+Different providers have different pricing models. Compare on [catsu.dev](https://catsu.dev).
+
+### Batch Efficiently
+
+```python
+# Batching reduces per-text overhead
+response = client.embed(
+    model="voyage-3",
+    input=texts  # Batch of many texts
+)
+
+cost_per_text = response.usage.cost / len(texts)
+```
+
+## Monitoring in Production
+
+```python
+class EmbeddingService:
+    def __init__(self):
+        self.client = catsu.Client()
+        self.total_cost = 0
+        self.total_requests = 0
+
+    def embed(self, text, model="voyage-3"):
+        response = self.client.embed(model=model, input=text)
+
+        # Track metrics
+        self.total_cost += response.usage.cost
+        self.total_requests += 1
+
+        # Log to monitoring system
+        self.log_metrics({
+            "cost": response.usage.cost,
+            "tokens": response.usage.tokens,
+            "latency": response.usage.latency,
+        })
+
+        return response.embeddings[0]
+
+    def get_stats(self):
+        return {
+            "total_cost": self.total_cost,
+            "total_requests": self.total_requests,
+            "avg_cost_per_request": self.total_cost / max(self.total_requests, 1)
+        }
+```
+
+## Best Practices
+
+- Monitor costs in real-time
+- Set budget alerts
+- Use Matryoshka dimensions to reduce downstream costs
+- Compare provider costs for your workload
+- Optimize batch sizes
+- Consider cost vs quality trade-offs
+- Track costs per user/tenant in multi-tenant apps
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - Compare provider pricing
+- [Common Parameters: dimensions](/parameters/dimensions) - Reduce dimensions to save costs
+- [Batch Processing](/best-practices/batch-processing) - Optimize batching for cost

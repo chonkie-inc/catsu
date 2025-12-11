@@ -1,0 +1,164 @@
+---
+title: Gemini
+description: Google Gemini embedding provider documentation
+---
+
+# Gemini
+
+Google's Gemini embedding model offers long context support and Matryoshka embeddings.
+
+## Overview
+
+- **Models**: 1 model (gemini-embedding-001)
+- **Key Features**: Long context (2048 tokens), Matryoshka (128-3072 dimensions), task-specific optimization
+- **API Docs**: [Gemini Embeddings](https://ai.google.dev/docs/embeddings_guide)
+
+## Environment Variable
+
+```bash
+export GEMINI_API_KEY="your-gemini-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier (gemini-embedding-001) |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `input_type` | str | No | `"query"` or `"document"` |
+| `task_type` | str | No | Specific task type (see below) |
+| `dimensions` | int | No | Output dimensions: 128-3072 |
+| `api_key` | str | No | Override API key for this request |
+
+## Task Types
+
+Gemini supports specific task types for optimization:
+
+- `RETRIEVAL_QUERY` - Search queries
+- `RETRIEVAL_DOCUMENT` - Documents for retrieval
+- `SEMANTIC_SIMILARITY` - Semantic similarity tasks
+- `CLASSIFICATION` - Text classification
+- `CLUSTERING` - Document clustering
+- `QUESTION_ANSWERING` - Q&A systems
+- `FACT_VERIFICATION` - Fact checking
+- `CODE_RETRIEVAL_QUERY` - Code search queries
+
+## Examples
+
+### Basic Usage
+
+```python
+import catsu
+
+client = catsu.Client()
+
+response = client.embed(
+    model="gemini-embedding-001",
+    input="Hello, Gemini!"
+)
+
+print(f"Dimensions: {response.dimensions}")  # 3072 (default)
+```
+
+### With task_type
+
+```python
+# For search queries
+query_response = client.embed(
+    model="gemini-embedding-001",
+    input="What is quantum computing?",
+    task_type="RETRIEVAL_QUERY"
+)
+
+# For documents
+doc_response = client.embed(
+    model="gemini-embedding-001",
+    input="Quantum computing uses quantum mechanics...",
+    task_type="RETRIEVAL_DOCUMENT"
+)
+
+# For classification
+classification_response = client.embed(
+    model="gemini-embedding-001",
+    input="This product is amazing!",
+    task_type="CLASSIFICATION"
+)
+```
+
+### With Custom Dimensions (Matryoshka)
+
+```python
+# Smaller dimensions for faster search
+response = client.embed(
+    model="gemini-embedding-001",
+    input="Sample text",
+    dimensions=512  # vs default 3072
+)
+
+print(f"Dimensions: {response.dimensions}")  # 512
+
+# Minimum dimensions
+tiny_response = client.embed(
+    model="gemini-embedding-001",
+    input="Text",
+    dimensions=128
+)
+```
+
+### Combined Parameters
+
+```python
+response = client.embed(
+    model="gemini-embedding-001",
+    input="AI research paper abstract...",
+    input_type="document",
+    task_type="SEMANTIC_SIMILARITY",
+    dimensions=1024
+)
+```
+
+### Long Context Example
+
+```python
+# Gemini supports up to 2048 tokens
+long_text = "..." * 1000  # Very long document
+
+response = client.embed(
+    model="gemini-embedding-001",
+    input=long_text,
+    task_type="RETRIEVAL_DOCUMENT"
+)
+```
+
+### Async Usage
+
+```python
+import asyncio
+
+async def main():
+    client = catsu.Client()
+
+    response = await client.aembed(
+        model="gemini-embedding-001",
+        input="Async Gemini embedding",
+        task_type="RETRIEVAL_QUERY",
+        dimensions=512
+    )
+
+    print(response.embeddings)
+
+asyncio.run(main())
+```
+
+## Special Notes
+
+- ✅ Supports both `input_type` and `task_type` parameters
+- ✅ Matryoshka embeddings: 128-3072 dimensions
+- Long context: up to 2048 tokens per input
+- Single model (gemini-embedding-001)
+- task_type provides fine-grained control beyond input_type
+
+## Next Steps
+
+- [Common Parameters: dimensions](/parameters/dimensions) - Learn about Matryoshka embeddings
+- [Common Parameters: input_type](/parameters/input-type) - Query vs document embeddings

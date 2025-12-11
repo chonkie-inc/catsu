@@ -1,0 +1,218 @@
+---
+title: Model Selection
+description: Choose the right embedding model for your use case
+---
+
+# Model Selection
+
+Choosing the right embedding model depends on your specific use case, requirements, and constraints.
+
+## Decision Factors
+
+Consider these factors when selecting a model:
+
+1. **Use case** - General retrieval, code search, multilingual, domain-specific
+2. **Cost** - Price per million tokens
+3. **Performance** - Quality vs speed trade-offs
+4. **Features** - input_type, dimensions, quantization support
+5. **Context length** - Maximum input tokens
+6. **Latency** - Response time requirements
+
+## By Use Case
+
+### General Text Retrieval
+
+Look for models optimized for semantic search:
+
+```python
+# Examples of good choices:
+# - voyage-3 (Voyage AI)
+# - text-embedding-3-large (OpenAI)
+# - embed-v4.0 (Cohere)
+```
+
+Visit [catsu.dev](https://catsu.dev) to compare current models.
+
+### Code Search
+
+Use code-specific models:
+
+```python
+# Code-optimized models:
+# - voyage-code-3 (Voyage AI)
+# - codestral-embed-2505 (Mistral AI)
+# - jina-code-embeddings-1.5b (Jina AI)
+
+response = client.embed(
+    model="voyage-code-3",
+    input="def calculate_similarity(a, b): pass"
+)
+```
+
+### Multilingual Content
+
+Choose models with multilingual support:
+
+```python
+# Multilingual options:
+# - embed-multilingual-v3.0 (Cohere)
+# - voyage-multilingual-2 (Voyage AI)
+# - BAAI/bge-m3 (Together AI, DeepInfra)
+# - mxbai models (Mixed Bread)
+
+response = client.embed(
+    model="embed-multilingual-v3.0",
+    input="Bonjour le monde"  # French
+)
+```
+
+### Domain-Specific Tasks
+
+#### Finance
+
+```python
+# Finance-optimized
+response = client.embed(
+    model="voyage-finance-2",
+    input="Q4 earnings exceeded analyst expectations..."
+)
+```
+
+#### Legal
+
+```python
+# Law-optimized
+response = client.embed(
+    model="voyage-law-2",
+    input="Pursuant to Section 12(a) of the statute..."
+)
+```
+
+## By Cost Sensitivity
+
+### Cost-Optimized
+
+For cost-sensitive applications, consider:
+
+- Smaller/lite models (lower cost per token)
+- Providers with competitive pricing
+- Matryoshka dimensions to reduce storage
+
+```python
+# Use smaller dimensions to save on downstream costs
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    dimensions=256  # vs 1024
+)
+```
+
+### Quality-Optimized
+
+For maximum quality:
+
+- Larger models from established providers
+- Full dimensions (no Matryoshka reduction)
+- Models with high benchmark scores
+
+## By Feature Requirements
+
+### Need Matryoshka (dimensions)?
+
+```python
+# Providers with dimensions support:
+# - Voyage AI, Gemini, OpenAI (text-3), Nomic (v1.5)
+# - DeepInfra (Qwen3), Mixed Bread
+
+response = client.embed(
+    model="voyage-3",
+    input="Text",
+    dimensions=512
+)
+```
+
+### Need input_type?
+
+```python
+# Providers with input_type support:
+# - Voyage AI, Cohere, Gemini, Jina AI, Mistral, Nomic, Mixed Bread
+
+response = client.embed(
+    model="voyage-3",
+    input="Query",
+    input_type="query"
+)
+```
+
+### Need Long Context?
+
+For very long inputs:
+
+```python
+# Long context models:
+# - Jina AI (up to 32,768 tokens)
+# - Together AI (up to 32K for some models)
+# - Gemini (2048 tokens)
+
+response = client.embed(
+    model="jina-embeddings-v3",
+    input="Very long document..." * 1000
+)
+```
+
+## Evaluation Strategy
+
+Test multiple models for your specific use case:
+
+```python
+def evaluate_models(queries, documents, models_to_test):
+    results = {}
+
+    for model in models_to_test:
+        # Embed queries
+        query_embeddings = client.embed(
+            model=model,
+            input=queries,
+            input_type="query"
+        )
+
+        # Embed documents
+        doc_embeddings = client.embed(
+            model=model,
+            input=documents,
+            input_type="document"
+        )
+
+        # Evaluate retrieval quality (your metrics here)
+        # ...
+
+        results[model] = {
+            "quality": quality_score,
+            "cost": query_embeddings.usage.cost + doc_embeddings.usage.cost,
+            "latency": query_embeddings.usage.latency
+        }
+
+    return results
+
+# Test and compare
+results = evaluate_models(test_queries, test_docs, [
+    "voyage-3",
+    "text-embedding-3-small",
+    "embed-v4.0"
+])
+```
+
+## Best Practices
+
+- Test multiple models on your specific data
+- Consider the full cost (API + storage + compute)
+- Balance quality, cost, and latency
+- Use domain-specific models when available
+- Check feature support before committing
+- Monitor performance in production
+
+## Next Steps
+
+- [Models Catalog](https://catsu.dev) - Compare all available models
+- [Cost Tracking](/best-practices/cost-tracking) - Monitor spending
+- [Providers](/providers) - Explore provider-specific features

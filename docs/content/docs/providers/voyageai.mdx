@@ -1,0 +1,172 @@
+---
+title: Voyage AI
+description: Voyage AI embedding provider documentation
+---
+
+# Voyage AI
+
+Voyage AI offers high-performance embedding models including domain-specific and multimodal variants.
+
+## Overview
+
+- **Models**: 11 models including specialized variants
+- **Key Features**: Domain-specific models (finance, law, code), multimodal support, quantization
+- **API Docs**: [Voyage AI Documentation](https://docs.voyageai.com/)
+
+## Environment Variable
+
+```bash
+export VOYAGE_API_KEY="your-voyage-api-key"
+```
+
+## Supported Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | str | Yes | Model identifier |
+| `input` | str \| List[str] | Yes | Text(s) to embed |
+| `input_type` | str | No | `"query"` or `"document"` |
+| `dimensions` | int | No | Output dimensions: 256, 512, 1024, 2048 |
+| `api_key` | str | No | Override API key for this request |
+
+## Examples
+
+### Basic Usage
+
+```python
+import catsu
+
+client = catsu.Client()
+
+response = client.embed(
+    model="voyage-3",
+    input="Hello, world!"
+)
+
+print(f"Dimensions: {response.dimensions}")  # 1024
+print(f"Cost: ${response.usage.cost:.8f}")
+```
+
+### With input_type
+
+```python
+# For queries
+query_response = client.embed(
+    model="voyage-3",
+    input="What is machine learning?",
+    input_type="query"
+)
+
+# For documents
+doc_response = client.embed(
+    model="voyage-3",
+    input="Machine learning is a subset of artificial intelligence...",
+    input_type="document"
+)
+```
+
+### With Custom Dimensions
+
+```python
+# Smaller dimensions for faster similarity search
+response = client.embed(
+    model="voyage-3",
+    input="Sample text",
+    dimensions=256  # vs default 1024
+)
+
+print(f"Dimensions: {response.dimensions}")  # 256
+```
+
+### Domain-Specific Models
+
+```python
+# Finance-specific
+finance_response = client.embed(
+    model="voyage-finance-2",
+    input="The company's Q4 earnings exceeded expectations..."
+)
+
+# Law-specific
+law_response = client.embed(
+    model="voyage-law-2",
+    input="In accordance with Section 12(a) of the statute..."
+)
+
+# Code-specific
+code_response = client.embed(
+    model="voyage-code-3",
+    input="def calculate_embeddings(texts): pass"
+)
+```
+
+### Multimodal Support
+
+```python
+# Text and image embeddings
+response = client.embed(
+    model="voyage-multimodal-3",
+    input="Description of an image"
+)
+```
+
+### With Quantization (voyage-3.5)
+
+voyage-3.5 supports binary quantization for smaller storage:
+
+```python
+# Note: Quantization is configured on the provider side
+# Catsu returns float embeddings by default
+response = client.embed(
+    model="voyage-3.5",
+    input="Text"
+)
+```
+
+### Async Usage
+
+```python
+import asyncio
+
+async def main():
+    client = catsu.Client()
+
+    response = await client.aembed(
+        model="voyage-3",
+        input="Async embedding generation",
+        input_type="document"
+    )
+
+    print(response.embeddings)
+
+asyncio.run(main())
+```
+
+## Model Variants
+
+Voyage AI offers several model variants:
+
+- **voyage-3-large** - Highest quality
+- **voyage-3.5** - Latest version with quantization
+- **voyage-3** - Balanced performance
+- **voyage-3-lite**, **voyage-3.5-lite** - Faster, lower cost
+- **voyage-code-3** - Code search and understanding
+- **voyage-finance-2** - Financial documents
+- **voyage-law-2** - Legal documents
+- **voyage-multilingual-2** - Multi-language support
+- **voyage-multimodal-3** - Text and image
+
+For complete model details, visit [catsu.dev](https://catsu.dev).
+
+## Special Notes
+
+- Supports both `input_type="query"` and `input_type="document"`
+- Dimensions can be 256, 512, 1024, or 2048
+- voyage-3.5 supports binary quantization for efficient storage
+- Domain-specific models optimized for finance, law, and code
+- Maximum input tokens vary by model (check via `list_models()`)
+
+## Next Steps
+
+- [Common Parameters](/parameters) - Learn about input_type and dimensions
+- [Best Practices: Model Selection](/best-practices/model-selection) - Choose the right model
