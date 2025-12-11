@@ -1,13 +1,4 @@
 import { useState, useMemo, useEffect } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  type ColumnDef,
-  type SortingState,
-  flexRender,
-} from '@tanstack/react-table';
 
 interface Model {
   name: string;
@@ -25,6 +16,16 @@ interface Model {
   release_date: string | null;
 }
 
+type SortDirection = 'asc' | 'desc' | null;
+type SortKey = keyof Model | null;
+
+interface ModelsTableProps {
+  models: Model[];
+  filterValue?: string;
+  onRowCountChange?: (count: number) => void;
+  onProviderCountChange?: (count: number) => void;
+}
+
 const modalityBadge: Record<string, string> = {
   text: 'T',
   image: 'I',
@@ -36,281 +37,175 @@ const quantizationBadge: Record<string, string> = {
   binary: 'B',
 };
 
-interface ModelsTableProps {
-  models: Model[];
-  filterValue?: string;
-  onFilterChange?: (filter: string) => void;
-  onRowCountChange?: (count: number) => void;
-  onProviderCountChange?: (count: number) => void;
-}
+const formatDate = (dateStr: string | null) => {
+  if (!dateStr) return '—';
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short'
+  }).format(date);
+};
 
-export function ModelsTable({ models, filterValue = '', onFilterChange, onRowCountChange, onProviderCountChange }: ModelsTableProps) {
-  const [globalFilter, setGlobalFilter] = useState(filterValue);
-  const [sorting, setSorting] = useState<SortingState>([]);
+export function ModelsTable({ models, filterValue = '', onRowCountChange, onProviderCountChange }: ModelsTableProps) {
+  const [sortKey, setSortKey] = useState<SortKey>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-  // Sync external filterValue with internal state
-  useEffect(() => {
-    setGlobalFilter(filterValue);
-  }, [filterValue]);
+  // Filter models based on search
+  const filteredModels = useMemo(() => {
+    if (!filterValue.trim()) return models;
+    const search = filterValue.toLowerCase();
+    return models.filter(model =>
+      model.name.toLowerCase().includes(search) ||
+      model.provider.toLowerCase().includes(search)
+    );
+  }, [models, filterValue]);
 
-  const columns = useMemo<ColumnDef<Model>[]>(
-    () => [
-      {
-        accessorKey: 'provider',
-        header: 'Provider',
-        size: 100,
-        cell: (info) => (
-          <span className="font-medium uppercase">
-            {info.getValue<string>()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'name',
-        header: 'Model',
-        size: 300,
-        cell: (info) => info.getValue<string>(),
-      },
-      {
-        accessorKey: 'dimensions',
-        header: 'Dimensions',
-        size: 110,
-        cell: (info) => (
-          <span className="tabular-nums">
-            {info.getValue<number>().toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'max_input_tokens',
-        header: 'Max Tokens',
-        size: 120,
-        cell: (info) => (
-          <span className="tabular-nums">
-            {info.getValue<number>().toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'cost_per_million_tokens',
-        header: 'Cost/1M',
-        size: 100,
-        cell: (info) => (
-          <span className="tabular-nums">
-            ${info.getValue<number>().toFixed(2)}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'mteb_score',
-        header: 'MTEB',
-        size: 80,
-        cell: (info) => {
-          const score = info.getValue<number | null>();
-          return (
-            <span className="tabular-nums">
-              {score !== null ? score.toFixed(2) : '—'}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: 'rteb_score',
-        header: 'RTEB',
-        size: 80,
-        cell: (info) => {
-          const score = info.getValue<number | null>();
-          return (
-            <span className="tabular-nums">
-              {score !== null ? score.toFixed(2) : '—'}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: 'modalities',
-        header: 'Modality',
-        size: 100,
-        cell: (info) => {
-          const modalities = info.getValue<string[]>() || ['text'];
-          return (
-            <div className="flex gap-1">
-              {modalities.map((modality) => (
-                <span
-                  key={modality}
-                  className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-semibold border border-gray-300 dark:border-gray-600 rounded"
-                  title={modality}
-                >
-                  {modalityBadge[modality] || modality[0].toUpperCase()}
-                </span>
-              ))}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'quantizations',
-        header: 'Quant',
-        size: 90,
-        cell: (info) => {
-          const quantizations = info.getValue<string[]>() || ['float'];
-          return (
-            <div className="flex gap-1">
-              {quantizations.map((quant) => (
-                <span
-                  key={quant}
-                  className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-semibold border border-gray-300 dark:border-gray-600 rounded"
-                  title={quant}
-                >
-                  {quantizationBadge[quant] || quant[0].toUpperCase()}
-                </span>
-              ))}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'supports_batching',
-        header: 'Batching',
-        size: 80,
-        cell: (info) => (info.getValue<boolean>() ? 'YES' : 'NO'),
-      },
-      {
-        accessorKey: 'supports_input_type',
-        header: 'Input Type',
-        size: 100,
-        cell: (info) => (info.getValue<boolean>() ? 'YES' : 'NO'),
-      },
-      {
-        accessorKey: 'supports_dimensions',
-        header: 'Config Dims',
-        size: 110,
-        cell: (info) => (info.getValue<boolean>() ? 'YES' : 'NO'),
-      },
-      {
-        accessorKey: 'release_date',
-        header: 'Released',
-        size: 100,
-        cell: (info) => {
-          const dateStr = info.getValue<string | null>();
-          if (!dateStr) return <span className="text-gray-400 dark:text-gray-500">—</span>;
+  // Sort filtered models
+  const sortedModels = useMemo(() => {
+    if (!sortKey || !sortDirection) return filteredModels;
 
-          const date = new Date(dateStr);
-          const formatter = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'short'
-          });
+    return [...filteredModels].sort((a, b) => {
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
 
-          return formatter.format(date);
-        },
-      },
-    ],
-    []
-  );
+      // Handle null values
+      if (aVal === null && bVal === null) return 0;
+      if (aVal === null) return sortDirection === 'asc' ? 1 : -1;
+      if (bVal === null) return sortDirection === 'asc' ? -1 : 1;
 
-  const table = useReactTable({
-    data: models,
-    columns,
-    state: {
-      globalFilter,
-      sorting,
-    },
-    onGlobalFilterChange: (value) => {
-      setGlobalFilter(value);
-      onFilterChange?.(value as string);
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
+      // Compare values
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const cmp = aVal.localeCompare(bVal);
+        return sortDirection === 'asc' ? cmp : -cmp;
+      }
 
-  // Notify parent of row count and provider count changes
-  const rows = table.getRowModel().rows;
-  const rowCount = rows.length;
-  const providerCount = new Set(rows.map(row => row.original.provider)).size;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
 
-  useEffect(() => {
-    if (onRowCountChange) {
-      onRowCountChange(rowCount);
+      if (typeof aVal === 'boolean' && typeof bVal === 'boolean') {
+        const cmp = (aVal ? 1 : 0) - (bVal ? 1 : 0);
+        return sortDirection === 'asc' ? cmp : -cmp;
+      }
+
+      return 0;
+    });
+  }, [filteredModels, sortKey, sortDirection]);
+
+  // Handle column header click for sorting
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      // Cycle through: asc -> desc -> null
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortDirection(null);
+        setSortKey(null);
+      } else {
+        setSortDirection('asc');
+      }
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
     }
+  };
+
+  // Get sort indicator
+  const getSortIndicator = (key: SortKey) => {
+    if (sortKey !== key) return '';
+    return sortDirection === 'asc' ? ' ↑' : sortDirection === 'desc' ? ' ↓' : '';
+  };
+
+  // Notify parent of counts
+  const rowCount = sortedModels.length;
+  const providerCount = new Set(sortedModels.map(m => m.provider)).size;
+
+  useEffect(() => {
+    onRowCountChange?.(rowCount);
   }, [rowCount, onRowCountChange]);
 
   useEffect(() => {
-    if (onProviderCountChange) {
-      onProviderCountChange(providerCount);
-    }
+    onProviderCountChange?.(providerCount);
   }, [providerCount, onProviderCountChange]);
 
   return (
-    <div className="w-full">
-      <table className="w-full text-xs border-collapse">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="sticky top-[57px] z-10 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide cursor-pointer select-none
-                    text-gray-600 dark:text-gray-300
-                    border-y border-gray-200 dark:border-gray-800
-                    bg-gray-100/80 dark:bg-gray-800/80
-                    backdrop-blur-md
-                    hover:bg-gray-200/80 dark:hover:bg-gray-700/80
-                    transition-colors"
-                  style={{ width: header.getSize() }}
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  <div className="flex items-center gap-1">
-                    <span>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </span>
-                    {header.column.getIsSorted() && (
-                      <span>
-                        {header.column.getIsSorted() === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="text-gray-700 dark:text-gray-300">
-          {rows.map((row) => (
-            <tr
-              key={row.id}
-              className="border-b border-gray-100 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="px-4 py-3 whitespace-nowrap"
-                  style={{ width: cell.column.getSize() }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// Separate search component that can be used in the header
-export function ModelsSearch({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Filter by model"
-      className="w-64 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-600"
-    />
+    <table>
+      <thead>
+        <tr>
+          <th className="sortable" onClick={() => handleSort('provider')}>
+            Provider{getSortIndicator('provider')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('name')}>
+            Model{getSortIndicator('name')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('dimensions')}>
+            Dimensions{getSortIndicator('dimensions')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('max_input_tokens')}>
+            Max Tokens{getSortIndicator('max_input_tokens')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('cost_per_million_tokens')}>
+            Cost/1M{getSortIndicator('cost_per_million_tokens')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('mteb_score')}>
+            MTEB{getSortIndicator('mteb_score')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('rteb_score')}>
+            RTEB{getSortIndicator('rteb_score')}
+          </th>
+          <th>Modality</th>
+          <th>Quant</th>
+          <th className="sortable" onClick={() => handleSort('supports_batching')}>
+            Batching{getSortIndicator('supports_batching')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('supports_input_type')}>
+            Input Type{getSortIndicator('supports_input_type')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('supports_dimensions')}>
+            Config Dims{getSortIndicator('supports_dimensions')}
+          </th>
+          <th className="sortable" onClick={() => handleSort('release_date')}>
+            Released{getSortIndicator('release_date')}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedModels.map((model, idx) => (
+          <tr key={`${model.provider}-${model.name}-${idx}`}>
+            <td>
+              <span className="provider-name">{model.provider}</span>
+            </td>
+            <td>{model.name}</td>
+            <td>{model.dimensions.toLocaleString()}</td>
+            <td>{model.max_input_tokens.toLocaleString()}</td>
+            <td>${model.cost_per_million_tokens.toFixed(2)}</td>
+            <td>{model.mteb_score !== null ? model.mteb_score.toFixed(2) : '—'}</td>
+            <td>{model.rteb_score !== null ? model.rteb_score.toFixed(2) : '—'}</td>
+            <td>
+              <div className="badges">
+                {(model.modalities || ['text']).map((modality) => (
+                  <span key={modality} className="badge" title={modality}>
+                    {modalityBadge[modality] || modality[0].toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            </td>
+            <td>
+              <div className="badges">
+                {(model.quantizations || ['float']).map((quant) => (
+                  <span key={quant} className="badge" title={quant}>
+                    {quantizationBadge[quant] || quant[0].toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            </td>
+            <td>{model.supports_batching ? 'Yes' : 'No'}</td>
+            <td>{model.supports_input_type ? 'Yes' : 'No'}</td>
+            <td>{model.supports_dimensions ? 'Yes' : 'No'}</td>
+            <td>{formatDate(model.release_date)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

@@ -84,11 +84,10 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
   }, [providerCount]);
 
   return (
-    <div>
+    <div className="table-container">
       <ModelsTable
         models={models}
         filterValue={searchValue}
-        onFilterChange={setSearchValue}
         onRowCountChange={setRowCount}
         onProviderCountChange={setProviderCount}
       />

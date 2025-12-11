@@ -1,1 +1,180 @@
 @import "tailwindcss";
+
+/* Define CSS layers - our custom styles in a higher priority layer */
+@layer tailwind, custom;
+
+/* CSS Custom Properties in custom layer */
+@layer custom {
+  :root {
+    --header-height: 56px;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Light mode colors (default) */
+    --color-background: #fff;
+    --color-border: #e5e5e5;
+    --color-text: #111;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #777;
+    --color-alpha-background: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Dark mode colors - automatically applied based on system preference */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: #0a0a0a;
+      --color-border: #333;
+      --color-text: #fff;
+      --color-text-secondary: #aaa;
+      --color-text-tertiary: #888;
+      --color-alpha-background: rgba(10, 10, 10, 0.9);
+    }
+  }
+
+  /* Support for manual .dark class override */
+  .dark {
+    --color-background: #0a0a0a;
+    --color-border: #333;
+    --color-text: #fff;
+    --color-text-secondary: #aaa;
+    --color-text-tertiary: #888;
+    --color-alpha-background: rgba(10, 10, 10, 0.9);
+  }
+}
+
+/* All custom styles in the custom layer for higher priority */
+@layer custom {
+  /* Fixed navbar */
+  .navbar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    height: var(--header-height);
+    backdrop-filter: blur(6px);
+    background-color: var(--color-alpha-background);
+  }
+
+  /* Main content container - offset for fixed navbar */
+  .main-content {
+    padding-top: 0;
+  }
+
+  /* Table container - the scroll viewport */
+  .table-container {
+    margin-top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    overflow: auto;
+    position: relative;
+    overscroll-behavior: contain;
+  }
+
+  /* Table styling */
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+    width: 100%;
+    min-height: 100%;
+  }
+
+  /* Sticky table header - fixed relative to viewport */
+  table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  table thead th {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    padding: 0.75rem;
+    line-height: 1;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-secondary);
+    backdrop-filter: blur(6px);
+    background-color: var(--color-alpha-background);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th.sortable:hover {
+    color: var(--color-text);
+  }
+
+  /* Table cells */
+  th,
+  td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  /* First column (provider) styling */
+  tbody td:first-child {
+    font-weight: 500;
+    color: var(--color-text) !important;
+  }
+
+  /* Second column (model name) styling */
+  tbody td:nth-child(2) {
+    color: var(--color-text) !important;
+  }
+
+  /* Provider name styling */
+  .provider-name {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--color-text) !important;
+  }
+
+  /* Badges for modality and quantization */
+  .badges {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    background-color: var(--color-background);
+    color: var(--color-text-secondary);
+  }
+
+  /* Row hover effect */
+  tbody tr:hover {
+    background-color: rgba(128, 128, 128, 0.05);
+  }
+
+  /* Mobile responsive - hide tagline and stats */
+  @media (max-width: 768px) {
+    .navbar-tagline,
+    .navbar-stats {
+      display: none !important;
+    }
+  }
+}
