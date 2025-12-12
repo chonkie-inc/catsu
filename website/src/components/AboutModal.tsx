@@ -105,8 +105,8 @@ print(f"Cost: \${response.usage.cost:.6f}")`}</code>
               </div>
 
               <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  This site shows all embedding models supported by Catsu, along with their specifications, pricing, and capabilities.
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  made with ❤️ by <a href="https://chonkie.ai" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 dark:hover:text-gray-200 underline">chonkie, inc.</a>
                 </p>
               </div>
             </div>

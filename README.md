@@ -90,3 +90,13 @@ response = await client.aembed(model="voyage-3", input="Hello, async world!")
 Can't find your favorite model or provider? **Open an issue** and we will promptly try to add it! We're constantly expanding support for new embedding providers and models.
 
 For guidelines on contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+---
+
+<div align="center">
+
+If you found this helpful, consider giving it a ⭐!
+
+made with ❤️ by [chonkie, inc.](https://chonkie.ai)
+
+</div>
