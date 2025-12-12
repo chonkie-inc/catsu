@@ -1,6 +1,6 @@
 <div align="center">
 
-![Catsu Logo](./assets/catsu.png)
+![Catsu Logo](./assets/catsu-logo-w-bg.png)
 
 # 🌐 catsu 🐱
 
