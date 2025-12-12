@@ -34,14 +34,14 @@ _A unified, batteries-included client for embedding APIs that actually works._
 
 ## 📦 Install
 
-Install with pip:
-```bash
-pip install catsu
-```
-
-Or with uv (recommended):
+Install with uv (recommended):
 ```bash
 uv pip install catsu
+```
+
+Or with pip:
+```bash
+pip install catsu
 ```
 
 ## 🚀 Quick Start

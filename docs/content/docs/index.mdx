@@ -1,13 +1,13 @@
 ---
 title: Welcome to Catsu
 description: A unified Python client for embedding APIs
+icon: House
 ---
 
 <div className="flex justify-center my-8">
-  <img src="/catsu-logo.png" alt="Catsu Logo" className="h-64 dark:invert" />
+  <img src="/catsu-logo.png" alt="Catsu Logo" className="h-64 dark:hidden" />
+  <img src="/catsu-logo-dark.png" alt="Catsu Logo" className="h-64 hidden dark:block" />
 </div>
-
-# Catsu Documentation
 
 **A unified Python client for embedding APIs**
 
@@ -34,8 +34,12 @@ response = client.embed(
     input="Hello, embeddings!"
 )
 
-# Access your results
+# Access your embeddings
+embedding = response.embeddings[0]  # List of floats
+print(f"Embedding: {embedding[:5]}...")  # First 5 dimensions
 print(f"Dimensions: {response.dimensions}")
+
+# Check usage and cost
 print(f"Tokens used: {response.usage.tokens}")
 print(f"Cost: ${response.usage.cost:.6f}")
 ```

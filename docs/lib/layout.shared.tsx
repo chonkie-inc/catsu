@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
+import { LayoutGrid } from 'lucide-react';
 
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -7,25 +8,23 @@ export function baseOptions(): BaseLayoutProps {
       title: (
         <div className="flex items-center gap-2">
           <Image
-            src="/catsu-logo.png"
+            src="/catsu-icon.png"
             alt="Catsu"
-            width={120}
-            height={40}
-            className="dark:invert"
+            width={24}
+            height={24}
           />
+          <span className="font-semibold">Catsu Docs</span>
         </div>
       ),
     },
+    githubUrl: 'https://github.com/chonkie-inc/catsu',
     links: [
       {
+        icon: <LayoutGrid />,
         text: 'Models Catalog',
         url: 'https://catsu.dev',
         external: true,
-      },
-      {
-        text: 'GitHub',
-        url: 'https://github.com/chonkie-inc/catsu',
-        external: true,
+        secondary: false,
       },
     ],
   };
