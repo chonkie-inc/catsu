@@ -35,7 +35,7 @@ export function ModelsTableWithSearch({ models }: ModelsTableWithSearchProps) {
       const searchInput = document.createElement('input');
       searchInput.type = 'text';
       searchInput.placeholder = 'Filter';
-      searchInput.className = 'w-40 md:w-48 px-2 md:px-3 py-1.5 pr-12 text-xs border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-600';
+      searchInput.className = 'w-28 md:w-48 px-2 md:px-3 py-1.5 pr-12 text-xs border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-600';
       searchInput.addEventListener('input', (e) => {
         setSearchValue((e.target as HTMLInputElement).value);
       });
