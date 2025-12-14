@@ -5,6 +5,7 @@ open-source embedding models on Cloudflare's edge network. Supports BGE, Qwen3,
 EmbeddingGemma, and PLaMo models with retry logic, cost tracking, and local tokenization.
 """
 
+import os
 from typing import Any, Dict, List, Literal, Optional
 
 from ..models import EmbedResponse, TokenizeResponse, Usage
@@ -60,7 +61,8 @@ class CloudflareProvider(BaseProvider):
         super().__init__(
             http_client, async_http_client, catalog, api_key, max_retries, verbose
         )
-        self.account_id = account_id
+        # Get account_id from parameter or environment variable
+        self.account_id = account_id or os.getenv("CLOUDFLARE_ACCOUNT_ID")
 
     def _get_account_id(self, account_id: Optional[str] = None) -> str:
         """Get the effective account ID, validating it exists.

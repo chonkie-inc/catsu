@@ -112,6 +112,10 @@ class Client:
             "jinaai": "JINA_API_KEY",
             "mistral": "MISTRAL_API_KEY",
             "nomic": "NOMIC_API_KEY",
+            "cloudflare": "CLOUDFLARE_API_KEY",
+            "deepinfra": "DEEPINFRA_API_KEY",
+            "mixedbread": "MIXEDBREAD_API_KEY",
+            "togetherai": "TOGETHERAI_API_KEY",
         }
 
         env_var = env_var_map.get(provider)
