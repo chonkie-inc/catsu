@@ -14,14 +14,14 @@ _A unified, batteries-included client for embedding APIs that actually works._
 
 </div>
 
-**The world of embedding API clients is broken.**
+**The world of embedding API clients is broken.** ([details](./docs/spilled-milk.md))
 
-- Everyone defaults to OpenAI's client for embeddings, even though it wasn't designed for that purpose
-- Provider-specific libraries (VoyageAI, Cohere, etc.) are inconsistent, poorly maintained, or outright broken
-- Universal clients like LiteLLM and any-llm-sdk don't focus on embeddings at all—they rely on native client libraries, inheriting all their problems
-- Every provider has different capabilities—some support dimension changes, others don't—with no standardized way to discover what's available
-- Most clients lack basic features like retry logic, proper error handling, and usage tracking
-- There's no single source of truth for model metadata, pricing, or capabilities
+- [Everyone defaults to OpenAI's client](./docs/spilled-milk.md#openais-client-wasnt-designed-for-embeddings) for embeddings, even though it wasn't designed for that purpose
+- [Provider-specific libraries](./docs/spilled-milk.md#provider-specific-libraries-are-inconsistent-or-broken) (VoyageAI, Cohere, etc.) are inconsistent, poorly maintained, or outright broken
+- [Universal clients like LiteLLM and any-llm-sdk](./docs/spilled-milk.md#universal-clients-dont-focus-on-embeddings) don't focus on embeddings at all—they rely on native client libraries, inheriting all their problems
+- [Every provider has different capabilities](./docs/spilled-milk.md#capability-inconsistencies-across-providers)—some support dimension changes, others don't—with no standardized way to discover what's available
+- [Most clients lack basic features](./docs/spilled-milk.md#missing-basic-features) like retry logic, proper error handling, and usage tracking
+- [There's no single source of truth](./docs/spilled-milk.md#no-single-source-of-truth-for-model-metadata) for model metadata, pricing, or capabilities
 
 **Catsu fixes this.** It's a lightweight, unified client built specifically for embeddings with:
 
