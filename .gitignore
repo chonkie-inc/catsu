@@ -36,3 +36,5 @@ dmypy.json
 
 # Temporary files
 .tmp/
+docs/design/fallback-support.md
+docs/release-posts.md

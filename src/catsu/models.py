@@ -95,6 +95,9 @@ class EmbedResponse(BaseModel):
         latency_ms: Request latency in milliseconds
         input_count: Number of input texts processed
         input_type: Type of input ("query" or "document")
+        requested_model: Original model requested (if fallback was used)
+        fallback_used: Whether a fallback model was used
+        fallback_reason: Reason why fallback was triggered
 
     Example:
         >>> response = EmbedResponse(
@@ -122,6 +125,19 @@ class EmbedResponse(BaseModel):
     input_type: str = Field(
         default="document",
         description='Input type: "query" or "document"',
+    )
+    # Fallback metadata
+    requested_model: Optional[str] = Field(
+        default=None,
+        description="Original model requested (set when fallback was used)",
+    )
+    fallback_used: bool = Field(
+        default=False,
+        description="Whether a fallback model was used",
+    )
+    fallback_reason: Optional[str] = Field(
+        default=None,
+        description="Reason why fallback was triggered (e.g., 'RateLimitError')",
     )
 
     @field_validator("dimensions")
@@ -202,12 +218,15 @@ class EmbedResponse(BaseModel):
 
     def __repr__(self) -> str:
         """Return string representation of EmbedResponse."""
-        return (
+        base = (
             f"EmbedResponse(model='{self.model}', provider='{self.provider}', "
             f"input_count={self.input_count}, dimensions={self.dimensions}, "
             f"tokens={self.usage.tokens}, cost=${self.usage.cost:.6f}, "
-            f"latency={self.latency_ms:.2f}ms)"
+            f"latency={self.latency_ms:.2f}ms"
         )
+        if self.fallback_used:
+            base += f", fallback_used=True, requested_model='{self.requested_model}'"
+        return base + ")"
 
 
 class ModelInfo(BaseModel):

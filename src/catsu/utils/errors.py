@@ -4,7 +4,7 @@ Provides a hierarchy of exceptions for different error scenarios, making it
 easier to handle and debug issues when working with embedding providers.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class CatsuError(Exception):
@@ -376,5 +376,87 @@ class UnsupportedFeatureError(CatsuError):
             details["provider"] = provider
         if feature:
             details["feature"] = feature
+
+        super().__init__(message, details)
+
+
+class ConfigurationError(CatsuError):
+    """Exception raised for configuration issues detected before making requests.
+
+    Raised when there's a configuration problem that would prevent requests from
+    succeeding, such as missing API keys for fallback models.
+
+    Example:
+        >>> client.embed(model="voyage-3", input="test", fallbacks=["text-embedding-3-small"])
+        ConfigurationError: Missing API keys for fallback models: text-embedding-3-small (openai: set OPENAI_API_KEY)
+
+    """
+
+    def __init__(
+        self,
+        message: str,
+        details: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Initialize ConfigurationError.
+
+        Args:
+            message: Error message
+            details: Optional additional error details
+
+        """
+        super().__init__(message, details)
+
+
+class FallbackExhaustedError(CatsuError):
+    """Exception raised when all fallback models have failed.
+
+    Raised when the primary model and all configured fallback models fail
+    after exhausting all retry cycles.
+
+    Attributes:
+        primary_model: The originally requested model
+        fallbacks: List of fallback models that were tried
+        errors: Dict mapping model names to their exceptions
+        cycles_attempted: Number of retry cycles attempted
+
+    Example:
+        >>> client.embed(model="voyage-3", input="test", fallbacks=["text-embedding-3-small"])
+        FallbackExhaustedError: All models failed: voyage-3 and 1 fallbacks
+
+    """
+
+    def __init__(
+        self,
+        primary_model: str,
+        fallbacks: List[str],
+        errors: Dict[str, Exception],
+        cycles_attempted: int = 1,
+        details: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Initialize FallbackExhaustedError.
+
+        Args:
+            primary_model: The originally requested model
+            fallbacks: List of fallback model names that were tried
+            errors: Dict mapping model names to their exceptions
+            cycles_attempted: Number of retry cycles attempted
+            details: Optional additional error details
+
+        """
+        self.primary_model = primary_model
+        self.fallbacks = fallbacks
+        self.errors = errors
+        self.cycles_attempted = cycles_attempted
+
+        fallback_count = len(fallbacks)
+        message = f"All models failed: {primary_model} and {fallback_count} fallback(s) after {cycles_attempted} cycle(s)"
+
+        details = details or {}
+        details["primary_model"] = primary_model
+        details["fallbacks"] = fallbacks
+        details["cycles_attempted"] = cycles_attempted
+        details["error_summary"] = {
+            model: str(error) for model, error in errors.items()
+        }
 
         super().__init__(message, details)

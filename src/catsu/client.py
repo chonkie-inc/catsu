@@ -4,7 +4,9 @@ The Client class provides a unified interface for accessing multiple embedding
 providers through a single API.
 """
 
+import asyncio
 import os
+import time
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import httpx
@@ -12,7 +14,22 @@ import httpx
 from .catalog import ModelCatalog
 from .models import EmbedResponse, TokenizeResponse
 from .providers import BaseProvider, registry
-from .utils.errors import InvalidInputError, ModelNotFoundError, UnsupportedFeatureError
+from .utils.errors import (
+    AuthenticationError,
+    ConfigurationError,
+    FallbackExhaustedError,
+    InvalidInputError,
+    ModelNotFoundError,
+    NetworkError,
+    ProviderError,
+    RateLimitError,
+    TimeoutError,
+    UnsupportedFeatureError,
+)
+
+# Type aliases for fallback configuration
+FallbackConfig = Dict[str, Any]  # {"model": "...", **provider_overrides}
+Fallbacks = Union[str, FallbackConfig, List[Union[str, FallbackConfig]], None]
 
 
 class Client:
@@ -57,12 +74,35 @@ class Client:
         max_retries: int = 3,
         timeout: int = 30,
         api_keys: Optional[Dict[str, str]] = None,
+        fallbacks: Fallbacks = None,
+        allow_unsafe_fallback: bool = False,
+        base_delay: float = 1.0,
+        max_delay: float = 10.0,
     ) -> None:
-        """Initialize the Catsu client."""
+        """Initialize the Catsu client.
+
+        Args:
+            verbose: Enable verbose logging (default: False)
+            max_retries: Maximum number of retry attempts (default: 3)
+            timeout: Request timeout in seconds (default: 30)
+            api_keys: Optional dict of API keys by provider name
+            fallbacks: Default fallback models for all requests
+            allow_unsafe_fallback: If True, allow fallback to models with
+                different dimensions (default: False, only dimension-compatible)
+            base_delay: Base delay between retry cycles in seconds
+            max_delay: Maximum delay between retry cycles in seconds
+
+        """
         self.verbose = verbose
         self.max_retries = max_retries
         self.timeout = timeout
         self._api_keys = api_keys or {}
+
+        # Fallback configuration
+        self.fallbacks = fallbacks
+        self.allow_unsafe_fallback = allow_unsafe_fallback
+        self.base_delay = base_delay
+        self.max_delay = max_delay
 
         # Initialize HTTP clients for sync and async
         self._http_client = httpx.Client(timeout=timeout)
@@ -199,6 +239,457 @@ class Client:
 
         return self._providers[provider_name]
 
+    # -------------------------------------------------------------------------
+    # Fallback helper methods
+    # -------------------------------------------------------------------------
+
+    def _normalize_fallbacks(self, fallbacks: Fallbacks) -> List[FallbackConfig]:
+        """Convert any fallback input format to List[FallbackConfig].
+
+        Args:
+            fallbacks: Fallback specification (str, dict, list, or None)
+
+        Returns:
+            Normalized list of fallback configurations
+
+        """
+        if fallbacks is None:
+            return []
+        if isinstance(fallbacks, str):
+            return [{"model": fallbacks}]
+        if isinstance(fallbacks, dict):
+            return [fallbacks]
+        # List - normalize each item
+        return [{"model": f} if isinstance(f, str) else f for f in fallbacks]
+
+    def _get_env_var_for_provider(self, provider: str) -> str:
+        """Get the environment variable name for a provider's API key."""
+        env_var_map = {
+            "voyageai": "VOYAGE_API_KEY",
+            "openai": "OPENAI_API_KEY",
+            "cohere": "COHERE_API_KEY",
+            "gemini": "GEMINI_API_KEY",
+            "jinaai": "JINA_API_KEY",
+            "mistral": "MISTRAL_API_KEY",
+            "nomic": "NOMIC_API_KEY",
+            "cloudflare": "CLOUDFLARE_API_KEY",
+            "deepinfra": "DEEPINFRA_API_KEY",
+            "mixedbread": "MIXEDBREAD_API_KEY",
+            "togetherai": "TOGETHERAI_API_KEY",
+        }
+        return env_var_map.get(provider, f"{provider.upper()}_API_KEY")
+
+    def _validate_fallback_credentials(
+        self,
+        primary_model: str,
+        fallback_configs: List[FallbackConfig],
+    ) -> None:
+        """Validate API keys exist for primary and all fallback models.
+
+        Args:
+            primary_model: The primary model string
+            fallback_configs: Normalized fallback configurations
+
+        Raises:
+            ConfigurationError: If any required API keys are missing
+
+        """
+        all_models = [primary_model] + [f["model"] for f in fallback_configs]
+        missing = []
+
+        for model in all_models:
+            provider_name, _ = self._parse_model_string(model)
+            api_key = self._get_api_key(provider_name)
+            if not api_key:
+                env_var = self._get_env_var_for_provider(provider_name)
+                missing.append({"model": model, "provider": provider_name, "env_var": env_var})
+
+        if missing:
+            details = "\n".join(
+                f"  - {m['model']} ({m['provider']}): set {m['env_var']}"
+                for m in missing
+            )
+            raise ConfigurationError(
+                f"Missing API keys for models:\n{details}",
+                details={"missing_credentials": missing},
+            )
+
+    def _get_target_dimensions(
+        self,
+        provider_name: str,
+        model_name: str,
+        kwargs: Dict[str, Any],
+    ) -> int:
+        """Get the target dimensions (from kwargs or model default).
+
+        Args:
+            provider_name: Provider name
+            model_name: Model name
+            kwargs: Request kwargs that may contain dimensions
+
+        Returns:
+            Target dimensions value
+
+        """
+        if "dimensions" in kwargs and kwargs["dimensions"] is not None:
+            return kwargs["dimensions"]
+        model_info = self._catalog.get_model_info(provider_name, model_name)
+        return model_info.dimensions
+
+    def _can_produce_dimensions(
+        self,
+        provider_name: str,
+        model_name: str,
+        target_dims: int,
+    ) -> bool:
+        """Check if a model can produce the target dimensions.
+
+        Args:
+            provider_name: Provider name
+            model_name: Model name
+            target_dims: Required dimensions
+
+        Returns:
+            True if model can produce target dimensions
+
+        """
+        model_info = self._catalog.get_model_info(provider_name, model_name)
+
+        # If model supports custom dimensions, it can produce any size
+        # (we assume the user knows valid ranges)
+        if model_info.supports_dimensions:
+            return True
+
+        # Otherwise, model must have matching default dimensions
+        return model_info.dimensions == target_dims
+
+    def _filter_compatible_fallbacks(
+        self,
+        target_dims: int,
+        fallback_configs: List[FallbackConfig],
+    ) -> List[FallbackConfig]:
+        """Filter fallbacks to only those that can produce target dimensions.
+
+        Args:
+            target_dims: Required dimensions
+            fallback_configs: Normalized fallback configurations
+
+        Returns:
+            Filtered list of compatible fallback configurations
+
+        """
+        compatible = []
+
+        for config in fallback_configs:
+            model = config["model"]
+            provider_name, model_name = self._parse_model_string(model)
+
+            if self._can_produce_dimensions(provider_name, model_name, target_dims):
+                # If model supports custom dims and none specified, add target
+                model_info = self._catalog.get_model_info(provider_name, model_name)
+                if model_info.supports_dimensions and "dimensions" not in config:
+                    config = {**config, "dimensions": target_dims}
+                compatible.append(config)
+            elif self.verbose:
+                print(f"[catsu] Skipping {model}: incompatible dimensions")
+
+        return compatible
+
+    def _is_fallback_error(self, error: Exception) -> bool:
+        """Check if an error should trigger fallback.
+
+        Fallback is triggered for transient errors (rate limits, timeouts,
+        network issues, server errors). Client errors (auth, invalid input)
+        should not trigger fallback.
+
+        Args:
+            error: The exception to check
+
+        Returns:
+            True if fallback should be attempted
+
+        """
+        # These errors should trigger fallback
+        if isinstance(error, (RateLimitError, TimeoutError, NetworkError)):
+            return True
+
+        # Provider errors with 5xx status codes should trigger fallback
+        if isinstance(error, ProviderError):
+            if error.status_code and error.status_code >= 500:
+                return True
+
+        # Auth errors and client errors should NOT trigger fallback
+        if isinstance(error, (AuthenticationError, InvalidInputError)):
+            return False
+
+        # Provider errors with 4xx should NOT trigger fallback
+        if isinstance(error, ProviderError):
+            if error.status_code and 400 <= error.status_code < 500:
+                return False
+
+        # Default: don't fallback for unknown errors
+        return False
+
+    # -------------------------------------------------------------------------
+    # Fallback orchestration
+    # -------------------------------------------------------------------------
+
+    def _embed_with_fallbacks(
+        self,
+        primary_model: str,
+        inputs: List[str],
+        fallback_configs: List[FallbackConfig],
+        allow_unsafe: bool,
+        input_type: Optional[Literal["query", "document"]] = None,
+        dimensions: Optional[int] = None,
+        api_key: Optional[str] = None,
+        **kwargs: Any,
+    ) -> EmbedResponse:
+        """Execute embed with fallback chain using round-robin retries.
+
+        Args:
+            primary_model: Primary model string
+            inputs: List of input texts
+            fallback_configs: Normalized fallback configurations
+            allow_unsafe: Whether to allow dimension-incompatible fallbacks
+            input_type: Optional input type hint
+            dimensions: Optional output dimensions
+            api_key: Optional API key override
+            **kwargs: Additional provider-specific parameters
+
+        Returns:
+            EmbedResponse from successful model
+
+        Raises:
+            FallbackExhaustedError: If all models fail after all cycles
+
+        """
+        # 1. Validate all credentials upfront (fail fast)
+        self._validate_fallback_credentials(primary_model, fallback_configs)
+
+        # 2. Get target dimensions from primary model
+        primary_provider, primary_model_name = self._parse_model_string(primary_model)
+        target_dims = self._get_target_dimensions(
+            primary_provider, primary_model_name, {"dimensions": dimensions}
+        )
+
+        # 3. Filter by dimension compatibility if safe mode
+        if not allow_unsafe:
+            fallback_configs = self._filter_compatible_fallbacks(target_dims, fallback_configs)
+
+        # 4. Build execution chain: [primary, ...fallbacks]
+        chain: List[FallbackConfig] = [
+            {"model": primary_model, "dimensions": dimensions, "api_key": api_key, **kwargs}
+        ]
+        for config in fallback_configs:
+            chain.append({**config})
+
+        errors: Dict[str, Exception] = {}
+        cycle = 1
+
+        # 5. Round-robin with global retries
+        while cycle <= self.max_retries:
+            if self.verbose:
+                print(f"[catsu] Starting cycle {cycle}/{self.max_retries}")
+
+            # Try each model in the chain (1 attempt each)
+            for config in chain:
+                model = config["model"]
+                model_kwargs = {k: v for k, v in config.items() if k != "model"}
+
+                try:
+                    # Parse model and get provider
+                    provider_name, model_name = self._parse_model_string(model)
+                    model_info = self._catalog.get_model_info(provider_name, model_name)
+
+                    # Validate features for this model
+                    model_dims = model_kwargs.get("dimensions")
+                    if model_dims is not None and not model_info.supports_dimensions:
+                        # Skip this model if it doesn't support requested dimensions
+                        if self.verbose:
+                            print(f"[catsu] Skipping {model}: doesn't support custom dimensions")
+                        continue
+
+                    model_input_type = input_type
+                    if model_input_type is not None and not model_info.supports_input_type:
+                        # Use model without input_type
+                        model_input_type = None
+
+                    # Get provider and make request
+                    provider_instance = self._get_provider(provider_name)
+                    response = provider_instance.embed(
+                        model=model_name,
+                        inputs=inputs,
+                        input_type=model_input_type,
+                        dimensions=model_dims,
+                        api_key=model_kwargs.get("api_key"),
+                        **{k: v for k, v in model_kwargs.items() if k not in ("dimensions", "api_key")},
+                    )
+
+                    # Add fallback metadata if not primary
+                    if model != primary_model:
+                        response.requested_model = primary_model
+                        response.fallback_used = True
+                        primary_error = errors.get(primary_model)
+                        response.fallback_reason = (
+                            type(primary_error).__name__ if primary_error else "Unknown"
+                        )
+
+                    if self.verbose and model != primary_model:
+                        print(f"[catsu] Fallback succeeded with {model}")
+
+                    return response
+
+                except Exception as e:
+                    errors[model] = e
+                    if self.verbose:
+                        print(f"[catsu] Cycle {cycle}: {model} failed: {e}")
+
+                    # Check if this error should trigger fallback
+                    if not self._is_fallback_error(e):
+                        # Re-raise non-fallback errors immediately
+                        raise
+
+                    # Continue to next model in chain
+
+            # All models failed this cycle - backoff before next cycle
+            if cycle < self.max_retries:
+                backoff = min(
+                    self.base_delay * (2 ** (cycle - 1)),
+                    self.max_delay,
+                )
+                if self.verbose:
+                    print(f"[catsu] All models failed cycle {cycle}, backing off {backoff}s...")
+                time.sleep(backoff)
+
+            cycle += 1
+
+        # 6. All cycles exhausted
+        raise FallbackExhaustedError(
+            primary_model=primary_model,
+            fallbacks=[f["model"] for f in fallback_configs],
+            errors=errors,
+            cycles_attempted=self.max_retries,
+        )
+
+    async def _aembed_with_fallbacks(
+        self,
+        primary_model: str,
+        inputs: List[str],
+        fallback_configs: List[FallbackConfig],
+        allow_unsafe: bool,
+        input_type: Optional[Literal["query", "document"]] = None,
+        dimensions: Optional[int] = None,
+        api_key: Optional[str] = None,
+        **kwargs: Any,
+    ) -> EmbedResponse:
+        """Async version of _embed_with_fallbacks."""
+        # 1. Validate all credentials upfront (fail fast)
+        self._validate_fallback_credentials(primary_model, fallback_configs)
+
+        # 2. Get target dimensions from primary model
+        primary_provider, primary_model_name = self._parse_model_string(primary_model)
+        target_dims = self._get_target_dimensions(
+            primary_provider, primary_model_name, {"dimensions": dimensions}
+        )
+
+        # 3. Filter by dimension compatibility if safe mode
+        if not allow_unsafe:
+            fallback_configs = self._filter_compatible_fallbacks(target_dims, fallback_configs)
+
+        # 4. Build execution chain: [primary, ...fallbacks]
+        chain: List[FallbackConfig] = [
+            {"model": primary_model, "dimensions": dimensions, "api_key": api_key, **kwargs}
+        ]
+        for config in fallback_configs:
+            chain.append({**config})
+
+        errors: Dict[str, Exception] = {}
+        cycle = 1
+
+        # 5. Round-robin with global retries
+        while cycle <= self.max_retries:
+            if self.verbose:
+                print(f"[catsu] Starting cycle {cycle}/{self.max_retries}")
+
+            # Try each model in the chain (1 attempt each)
+            for config in chain:
+                model = config["model"]
+                model_kwargs = {k: v for k, v in config.items() if k != "model"}
+
+                try:
+                    # Parse model and get provider
+                    provider_name, model_name = self._parse_model_string(model)
+                    model_info = self._catalog.get_model_info(provider_name, model_name)
+
+                    # Validate features for this model
+                    model_dims = model_kwargs.get("dimensions")
+                    if model_dims is not None and not model_info.supports_dimensions:
+                        if self.verbose:
+                            print(f"[catsu] Skipping {model}: doesn't support custom dimensions")
+                        continue
+
+                    model_input_type = input_type
+                    if model_input_type is not None and not model_info.supports_input_type:
+                        model_input_type = None
+
+                    # Get provider and make async request
+                    provider_instance = self._get_provider(provider_name)
+                    response = await provider_instance.aembed(
+                        model=model_name,
+                        inputs=inputs,
+                        input_type=model_input_type,
+                        dimensions=model_dims,
+                        api_key=model_kwargs.get("api_key"),
+                        **{k: v for k, v in model_kwargs.items() if k not in ("dimensions", "api_key")},
+                    )
+
+                    # Add fallback metadata if not primary
+                    if model != primary_model:
+                        response.requested_model = primary_model
+                        response.fallback_used = True
+                        primary_error = errors.get(primary_model)
+                        response.fallback_reason = (
+                            type(primary_error).__name__ if primary_error else "Unknown"
+                        )
+
+                    if self.verbose and model != primary_model:
+                        print(f"[catsu] Fallback succeeded with {model}")
+
+                    return response
+
+                except Exception as e:
+                    errors[model] = e
+                    if self.verbose:
+                        print(f"[catsu] Cycle {cycle}: {model} failed: {e}")
+
+                    if not self._is_fallback_error(e):
+                        raise
+
+            # All models failed this cycle - backoff before next cycle
+            if cycle < self.max_retries:
+                backoff = min(
+                    self.base_delay * (2 ** (cycle - 1)),
+                    self.max_delay,
+                )
+                if self.verbose:
+                    print(f"[catsu] All models failed cycle {cycle}, backing off {backoff}s...")
+                await asyncio.sleep(backoff)
+
+            cycle += 1
+
+        # 6. All cycles exhausted
+        raise FallbackExhaustedError(
+            primary_model=primary_model,
+            fallbacks=[f["model"] for f in fallback_configs],
+            errors=errors,
+            cycles_attempted=self.max_retries,
+        )
+
+    # -------------------------------------------------------------------------
+    # Public API
+    # -------------------------------------------------------------------------
+
     def embed(
         self,
         model: str,
@@ -207,6 +698,8 @@ class Client:
         input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
+        fallbacks: Fallbacks = None,
+        allow_unsafe_fallback: Optional[bool] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Generate embeddings for input text(s).
@@ -219,6 +712,12 @@ class Client:
                        Used by some providers like VoyageAI
             dimensions: Optional output dimensions (model must support this feature)
             api_key: Optional API key override for this specific request
+            fallbacks: Fallback model(s) to try if primary fails. Can be:
+                - str: Single model name (e.g., "text-embedding-3-small")
+                - dict: Model with config (e.g., {"model": "...", "api_key": "..."})
+                - list: Multiple fallbacks in order of preference
+            allow_unsafe_fallback: If True, allow fallback to models with different
+                dimensions (overrides client-level setting)
             **kwargs: Additional provider-specific parameters
 
         Returns:
@@ -230,20 +729,49 @@ class Client:
             ModelNotFoundError: Model not found
             AmbiguousModelError: Model name is ambiguous
             UnsupportedFeatureError: Model doesn't support requested feature
+            ConfigurationError: Missing API keys for fallback models
+            FallbackExhaustedError: All fallback models failed
 
         Example:
             >>> client = Client()
             >>> result = client.embed(
             ...     model="voyage-3",
             ...     input="hello world",
-            ...     provider="voyageai",
-            ...     dimensions=512
+            ...     fallbacks=["text-embedding-3-small", "embed-english-v3.0"]
             ... )
             >>> print(result.embeddings)  # [[0.1, 0.2, ...]]
-            >>> print(result.usage.total_tokens)  # 2
-            >>> print(result.usage.total_cost)  # 0.0000002
+            >>> print(result.fallback_used)  # True if fallback was used
 
         """
+        # Normalize input to list
+        inputs = [input] if isinstance(input, str) else input
+
+        # Determine effective fallbacks (per-request overrides client-level)
+        effective_fallbacks = fallbacks if fallbacks is not None else self.fallbacks
+        effective_allow_unsafe = (
+            allow_unsafe_fallback
+            if allow_unsafe_fallback is not None
+            else self.allow_unsafe_fallback
+        )
+
+        # If fallbacks are configured, use fallback logic
+        if effective_fallbacks is not None:
+            # Construct full model string with provider if specified
+            full_model = f"{provider}:{model}" if provider and ":" not in model else model
+
+            fallback_configs = self._normalize_fallbacks(effective_fallbacks)
+            return self._embed_with_fallbacks(
+                primary_model=full_model,
+                inputs=inputs,
+                fallback_configs=fallback_configs,
+                allow_unsafe=effective_allow_unsafe,
+                input_type=input_type,
+                dimensions=dimensions,
+                api_key=api_key,
+                **kwargs,
+            )
+
+        # No fallbacks - use original logic
         # Parse provider and model
         provider_name, model_name = self._parse_model_string(model, provider)
 
@@ -275,9 +803,6 @@ class Client:
 
         # Get provider instance
         provider_instance = self._get_provider(provider_name)
-
-        # Normalize input to list
-        inputs = [input] if isinstance(input, str) else input
 
         # Call provider's embed method
         return provider_instance.embed(
@@ -297,6 +822,8 @@ class Client:
         input_type: Optional[Literal["query", "document"]] = None,
         dimensions: Optional[int] = None,
         api_key: Optional[str] = None,
+        fallbacks: Fallbacks = None,
+        allow_unsafe_fallback: Optional[bool] = None,
         **kwargs: Any,
     ) -> EmbedResponse:
         """Async version of embed().
@@ -310,6 +837,9 @@ class Client:
             input_type: Optional input type hint ("query" or "document")
             dimensions: Optional output dimensions (model must support this feature)
             api_key: Optional API key override for this specific request
+            fallbacks: Fallback model(s) to try if primary fails
+            allow_unsafe_fallback: If True, allow fallback to models with different
+                dimensions (overrides client-level setting)
             **kwargs: Additional provider-specific parameters
 
         Returns:
@@ -317,6 +847,8 @@ class Client:
 
         Raises:
             UnsupportedFeatureError: Model doesn't support requested feature
+            ConfigurationError: Missing API keys for fallback models
+            FallbackExhaustedError: All fallback models failed
 
         Example:
             >>> import asyncio
@@ -324,11 +856,39 @@ class Client:
             >>> result = await client.aembed(
             ...     model="voyage-3",
             ...     input="hello world",
-            ...     provider="voyageai",
-            ...     dimensions=512
+            ...     fallbacks=["text-embedding-3-small"]
             ... )
 
         """
+        # Normalize input to list
+        inputs = [input] if isinstance(input, str) else input
+
+        # Determine effective fallbacks (per-request overrides client-level)
+        effective_fallbacks = fallbacks if fallbacks is not None else self.fallbacks
+        effective_allow_unsafe = (
+            allow_unsafe_fallback
+            if allow_unsafe_fallback is not None
+            else self.allow_unsafe_fallback
+        )
+
+        # If fallbacks are configured, use fallback logic
+        if effective_fallbacks is not None:
+            # Construct full model string with provider if specified
+            full_model = f"{provider}:{model}" if provider and ":" not in model else model
+
+            fallback_configs = self._normalize_fallbacks(effective_fallbacks)
+            return await self._aembed_with_fallbacks(
+                primary_model=full_model,
+                inputs=inputs,
+                fallback_configs=fallback_configs,
+                allow_unsafe=effective_allow_unsafe,
+                input_type=input_type,
+                dimensions=dimensions,
+                api_key=api_key,
+                **kwargs,
+            )
+
+        # No fallbacks - use original logic
         # Parse provider and model
         provider_name, model_name = self._parse_model_string(model, provider)
 
@@ -360,9 +920,6 @@ class Client:
 
         # Get provider instance
         provider_instance = self._get_provider(provider_name)
-
-        # Normalize input to list
-        inputs = [input] if isinstance(input, str) else input
 
         # Call provider's aembed method
         return await provider_instance.aembed(
@@ -442,6 +999,44 @@ class Client:
             inputs=inputs,
             **kwargs,
         )
+
+    def get_compatible_fallbacks(self, model: str) -> List[str]:
+        """Get models with dimensions compatible with the given model.
+
+        Returns models that can produce embeddings with the same dimensions
+        as the specified model, making them suitable fallback candidates.
+
+        Args:
+            model: Model name or "provider:model" string
+
+        Returns:
+            List of compatible model names (in "provider:model" format)
+
+        Example:
+            >>> client = Client()
+            >>> fallbacks = client.get_compatible_fallbacks("voyage-3")
+            >>> print(fallbacks)
+            ['voyageai:voyage-3-lite', 'cohere:embed-english-v3.0', ...]
+
+        """
+        # Get target model's dimensions
+        provider_name, model_name = self._parse_model_string(model)
+        model_info = self._catalog.get_model_info(provider_name, model_name)
+        target_dims = model_info.dimensions
+
+        compatible = []
+        all_models = self._catalog.list_models()
+
+        for m in all_models:
+            # Skip the same model
+            if m.provider == provider_name and m.name == model_name:
+                continue
+
+            # Check if model can produce target dimensions
+            if m.supports_dimensions or m.dimensions == target_dims:
+                compatible.append(f"{m.provider}:{m.name}")
+
+        return compatible
 
     def close(self) -> None:
         """Close sync HTTP client."""
