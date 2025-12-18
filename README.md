@@ -6,6 +6,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/catsu.svg?style=flat&labelColor=black&color=orange)](https://pypi.org/project/catsu/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/catsu?period=total&units=international_system&left_color=black&right_color=orange&left_text=downloads)](https://pepy.tech/projects/catsu)
+[![codecov](https://img.shields.io/codecov/c/github/chonkie-inc/catsu?token=27C1TNUKF5&style=flat&labelColor=black&color=orange)](https://codecov.io/gh/chonkie-inc/catsu)
 [![Python](https://img.shields.io/badge/python-3.10+-orange.svg?style=flat&labelColor=black)](https://pypi.org/project/catsu/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg?style=flat&labelColor=black)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation](https://img.shields.io/badge/docs-latest-orange.svg?style=flat&labelColor=black)](https://docs.catsu.dev)
