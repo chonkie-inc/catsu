@@ -1,6 +1,34 @@
-# Catsu
+<div align="center">
 
-High-performance embeddings client for multiple providers, powered by Rust.
+![Catsu Logo](https://raw.githubusercontent.com/chonkie-inc/catsu/main/assets/catsu-logo-w-bg.png)
+
+# 🐱 catsu
+
+[![PyPI version](https://img.shields.io/pypi/v/catsu.svg?style=flat&labelColor=black&color=orange)](https://pypi.org/project/catsu/)
+[![Python](https://img.shields.io/badge/python-3.10+-orange.svg?style=flat&labelColor=black)](https://pypi.org/project/catsu/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg?style=flat&labelColor=black)](https://opensource.org/licenses/Apache-2.0)
+[![Documentation](https://img.shields.io/badge/docs-latest-orange.svg?style=flat&labelColor=black)](https://docs.catsu.dev)
+[![Discord](https://img.shields.io/badge/discord-join-orange.svg?style=flat&labelColor=black&logo=discord&logoColor=white)](https://discord.gg/vH3SkRqmUz)
+
+_A unified, batteries-included client for embedding APIs that actually works._
+
+</div>
+
+**The world of embedding API clients is broken.**
+
+- Everyone defaults to OpenAI's client for embeddings, even though it wasn't designed for that purpose
+- Provider-specific libraries (VoyageAI, Cohere, etc.) are inconsistent, poorly maintained, or outright broken
+- Universal clients like LiteLLM don't focus on embeddings—they rely on native client libraries, inheriting all their problems
+- Every provider has different capabilities—some support dimension changes, others don't—with no standardized way to discover what's available
+- Most clients lack basic features like retry logic, proper error handling, and usage tracking
+
+**Catsu fixes this.** It's a high-performance, unified client built specifically for embeddings with:
+
+🎯 A clean, consistent API across all providers </br>
+🔄 Built-in retry logic with exponential backoff </br>
+💰 Automatic usage and cost tracking </br>
+📚 Rich model metadata and capability discovery </br>
+⚡ Rust core with Python bindings for maximum performance
 
 ## Installation
 
@@ -24,6 +52,7 @@ response = client.embed(
 
 print(f"Dimensions: {response.dimensions}")
 print(f"Tokens used: {response.usage.tokens}")
+print(f"Embedding: {response.embeddings[0][:5]}")
 ```
 
 ## Async Support
@@ -34,10 +63,24 @@ from catsu import Client
 
 async def main():
     client = Client()
-    response = await client.aembed("openai:text-embedding-3-small", "Hello!")
+    response = await client.aembed(
+        "openai:text-embedding-3-small",
+        "Hello, async world!"
+    )
     print(response.embeddings[0][:5])
 
 asyncio.run(main())
+```
+
+## With Options
+
+```python
+response = client.embed(
+    "openai:text-embedding-3-small",
+    ["Search query"],
+    input_type="query",  # "query" or "document"
+    dimensions=256,      # output dimensions (if supported)
+)
 ```
 
 ## Model Catalog
@@ -61,25 +104,32 @@ client = Client(
 )
 ```
 
-## Supported Providers
+## NumPy Integration
 
-- OpenAI (`OPENAI_API_KEY`)
-- VoyageAI (`VOYAGE_API_KEY`)
-- Cohere (`COHERE_API_KEY`)
-- Jina (`JINA_API_KEY`)
-- Mistral (`MISTRAL_API_KEY`)
-- Gemini (`GOOGLE_API_KEY` or `GEMINI_API_KEY`)
-- Together (`TOGETHER_API_KEY`)
-- Mixedbread (`MIXEDBREAD_API_KEY`)
-- Nomic (`NOMIC_API_KEY`)
-- DeepInfra (`DEEPINFRA_API_KEY`)
-- Cloudflare (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`)
+```python
+# Convert embeddings to numpy array
+arr = response.to_numpy()
+print(arr.shape)  # (2, 1536)
+```
 
-## Features
+## Context Manager
 
-- **11 providers** with unified API
-- **Async support** with `aembed()`
-- **Model catalog** with 64+ models
-- **Automatic retry** with exponential backoff
-- **Cost tracking** per request
-- **High performance** - Rust core with Python bindings
+```python
+# Sync
+with Client() as client:
+    response = client.embed("openai:text-embedding-3-small", "Hello!")
+
+# Async
+async with Client() as client:
+    response = await client.aembed("openai:text-embedding-3-small", "Hello!")
+```
+
+---
+
+<div align="center">
+
+If you found this helpful, consider giving it a ⭐!
+
+made with ❤️ by [chonkie, inc.](https://chonkie.ai)
+
+</div>

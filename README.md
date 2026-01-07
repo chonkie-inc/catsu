@@ -4,16 +4,15 @@
 
 # 🌐 catsu 🐱
 
+[![Crates.io](https://img.shields.io/crates/v/catsu.svg?style=flat&labelColor=black&color=orange)](https://crates.io/crates/catsu)
 [![PyPI version](https://img.shields.io/pypi/v/catsu.svg?style=flat&labelColor=black&color=orange)](https://pypi.org/project/catsu/)
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/catsu?period=total&units=international_system&left_color=black&right_color=orange&left_text=downloads)](https://pepy.tech/projects/catsu)
-[![codecov](https://img.shields.io/codecov/c/github/chonkie-inc/catsu?token=27C1TNUKF5&style=flat&labelColor=black&color=orange)](https://codecov.io/gh/chonkie-inc/catsu)
-[![Python](https://img.shields.io/badge/python-3.10+-orange.svg?style=flat&labelColor=black)](https://pypi.org/project/catsu/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-orange.svg?style=flat&labelColor=black)](https://opensource.org/licenses/Apache-2.0)
 [![Documentation](https://img.shields.io/badge/docs-latest-orange.svg?style=flat&labelColor=black)](https://docs.catsu.dev)
 [![Discord](https://img.shields.io/badge/discord-join-orange.svg?style=flat&labelColor=black&logo=discord&logoColor=white)](https://discord.gg/vH3SkRqmUz)
-[![Stars](https://img.shields.io/github/stars/chonkie-inc/catsu?style=flat&labelColor=black&color=orange)](https://github.com/chonkie-inc/catsu)
 
 _A unified, batteries-included client for embedding APIs that actually works._
+
+[Rust](#-rust) • [Python](./packages/python/README_PYPI.md)
 
 </div>
 
@@ -26,73 +25,95 @@ _A unified, batteries-included client for embedding APIs that actually works._
 - [Most clients lack basic features](./docs/spilled-milk.md#missing-basic-features) like retry logic, proper error handling, and usage tracking
 - [There's no single source of truth](./docs/spilled-milk.md#no-single-source-of-truth-for-model-metadata) for model metadata, pricing, or capabilities
 
-**Catsu fixes this.** It's a lightweight, unified client built specifically for embeddings with:
+**Catsu fixes this.** It's a high-performance, unified client built specifically for embeddings with:
 
 🎯 A clean, consistent API across all providers </br>
 🔄 Built-in retry logic with exponential backoff </br>
 💰 Automatic usage and cost tracking </br>
 📚 Rich model metadata and capability discovery </br>
-⚠️ Proper error handling and type hints </br>
-⚡ First-class support for both sync and async
+⚡ Rust core with Python bindings for maximum performance
 
-## 📦 Install
+## 📦 Rust
 
-Install with uv (recommended):
-```bash
-uv pip install catsu
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+catsu = "0.1"
+tokio = { version = "1", features = ["full"] }
 ```
 
-Or with pip:
+### Quick Start
+
+```rust
+use catsu::Client;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create client (reads API keys from environment)
+    let client = Client::new()?;
+
+    // Generate embeddings
+    let response = client.embed(
+        "openai:text-embedding-3-small",
+        vec!["Hello, world!".to_string(), "How are you?".to_string()],
+    ).await?;
+
+    println!("Dimensions: {}", response.dimensions);
+    println!("Tokens used: {}", response.usage.tokens);
+    println!("Embedding: {:?}", &response.embeddings[0][..5]);
+
+    Ok(())
+}
+```
+
+### With Options
+
+```rust
+use catsu::{Client, InputType};
+
+let response = client.embed_with_options(
+    "openai:text-embedding-3-small",
+    vec!["Search query".to_string()],
+    Some(InputType::Query),  // input type hint
+    Some(256),               // output dimensions
+).await?;
+```
+
+### Model Catalog
+
+```rust
+// List all available models
+let models = client.list_models(None);
+
+// Filter by provider
+let openai_models = client.list_models(Some("openai"));
+for model in openai_models {
+    println!("{}: {} dims", model.name, model.dimensions);
+}
+```
+
+## 🐍 Python
+
+Looking for Python? See the **[Python documentation](./packages/python/README_PYPI.md)**.
+
 ```bash
 pip install catsu
 ```
 
-## 🚀 Quick Start
-
-Get started in seconds! Just import catsu, create a client, and start embedding:
-
 ```python
-import catsu
+from catsu import Client
 
-# Initialize the client
-client = catsu.Client()
-
-# Generate embeddings (auto-detects provider from model name)
-response = client.embed(
-    model="voyage-3",
-    input="Hello, embeddings!"
-)
-
-# Access your results
+client = Client()
+response = client.embed("openai:text-embedding-3-small", ["Hello, world!"])
 print(f"Dimensions: {response.dimensions}")
-print(f"Tokens used: {response.usage.tokens}")
-print(f"Cost: ${response.usage.cost:.6f}")
-print(f"Embedding: {response.embeddings[0][:5]}...")  # First 5 dims
 ```
-
-That's it! No configuration needed—catsu picks up your API keys from environment variables automatically (`VOYAGE_API_KEY`, `OPENAI_API_KEY`, etc.).
-
-**Want more control?** Specify the provider explicitly:
-```python
-# Method 1: Separate parameters
-response = client.embed(provider="voyageai", model="voyage-3", input="Hello!")
-
-# Method 2: Provider prefix
-response = client.embed(model="voyageai:voyage-3", input="Hello!")
-```
-
-**Need async?** Just use `aembed`:
-```python
-response = await client.aembed(model="voyage-3", input="Hello, async world!")
-```
-
-📖 **Want to learn more?** Check out the [complete documentation](https://docs.catsu.dev) for detailed guides on all providers, parameters, and best practices.
 
 ## 🤝 Contributing
 
-Can't find your favorite model or provider? **Open an issue** and we will promptly try to add it! We're constantly expanding support for new embedding providers and models.
+Can't find your favorite model or provider? **Open an issue** and we'll add it!
 
-For guidelines on contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+For guidelines on contributing, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
 
