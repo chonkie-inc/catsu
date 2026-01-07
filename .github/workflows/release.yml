@@ -25,8 +25,9 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64
-          - os: ubuntu-latest
-            target: aarch64
+          # Linux aarch64 disabled due to ring crate cross-compilation issues
+          # - os: ubuntu-latest
+          #   target: aarch64
           - os: macos-latest
             target: x86_64
           - os: macos-latest
