@@ -17,14 +17,14 @@ jobs:
 
       - name: Compare models.json files
         run: |
-          if ! diff -q src/catsu/data/models.json website/src/models.json > /dev/null 2>&1; then
+          if ! diff -q src/data/models.json website/src/models.json > /dev/null 2>&1; then
             echo "❌ models.json files are out of sync!"
             echo ""
-            echo "Library:  src/catsu/data/models.json"
+            echo "Library:  src/data/models.json"
             echo "Website:  website/src/models.json"
             echo ""
             echo "Differences:"
-            diff src/catsu/data/models.json website/src/models.json || true
+            diff src/data/models.json website/src/models.json || true
             echo ""
             echo "Please ensure both files are identical."
             exit 1
