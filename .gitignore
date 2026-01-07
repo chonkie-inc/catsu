@@ -13,6 +13,11 @@ __pycache__/
 dist/
 build/
 
+# Compiled extensions
+*.so
+*.dylib
+*.dll
+
 # Virtual environments
 .venv/
 venv/
@@ -36,3 +41,18 @@ dmypy.json
 
 # Temporary files
 .tmp/
+work.log
+
+# Rust
+target/
+Cargo.lock
+
+# Maturin
+packages/python/.venv/
+
+# Node.js / Docs
+node_modules/
+.next/
+.open-next/
+docs/release-posts.md
+docs/design/fallback-support.md

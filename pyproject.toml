@@ -71,12 +71,12 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = "src"
+pythonpath = "src_legacy"
 asyncio_mode = "strict"
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.setuptools]
-package-dir = { "" = "src" }
+package-dir = { "" = "src_legacy" }
 packages = [
     "catsu",
     "catsu.providers",

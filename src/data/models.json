@@ -1,0 +1,1507 @@
+{
+  "cloudflare": [
+    {
+      "name": "@cf/baai/bge-small-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 64.3,
+      "rteb_score": 47.26,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-small-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-base-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.067,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-large-en-v1.5",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.204,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "@cf/baai/bge-m3",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "@cf/qwen/qwen3-embedding-0.6b",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 70.47,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-0.6B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "@cf/google/embeddinggemma-300m",
+      "provider": "cloudflare",
+      "dimensions": 768,
+      "max_input_tokens": 2048,
+      "cost_per_million_tokens": 0.012,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 69.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "google/embeddinggemma-300m"
+      },
+      "release_date": "2025-03-25"
+    },
+    {
+      "name": "@cf/pfnet/plamo-embedding-1b",
+      "provider": "cloudflare",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.019,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "pfnet/plamo-1.0-embedding"
+      },
+      "release_date": "2024-10-01"
+    }
+  ],
+  "cohere": [
+    {
+      "name": "embed-v4.0",
+      "provider": "cohere",
+      "dimensions": 1536,
+      "max_input_tokens": 128000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 64.98,
+      "rteb_score": 71.4,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-v4"
+      },
+      "release_date": "2025-04-15"
+    },
+    {
+      "name": "embed-english-v3.0",
+      "provider": "cohere",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 66.21,
+      "rteb_score": 51.89,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-english-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2023-11-02"
+    },
+    {
+      "name": "embed-english-light-v3.0",
+      "provider": "cohere",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 64.59,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-english-light-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2023-11-02"
+    },
+    {
+      "name": "embed-multilingual-v3.0",
+      "provider": "cohere",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 66.01,
+      "rteb_score": 55.43,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-multilingual-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2023-11-02"
+    },
+    {
+      "name": "embed-multilingual-light-v3.0",
+      "provider": "cohere",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 62.75,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Cohere/Cohere-embed-multilingual-light-v3.0"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2023-11-02"
+    }
+  ],
+  "deepinfra": [
+    {
+      "name": "Qwen/Qwen3-Embedding-8B",
+      "provider": "deepinfra",
+      "dimensions": 4096,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 75.23,
+      "rteb_score": 73.15,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-8B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "Qwen/Qwen3-Embedding-4B",
+      "provider": "deepinfra",
+      "dimensions": 2560,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 74.61,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-4B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "Qwen/Qwen3-Embedding-0.6B",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 70.47,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Qwen/Qwen3-Embedding-0.6B"
+      },
+      "release_date": "2025-06-05"
+    },
+    {
+      "name": "BAAI/bge-m3",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "BAAI/bge-base-en-v1.5",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-large-en-v1.5",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-en-icl",
+      "provider": "deepinfra",
+      "dimensions": 4096,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-en-icl"
+      },
+      "release_date": "2024-09-06"
+    },
+    {
+      "name": "intfloat/e5-base-v2",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 62.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/e5-base-v2"
+      },
+      "release_date": "2023-06-23"
+    },
+    {
+      "name": "intfloat/e5-large-v2",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 514,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 62.79,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/e5-large-v2"
+      },
+      "release_date": "2023-06-23"
+    },
+    {
+      "name": "intfloat/multilingual-e5-large",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 514,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "intfloat/multilingual-e5-large"
+      },
+      "release_date": "2024-01-10"
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L6-v2",
+      "provider": "deepinfra",
+      "dimensions": 384,
+      "max_input_tokens": 256,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 59.03,
+      "rteb_score": 44.55,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-MiniLM-L6-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "sentence-transformers/all-MiniLM-L12-v2",
+      "provider": "deepinfra",
+      "dimensions": 384,
+      "max_input_tokens": 256,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 44.95,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-MiniLM-L12-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "sentence-transformers/all-mpnet-base-v2",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 384,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 49.79,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "sentence-transformers/all-mpnet-base-v2"
+      },
+      "release_date": "2021-08-25"
+    },
+    {
+      "name": "thenlper/gte-base",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.005,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 63.9,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "thenlper/gte-base"
+      },
+      "release_date": "2023-08-14"
+    },
+    {
+      "name": "thenlper/gte-large",
+      "provider": "deepinfra",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 64.77,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "thenlper/gte-large"
+      },
+      "release_date": "2023-08-14"
+    },
+    {
+      "name": "google/embeddinggemma-300m",
+      "provider": "deepinfra",
+      "dimensions": 768,
+      "max_input_tokens": 2048,
+      "cost_per_million_tokens": 0.002,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 69.67,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "google/EmbeddingGemma-300m"
+      },
+      "release_date": "2025-03-25"
+    }
+  ],
+  "gemini": [
+    {
+      "name": "gemini-embedding-001",
+      "provider": "gemini",
+      "dimensions": 3072,
+      "max_input_tokens": 2048,
+      "cost_per_million_tokens": 0.15,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 73.3,
+      "rteb_score": 72.93,
+      "release_date": "2025-07-14",
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    }
+  ],
+  "jinaai": [
+    {
+      "name": "jina-embeddings-v4",
+      "provider": "jinaai",
+      "dimensions": 2048,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 67.9,
+      "release_date": "2025-06-24",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v4"
+      }
+    },
+    {
+      "name": "jina-embeddings-v3",
+      "provider": "jinaai",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2024-09-18",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v3"
+      }
+    },
+    {
+      "name": "jina-code-embeddings-1.5b",
+      "provider": "jinaai",
+      "dimensions": 1536,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-09-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-code-embeddings-1.5b"
+      }
+    },
+    {
+      "name": "jina-code-embeddings-0.5b",
+      "provider": "jinaai",
+      "dimensions": 896,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-09-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-code-embeddings-0.5b"
+      }
+    },
+    {
+      "name": "jina-embeddings-v2-base-en",
+      "provider": "jinaai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 45.97,
+      "rteb_score": 42.12,
+      "release_date": "2023-10-28",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v2-base-en"
+      }
+    },
+    {
+      "name": "jina-embeddings-v2-base-code",
+      "provider": "jinaai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.05,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2024-02-15",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "jinaai/jina-embeddings-v2-base-code"
+      }
+    }
+  ],
+  "mistral": [
+    {
+      "name": "codestral-embed-2505",
+      "provider": "mistral",
+      "dimensions": 1536,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.15,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2025-05-28",
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    },
+    {
+      "name": "mistral-embed",
+      "provider": "mistral",
+      "dimensions": 1024,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "release_date": "2023-12-11",
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      }
+    }
+  ],
+  "mixedbread": [
+    {
+      "name": "mxbai-embed-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 66.26,
+      "rteb_score": 50.39,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-large-v1"
+      },
+      "release_date": "2024-03-01"
+    },
+    {
+      "name": "mxbai-embed-2d-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-2d-large-v1"
+      },
+      "release_date": "2024-06-01"
+    },
+    {
+      "name": "deepset-mxbai-embed-de-large-v1",
+      "provider": "mixedbread",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
+      },
+      "release_date": "2024-05-01"
+    },
+    {
+      "name": "mxbai-embed-xsmall-v1",
+      "provider": "mixedbread",
+      "dimensions": 384,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float",
+        "binary"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "mixedbread-ai/mxbai-embed-xsmall-v1"
+      },
+      "release_date": "2024-08-01"
+    }
+  ],
+  "nomic": [
+    {
+      "name": "nomic-embed-text-v1.5",
+      "provider": "nomic",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 62.2,
+      "rteb_score": null,
+      "release_date": "2024-02-14",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "nomic-ai/nomic-embed-text-v1.5"
+      }
+    },
+    {
+      "name": "nomic-embed-text-v1",
+      "provider": "nomic",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 63.6,
+      "rteb_score": null,
+      "release_date": "2024-02-01",
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "nomic-ai/nomic-embed-text-v1"
+      }
+    }
+  ],
+  "openai": [
+    {
+      "name": "text-embedding-3-large",
+      "provider": "openai",
+      "dimensions": 3072,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.13,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 79.15,
+      "rteb_score": 63.33,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-25"
+    },
+    {
+      "name": "text-embedding-3-small",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": true,
+      "mteb_score": 77.56,
+      "rteb_score": 56.66,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-25"
+    },
+    {
+      "name": "text-embedding-ada-002",
+      "provider": "openai",
+      "dimensions": 1536,
+      "max_input_tokens": 8191,
+      "cost_per_million_tokens": 0.1,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 75.79,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "tiktoken",
+        "name": "cl100k_base"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2022-12-15"
+    }
+  ],
+  "togetherai": [
+    {
+      "name": "BAAI/bge-base-en-v1.5",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.14,
+      "rteb_score": 50.63,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-base-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-large-en-v1.5",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 65.89,
+      "rteb_score": 51.61,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-large-en-v1.5"
+      },
+      "release_date": "2023-09-11"
+    },
+    {
+      "name": "BAAI/bge-m3",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 8194,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": 54.33,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "BAAI/bge-m3"
+      },
+      "release_date": "2024-01-30"
+    },
+    {
+      "name": "WhereIsAI/UAE-Large-V1",
+      "provider": "togetherai",
+      "dimensions": 1024,
+      "max_input_tokens": 512,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 66.4,
+      "rteb_score": 50.65,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "WhereIsAI/UAE-Large-V1"
+      },
+      "release_date": "2023-10-01"
+    },
+    {
+      "name": "togethercomputer/m2-bert-80M-8k-retrieval",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.01,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "togethercomputer/m2-bert-80M-8k-retrieval"
+      },
+      "release_date": "2024-01-01"
+    },
+    {
+      "name": "Alibaba-NLP/gte-Qwen2-7B-instruct",
+      "provider": "togetherai",
+      "dimensions": 3584,
+      "max_input_tokens": 32768,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": 70.72,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Alibaba-NLP/gte-Qwen2-7B-instruct"
+      },
+      "release_date": "2024-06-01"
+    },
+    {
+      "name": "Alibaba-NLP/gte-modernbert-base",
+      "provider": "togetherai",
+      "dimensions": 768,
+      "max_input_tokens": 8192,
+      "cost_per_million_tokens": 0.08,
+      "modalities": [
+        "text"
+      ],
+      "quantizations": [
+        "float"
+      ],
+      "supports_batching": true,
+      "supports_input_type": false,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "Alibaba-NLP/gte-modernbert-base"
+      },
+      "release_date": "2024-11-01"
+    }
+  ],
+  "voyageai": [
+    {
+      "name": "voyage-3-large",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 76.34,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2025-01-07"
+    },
+    {
+      "name": "voyage-3.5",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": 73.78,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2025-05-20"
+    },
+    {
+      "name": "voyage-3.5-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3.5-lite"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2025-05-20"
+    },
+    {
+      "name": "voyage-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 61.38,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-09-18"
+    },
+    {
+      "name": "voyage-3-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 60.44,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-lite"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-09-18"
+    },
+    {
+      "name": "voyage-code-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 75.15,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-12-04"
+    },
+    {
+      "name": "voyage-finance-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 74.33,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-finance-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-06-03"
+    },
+    {
+      "name": "voyage-law-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 75.66,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-law-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-04-15"
+    },
+    {
+      "name": "voyage-code-2",
+      "provider": "voyageai",
+      "dimensions": 1536,
+      "max_input_tokens": 16000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 73.74,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-code-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-01-23"
+    },
+    {
+      "name": "voyage-multilingual-2",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": 74.45,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-multilingual-2"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-06-10"
+    },
+    {
+      "name": "voyage-multimodal-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": false,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-multimodal-3"
+      },
+      "quantizations": [
+        "float"
+      ],
+      "release_date": "2024-11-12"
+    }
+  ]
+}
