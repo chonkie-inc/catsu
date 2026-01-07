@@ -12,7 +12,21 @@ repository = "https://github.com/chonkie-inc/catsu"
 readme = "README.md"
 keywords = ["embeddings", "openai", "voyageai", "async", "http-client"]
 categories = ["web-programming::http-client", "asynchronous"]
-include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
+exclude = [
+    ".venv/**",
+    ".pytest_cache/**",
+    ".github/**",
+    "docs/**",
+    "website/**",
+    "packages/**",
+    "tests/**",
+    "prototypes/**",
+    "assets/**",
+    "examples/*.py",
+    "examples/README.md",
+    "pyproject.toml",
+    "uv.lock",
+]
 
 [dependencies]
 tokio = { version = "1.48", features = ["full"] }
