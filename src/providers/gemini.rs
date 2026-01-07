@@ -112,10 +112,7 @@ impl EmbeddingProvider for GeminiProvider {
 
         // Use single embedContent endpoint for each input
         // (batchEmbedContents requires additional API permissions)
-        let url = format!(
-            "{}/models/{}:embedContent",
-            GEMINI_API_BASE, request.model
-        );
+        let url = format!("{}/models/{}:embedContent", GEMINI_API_BASE, request.model);
 
         let mut embedding_vectors: Vec<Vec<f32>> = Vec::with_capacity(input_count);
 
@@ -159,8 +156,7 @@ impl EmbeddingProvider for GeminiProvider {
                 });
             }
 
-            let gemini_response: GeminiSingleEmbedResponse =
-                serde_json::from_str(&response_text)?;
+            let gemini_response: GeminiSingleEmbedResponse = serde_json::from_str(&response_text)?;
             embedding_vectors.push(gemini_response.embedding.values);
         }
 

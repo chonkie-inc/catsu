@@ -154,7 +154,6 @@ impl HttpClient {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -157,7 +157,10 @@ impl EmbeddingProvider for JinaProvider {
             input_count,
             input_type: input_type_value,
             latency_ms,
-            usage: Usage { tokens: total_tokens, cost },
+            usage: Usage {
+                tokens: total_tokens,
+                cost,
+            },
         })
     }
 }

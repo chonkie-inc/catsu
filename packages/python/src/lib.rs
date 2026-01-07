@@ -180,7 +180,9 @@ impl CatsuClient {
         }
         .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
 
-        Ok(Self { inner: Arc::new(inner) })
+        Ok(Self {
+            inner: Arc::new(inner),
+        })
     }
 
     /// Generate embeddings for input text(s).
