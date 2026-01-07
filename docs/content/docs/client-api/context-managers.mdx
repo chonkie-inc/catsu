@@ -17,12 +17,12 @@ Context managers ensure:
 ## Synchronous Context Manager
 
 ```python
-import catsu
+from catsu import Client
 
-with catsu.Client() as client:
+with Client() as client:
     response = client.embed(
-        model="voyage-3",
-        input="Hello, world!"
+        "openai:text-embedding-3-small",
+        "Hello, world!"
     )
     print(response.embeddings)
 
@@ -33,13 +33,13 @@ with catsu.Client() as client:
 
 ```python
 import asyncio
-import catsu
+from catsu import Client
 
 async def main():
-    async with catsu.Client() as client:
+    async with Client() as client:
         response = await client.aembed(
-            model="voyage-3",
-            input="Hello, async world!"
+            "openai:text-embedding-3-small",
+            "Hello, async world!"
         )
         print(response.embeddings)
 
@@ -53,64 +53,47 @@ asyncio.run(main())
 You can still pass configuration parameters:
 
 ```python
-with catsu.Client(verbose=True, max_retries=5, timeout=60) as client:
-    response = client.embed(model="voyage-3", input="Text")
+with Client(max_retries=5, timeout=60) as client:
+    response = client.embed("openai:text-embedding-3-small", "Text")
 ```
 
 ## Multiple Requests
 
 ```python
-with catsu.Client() as client:
+with Client() as client:
     # Process multiple requests
-    response1 = client.embed(model="voyage-3", input="Text 1")
-    response2 = client.embed(model="openai:text-embedding-3-small", input="Text 2")
-    response3 = client.embed(model="cohere:embed-v4.0", input="Text 3")
+    response1 = client.embed("openai:text-embedding-3-small", "Text 1")
+    response2 = client.embed("voyageai:voyage-3", "Text 2")
+    response3 = client.embed("cohere:embed-v4.0", "Text 3")
 
-    total_cost = sum([
-        response1.usage.cost,
-        response2.usage.cost,
-        response3.usage.cost
+    total_tokens = sum([
+        response1.usage.tokens,
+        response2.usage.tokens,
+        response3.usage.tokens
     ])
 
-    print(f"Total cost: ${total_cost:.6f}")
+    print(f"Total tokens: {total_tokens}")
 ```
 
 ## Async with asyncio.gather()
 
 ```python
 import asyncio
-import catsu
+from catsu import Client
 
 async def main():
-    async with catsu.Client() as client:
+    async with Client() as client:
         # Parallel requests with context manager
         responses = await asyncio.gather(
-            client.aembed(model="voyage-3", input="Query 1"),
-            client.aembed(model="voyage-3", input="Query 2"),
-            client.aembed(model="voyage-3", input="Query 3"),
+            client.aembed("openai:text-embedding-3-small", "Query 1"),
+            client.aembed("openai:text-embedding-3-small", "Query 2"),
+            client.aembed("openai:text-embedding-3-small", "Query 3"),
         )
 
         for i, response in enumerate(responses):
             print(f"Query {i+1}: {len(response.embeddings[0])} dimensions")
 
 asyncio.run(main())
-```
-
-## Exception Handling with Context Managers
-
-Context managers work seamlessly with exception handling:
-
-```python
-from catsu.exceptions import CatsuError
-
-try:
-    with catsu.Client() as client:
-        response = client.embed(model="voyage-3", input="Text")
-        print(response.embeddings)
-except CatsuError as e:
-    print(f"Error: {e}")
-finally:
-    print("Cleanup guaranteed")
 ```
 
 ## When to Use Context Managers
@@ -131,17 +114,17 @@ finally:
 ```python
 # Good: Context manager for scoped operations
 def embed_batch(texts):
-    with catsu.Client() as client:
-        return client.embed(model="voyage-3", input=texts)
+    with Client() as client:
+        return client.embed("openai:text-embedding-3-small", texts)
 
 # Also good: Reuse client for multiple operations
-client = catsu.Client()
+client = Client()
 
 def embed_query(text):
-    return client.embed(model="voyage-3", input=text, input_type="query")
+    return client.embed("voyageai:voyage-3", text, input_type="query")
 
 def embed_document(text):
-    return client.embed(model="voyage-3", input=text, input_type="document")
+    return client.embed("voyageai:voyage-3", text, input_type="document")
 ```
 
 ## Next Steps

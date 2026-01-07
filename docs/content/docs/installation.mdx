@@ -4,22 +4,28 @@ description: Install Catsu and configure API keys
 icon: Download
 ---
 
-## Install with uv (recommended)
+## Python
 
-```bash
-uv pip install catsu
-```
-
-Or with pip:
+Install with pip:
 
 ```bash
 pip install catsu
 ```
 
-## Requirements
+### Requirements
 
 - Python 3.10 or higher
 - API keys for the providers you want to use
+
+## Rust
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+catsu = "0.1"
+tokio = { version = "1", features = ["full"] }
+```
 
 ## API Key Configuration
 
@@ -28,8 +34,8 @@ Catsu automatically picks up API keys from environment variables. Configure the 
 ### Core Providers
 
 ```bash
-export VOYAGE_API_KEY="your-voyage-key"
 export OPENAI_API_KEY="your-openai-key"
+export VOYAGE_API_KEY="your-voyage-key"
 export COHERE_API_KEY="your-cohere-key"
 export GEMINI_API_KEY="your-gemini-key"
 export JINA_API_KEY="your-jina-key"
@@ -40,51 +46,43 @@ export NOMIC_API_KEY="your-nomic-key"
 ### Additional Providers
 
 ```bash
-export CLOUDFLARE_API_KEY="your-cloudflare-key"
+export CLOUDFLARE_API_TOKEN="your-cloudflare-token"
 export CLOUDFLARE_ACCOUNT_ID="your-account-id"
 export DEEPINFRA_API_KEY="your-deepinfra-key"
 export MIXEDBREAD_API_KEY="your-mixedbread-key"
-export TOGETHERAI_API_KEY="your-together-key"
-```
-
-## Alternative: Pass Keys Directly
-
-You can also pass API keys when initializing the client:
-
-```python
-import catsu
-
-client = catsu.Client(
-    api_keys={
-        "voyageai": "your-voyage-key",
-        "openai": "your-openai-key",
-    }
-)
-```
-
-Or override per request:
-
-```python
-response = client.embed(
-    model="voyage-3",
-    input="Hello!",
-    api_key="request-specific-key"
-)
+export TOGETHER_API_KEY="your-together-key"
 ```
 
 ## Verify Installation
 
-Test your installation:
+### Python
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 print("Catsu installed successfully!")
 
-# List available models (requires at least one API key)
+# List available models
 models = client.list_models()
-print(f"Found {len(models)} models across {len(set(m.provider for m in models))} providers")
+print(f"Found {len(models)} models")
+```
+
+### Rust
+
+```rust
+use catsu::Client;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::new()?;
+    println!("Catsu installed successfully!");
+
+    let models = client.list_models(None);
+    println!("Found {} models", models.len());
+
+    Ok(())
+}
 ```
 
 ## Next Steps

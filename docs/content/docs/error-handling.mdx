@@ -27,10 +27,10 @@ from catsu.exceptions import (
 ## Basic Error Handling
 
 ```python
-import catsu
+from catsu import Client
 from catsu.exceptions import CatsuError, AuthenticationError
 
-client = catsu.Client()
+client = Client()
 
 try:
     response = client.embed(
@@ -52,12 +52,12 @@ from catsu.exceptions import RateLimitError
 import time
 
 try:
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 except RateLimitError as e:
     print(f"Rate limited. Retry after: {e.retry_after} seconds")
     time.sleep(e.retry_after)
     # Retry the request
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 ```
 
 Catsu automatically retries rate-limited requests with exponential backoff (configurable via `max_retries`).
@@ -102,7 +102,7 @@ Note: Catsu will warn you but not raise an error for ignored parameters.
 from catsu.exceptions import NetworkError, TimeoutError
 
 try:
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 except TimeoutError as e:
     print(f"Request timed out after {e.timeout} seconds")
 except NetworkError as e:
@@ -134,7 +134,7 @@ Non-retryable errors:
 ## Complete Example
 
 ```python
-import catsu
+from catsu import Client
 from catsu.exceptions import (
     AuthenticationError,
     RateLimitError,
@@ -146,7 +146,7 @@ def safe_embed(text: str, model: str = "voyage-3"):
     client = catsu.Client(max_retries=3, timeout=30)
 
     try:
-        response = client.embed(model=model, input=text)
+        response = client.embed(model=model, text)
         return response.embeddings[0]
 
     except AuthenticationError:

@@ -25,11 +25,11 @@ Filter models by provider:
 # All models from all providers
 all_models = client.list_models()
 
-# Only Voyage AI models
-voyage_models = client.list_models(provider="voyageai")
-
 # Only OpenAI models
-openai_models = client.list_models(provider="openai")
+openai_models = client.list_models("openai")
+
+# Only Voyage AI models
+voyage_models = client.list_models("voyageai")
 ```
 
 ## Return Value
@@ -42,21 +42,19 @@ class ModelInfo:
     provider: str                  # Provider name
     dimensions: int                # Default embedding dimensions
     max_input_tokens: int          # Maximum tokens per request
-    supports_batching: bool        # Batch processing support
-    supports_input_type: bool      # input_type parameter support
-    supports_dimensions: bool      # Matryoshka embeddings support
+    cost_per_million_tokens: float # Cost per million tokens
 ```
 
-Note: For complete model information including pricing and benchmarks, visit [catsu.dev](https://catsu.dev).
+Note: For complete model information including benchmarks, visit [catsu.dev](https://catsu.dev).
 
 ## Examples
 
 ### List All Models
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 models = client.list_models()
 
 print(f"Total models: {len(models)}")
@@ -75,54 +73,32 @@ for provider, model_names in providers.items():
 ### Filter by Provider
 
 ```python
-# Get all Voyage AI models
-voyage_models = client.list_models(provider="voyageai")
+# Get all OpenAI models
+openai_models = client.list_models("openai")
 
-for model in voyage_models:
-    print(f"{model.name}: {model.dimensions}d, max {model.max_input_tokens} tokens")
+for model in openai_models:
+    print(f"{model.name}: {model.dimensions}d, ${model.cost_per_million_tokens}/M tokens")
 ```
 
-### Find Models with Specific Features
+### Find High-Dimensional Models
 
 ```python
-# Find models that support dimensions (Matryoshka)
-matryoshka_models = [
+# Find models with more than 1024 dimensions
+high_dim_models = [
     model for model in client.list_models()
-    if model.supports_dimensions
+    if model.dimensions > 1024
 ]
 
-print(f"Models with Matryoshka support: {len(matryoshka_models)}")
-
-# Find models that support input_type
-input_type_models = [
-    model for model in client.list_models()
-    if model.supports_input_type
-]
-
-print(f"Models with input_type support: {len(input_type_models)}")
-```
-
-### Check Model Capabilities
-
-```python
-# Check if a specific model supports a feature
-model_name = "voyage-3"
-models = client.list_models(provider="voyageai")
-voyage_3 = next((m for m in models if m.name == model_name), None)
-
-if voyage_3:
-    print(f"Model: {voyage_3.name}")
-    print(f"Dimensions: {voyage_3.dimensions}")
-    print(f"Max tokens: {voyage_3.max_input_tokens}")
-    print(f"Supports input_type: {voyage_3.supports_input_type}")
-    print(f"Supports dimensions: {voyage_3.supports_dimensions}")
+print(f"Models with >1024 dimensions: {len(high_dim_models)}")
+for model in high_dim_models:
+    print(f"  {model.provider}:{model.name} - {model.dimensions}d")
 ```
 
 ## Provider Names
 
 Valid provider filter values:
-- `"voyageai"` - Voyage AI
 - `"openai"` - OpenAI
+- `"voyageai"` - Voyage AI
 - `"cohere"` - Cohere
 - `"gemini"` - Google Gemini
 - `"jinaai"` - Jina AI
@@ -130,53 +106,10 @@ Valid provider filter values:
 - `"nomic"` - Nomic
 - `"cloudflare"` - Cloudflare Workers AI
 - `"deepinfra"` - DeepInfra
-- `"mixedbread"` - Mixed Bread
+- `"mixedbread"` - Mixedbread
 - `"togetherai"` - Together AI
-
-## Use Cases
-
-### Model Selection Helper
-
-```python
-def find_best_model(use_case: str):
-    client = catsu.Client()
-    models = client.list_models()
-
-    if use_case == "code":
-        # Find code-optimized models
-        code_models = [m for m in models if "code" in m.name.lower()]
-        return code_models
-
-    elif use_case == "multilingual":
-        # Find multilingual models
-        multilingual = [m for m in models if "multilingual" in m.name.lower()]
-        return multilingual
-
-    elif use_case == "long-context":
-        # Find models with high token limits
-        long_context = [m for m in models if m.max_input_tokens > 8000]
-        return long_context
-
-# Usage
-models = find_best_model("code")
-for model in models:
-    print(f"{model.provider}/{model.name}")
-```
-
-### Capability Discovery
-
-```python
-# Find all models that support both input_type and dimensions
-flexible_models = [
-    model for model in client.list_models()
-    if model.supports_input_type and model.supports_dimensions
-]
-
-print(f"Found {len(flexible_models)} flexible models")
-```
 
 ## Next Steps
 
 - [Providers](/providers) - Explore all supported providers
-- [Common Parameters](/parameters) - Learn about input_type, dimensions, etc.
 - [Best Practices: Model Selection](/best-practices/model-selection) - Choose the right model for your use case

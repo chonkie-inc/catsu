@@ -37,7 +37,7 @@ export CLOUDFLARE_ACCOUNT_ID="your-account-id"
 
 ```python
 response = client.embed(
-    model="@cf/baai/bge-base-en-v1.5",
+    "@cf/baai/bge-base-en-v1.5",
     input="Hello, Cloudflare!"
 )
 ```
@@ -52,7 +52,7 @@ client = catsu.Client(
 )
 
 response = client.embed(
-    model="@cf/baai/bge-base-en-v1.5",
+    "@cf/baai/bge-base-en-v1.5",
     input="Text",
     account_id="your-account-id"  # If not in env
 )
@@ -63,14 +63,14 @@ response = client.embed(
 ```python
 # Mean pooling (default)
 response = client.embed(
-    model="@cf/baai/bge-base-en-v1.5",
+    "@cf/baai/bge-base-en-v1.5",
     input="Text",
     pooling="mean"
 )
 
 # CLS token pooling
 response = client.embed(
-    model="@cf/baai/bge-base-en-v1.5",
+    "@cf/baai/bge-base-en-v1.5",
     input="Text",
     pooling="cls"
 )

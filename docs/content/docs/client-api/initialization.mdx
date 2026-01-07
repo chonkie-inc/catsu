@@ -4,7 +4,7 @@ description: Configure the Catsu Client with custom settings
 icon: Settings
 ---
 
-The `Client` class accepts several configuration parameters to customize behavior.
+The `Client` class accepts configuration parameters to customize behavior.
 
 ## Constructor Parameters
 
@@ -12,29 +12,12 @@ The `Client` class accepts several configuration parameters to customize behavio
 from catsu import Client
 
 client = Client(
-    verbose=False,      # Enable debug logging
-    max_retries=3,      # Maximum retry attempts
-    timeout=30,         # Request timeout in seconds
-    api_keys={}         # Optional API keys dictionary
+    max_retries=3,      # Maximum retry attempts (default: 3)
+    timeout=30,         # Request timeout in seconds (default: 30)
 )
 ```
 
 ## Parameters
-
-### `verbose` (bool, default: `False`)
-
-Enable verbose logging to see detailed request/response information:
-
-```python
-client = Client(verbose=True)
-
-# Logs will show:
-# - Request parameters
-# - API endpoints called
-# - Retry attempts
-# - Response metadata
-# - Token usage and costs
-```
 
 ### `max_retries` (int, default: `3`)
 
@@ -55,76 +38,34 @@ Request timeout in seconds:
 
 ```python
 client = Client(timeout=60)  # 60 second timeout
-
-# Raises TimeoutError if request exceeds timeout
 ```
 
-### `api_keys` (dict, optional)
+## API Key Configuration
 
-Override environment variable API keys:
+Catsu reads API keys from environment variables automatically:
 
-```python
-client = Client(
-    api_keys={
-        "voyageai": "your-voyage-key",
-        "openai": "your-openai-key",
-        "cohere": "your-cohere-key",
-    }
-)
+```bash
+export OPENAI_API_KEY="your-openai-key"
+export VOYAGE_API_KEY="your-voyage-key"
+export COHERE_API_KEY="your-cohere-key"
 ```
 
-Provider names for `api_keys`:
-- `"voyageai"` - Voyage AI
-- `"openai"` - OpenAI
-- `"cohere"` - Cohere
-- `"gemini"` - Google Gemini
-- `"jinaai"` - Jina AI
-- `"mistral"` - Mistral AI
-- `"nomic"` - Nomic
-- `"cloudflare"` - Cloudflare Workers AI
-- `"deepinfra"` - DeepInfra
-- `"mixedbread"` - Mixed Bread
-- `"togetherai"` - Together AI
-
-## API Key Priority
-
-Catsu resolves API keys in this order (highest to lowest priority):
-
-1. **Per-request `api_key` parameter**
-   ```python
-   client.embed(model="voyage-3", input="Text", api_key="request-key")
-   ```
-
-2. **Client `api_keys` dictionary**
-   ```python
-   client = Client(api_keys={"voyageai": "client-key"})
-   ```
-
-3. **Environment variables**
-   ```bash
-   export VOYAGE_API_KEY="env-key"
-   ```
+See [Installation](/installation) for the complete list of environment variables.
 
 ## Complete Example
 
 ```python
-import catsu
-import os
+from catsu import Client
 
 # Production configuration
-client = catsu.Client(
-    verbose=False,          # Disable logging in production
+client = Client(
     max_retries=5,          # More retries for reliability
     timeout=60,             # Longer timeout for large batches
-    api_keys={
-        "voyageai": os.getenv("VOYAGE_KEY"),
-        "openai": os.getenv("OPENAI_KEY"),
-    }
 )
 
 response = client.embed(
-    model="voyage-3",
-    input="Production embedding request"
+    "openai:text-embedding-3-small",
+    ["Production embedding request"]
 )
 ```
 

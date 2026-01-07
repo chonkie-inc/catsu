@@ -34,7 +34,7 @@ export TOGETHERAI_API_KEY="your-together-api-key"
 
 ```python
 response = client.embed(
-    model="BAAI/bge-base-en-v1.5",
+    "BAAI/bge-base-en-v1.5",
     input="Hello, Together AI!"
 )
 ```
@@ -44,19 +44,19 @@ response = client.embed(
 ```python
 # BGE Large
 large_response = client.embed(
-    model="BAAI/bge-large-en-v1.5",
+    "BAAI/bge-large-en-v1.5",
     input="Text for large model"
 )
 
 # M3 (multilingual)
 m3_response = client.embed(
-    model="BAAI/bge-m3",
+    "BAAI/bge-m3",
     input="Multilingual text"
 )
 
 # UAE Large
 uae_response = client.embed(
-    model="WhereIsAI/UAE-Large-V1",
+    "WhereIsAI/UAE-Large-V1",
     input="Text"
 )
 ```
@@ -68,7 +68,7 @@ uae_response = client.embed(
 long_text = "..." * 10000
 
 response = client.embed(
-    model="BAAI/bge-large-en-v1.5",
+    "BAAI/bge-large-en-v1.5",
     input=long_text
 )
 ```
@@ -79,10 +79,10 @@ response = client.embed(
 import asyncio
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="BAAI/bge-base-en-v1.5",
+        "BAAI/bge-base-en-v1.5",
         input="Async Together AI embedding"
     )
 

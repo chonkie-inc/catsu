@@ -43,7 +43,7 @@ Use code-specific models:
 # - jina-code-embeddings-1.5b (Jina AI)
 
 response = client.embed(
-    model="voyage-code-3",
+    "voyage-code-3",
     input="def calculate_similarity(a, b): pass"
 )
 ```
@@ -60,7 +60,7 @@ Choose models with multilingual support:
 # - mxbai models (Mixed Bread)
 
 response = client.embed(
-    model="embed-multilingual-v3.0",
+    "embed-multilingual-v3.0",
     input="Bonjour le monde"  # French
 )
 ```
@@ -72,7 +72,7 @@ response = client.embed(
 ```python
 # Finance-optimized
 response = client.embed(
-    model="voyage-finance-2",
+    "voyage-finance-2",
     input="Q4 earnings exceeded analyst expectations..."
 )
 ```
@@ -82,7 +82,7 @@ response = client.embed(
 ```python
 # Law-optimized
 response = client.embed(
-    model="voyage-law-2",
+    "voyage-law-2",
     input="Pursuant to Section 12(a) of the statute..."
 )
 ```
@@ -100,7 +100,7 @@ For cost-sensitive applications, consider:
 ```python
 # Use smaller dimensions to save on downstream costs
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Text",
     dimensions=256  # vs 1024
 )
@@ -124,7 +124,7 @@ For maximum quality:
 # - DeepInfra (Qwen3), Mixed Bread
 
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Text",
     dimensions=512
 )
@@ -137,7 +137,7 @@ response = client.embed(
 # - Voyage AI, Cohere, Gemini, Jina AI, Mistral, Nomic, Mixed Bread
 
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Query",
     input_type="query"
 )
@@ -154,7 +154,7 @@ For very long inputs:
 # - Gemini (2048 tokens)
 
 response = client.embed(
-    model="jina-embeddings-v3",
+    "jina-embeddings-v3",
     input="Very long document..." * 1000
 )
 ```

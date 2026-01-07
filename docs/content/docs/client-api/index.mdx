@@ -11,7 +11,6 @@ The `Client` class is the main interface for interacting with embedding provider
 The Client class provides a unified interface for:
 - Generating embeddings (sync and async)
 - Listing available models
-- Managing API keys and configuration
 - Handling retries and timeouts
 
 ## Quick Reference
@@ -21,20 +20,18 @@ from catsu import Client
 
 # Initialize client
 client = Client(
-    verbose=False,      # Enable debug logging
-    max_retries=3,      # Retry attempts
-    timeout=30,         # Request timeout (seconds)
-    api_keys={}         # Optional API key dict
+    max_retries=3,      # Retry attempts (default: 3)
+    timeout=30,         # Request timeout in seconds (default: 30)
 )
 
 # Generate embeddings (sync)
-response = client.embed(model="voyage-3", input="Text")
+response = client.embed("openai:text-embedding-3-small", ["Text"])
 
 # Generate embeddings (async)
-response = await client.aembed(model="voyage-3", input="Text")
+response = await client.aembed("openai:text-embedding-3-small", ["Text"])
 
 # List available models
-models = client.list_models(provider="voyageai")  # Optional filter
+models = client.list_models("openai")  # Optional provider filter
 ```
 
 ## Available Methods
@@ -58,30 +55,27 @@ All `embed()` and `aembed()` methods return an `EmbedResponse` object:
 class EmbedResponse:
     embeddings: List[List[float]]  # List of embedding vectors
     dimensions: int                 # Embedding dimensions
-    usage: Usage                    # Token usage and cost info
+    usage: Usage                    # Token usage info
 
 class Usage:
     tokens: int       # Total tokens processed
-    cost: float       # Cost in USD
-    latency: float    # Request latency in seconds
 ```
 
 ## Example Usage
 
 ```python
-import catsu
+from catsu import Client
 
 # Initialize with configuration
-client = catsu.Client(
-    verbose=True,
+client = Client(
     max_retries=5,
     timeout=60
 )
 
 # Generate embeddings
 response = client.embed(
-    model="voyage-3",
-    input=["Query 1", "Query 2"],
+    "voyageai:voyage-3",
+    ["Query 1", "Query 2"],
     input_type="query"
 )
 
@@ -89,8 +83,9 @@ response = client.embed(
 for i, embedding in enumerate(response.embeddings):
     print(f"Embedding {i+1}: {len(embedding)} dimensions")
 
-print(f"Total cost: ${response.usage.cost:.6f}")
-print(f"Latency: {response.usage.latency:.3f}s")
+# Convert to numpy
+arr = response.to_numpy()
+print(arr.shape)  # (2, 1024)
 ```
 
 ## Learn More

@@ -35,12 +35,12 @@ export COHERE_API_KEY="your-cohere-api-key"
 ### Basic Usage
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 
 response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="Hello, Cohere!"
 )
 
@@ -54,14 +54,14 @@ Catsu automatically maps `input_type` to Cohere's `search_query`/`search_documen
 ```python
 # For search queries
 query_response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="What is natural language processing?",
     input_type="query"  # → search_query in Cohere API
 )
 
 # For documents
 doc_response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="NLP is a field of AI that focuses on...",
     input_type="document"  # → search_document in Cohere API
 )
@@ -74,21 +74,21 @@ Control how long texts are truncated:
 ```python
 # Truncate from the end (keep beginning)
 response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="Very long text that exceeds the token limit...",
     truncate="END"
 )
 
 # Truncate from the start (keep ending)
 response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="Long text...",
     truncate="START"
 )
 
 # Don't truncate (raises error if too long)
 response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input="Text",
     truncate="NONE"
 )
@@ -99,19 +99,19 @@ response = client.embed(
 ```python
 # English-only model
 english_response = client.embed(
-    model="embed-english-v3.0",
+    "embed-english-v3.0",
     input="English text only"
 )
 
 # Multilingual model
 multilingual_response = client.embed(
-    model="embed-multilingual-v3.0",
+    "embed-multilingual-v3.0",
     input="Texto en español"  # Spanish text
 )
 
 # Light multilingual model (faster, smaller)
 light_response = client.embed(
-    model="embed-multilingual-light-v3.0",
+    "embed-multilingual-light-v3.0",
     input="Texte en français"  # French text
 )
 ```
@@ -122,7 +122,7 @@ light_response = client.embed(
 texts = ["Document 1", "Document 2", "Document 3"]
 
 response = client.embed(
-    model="embed-v4.0",
+    "embed-v4.0",
     input=texts,
     input_type="document"
 )
@@ -136,10 +136,10 @@ print(f"Embedded {len(response.embeddings)} documents")
 import asyncio
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="embed-v4.0",
+        "embed-v4.0",
         input="Async Cohere embedding",
         input_type="query"
     )

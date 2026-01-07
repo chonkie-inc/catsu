@@ -62,7 +62,7 @@ export function AboutModal() {
             {/* Content */}
             <div className="p-6 space-y-4 text-sm text-gray-700 dark:text-gray-300">
               <p className="text-base">
-                <strong>Catsu</strong> is a unified, batteries-included client for embedding APIs that actually works.
+                <strong>Catsu</strong> is a high-performance embeddings client for multiple providers, powered by Rust.
               </p>
 
               <div>
@@ -70,37 +70,36 @@ export function AboutModal() {
                 <ul className="space-y-2 list-disc list-inside">
                   <li>🎯 Clean, consistent API across all providers</li>
                   <li>🔄 Built-in retry logic with exponential backoff</li>
-                  <li>💰 Automatic usage and cost tracking</li>
                   <li>📚 Rich model metadata and capability discovery</li>
-                  <li>⚠️ Proper error handling and type hints</li>
-                  <li>⚡ First-class support for both sync and async</li>
+                  <li>⚡ High performance - Rust core with Python bindings</li>
+                  <li>🔀 First-class support for both sync and async</li>
                 </ul>
               </div>
 
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Installation</h3>
                 <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
-                  <code>uv pip install catsu</code>
+                  <code>pip install catsu</code>
                 </pre>
               </div>
 
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Quick Start</h3>
                 <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded text-xs overflow-x-auto border border-gray-200 dark:border-gray-800">
-                  <code>{`import catsu
+                  <code>{`from catsu import Client
 
 # Initialize the client
-client = catsu.Client()
+client = Client()
 
 # Generate embeddings
 response = client.embed(
-    model="voyage-3",
-    input="Hello, embeddings!"
+    "openai:text-embedding-3-small",
+    ["Hello, embeddings!"]
 )
 
 # Access results
 print(f"Dimensions: {response.dimensions}")
-print(f"Cost: \${response.usage.cost:.6f}")`}</code>
+print(f"Tokens: {response.usage.tokens}")`}</code>
                 </pre>
               </div>
 

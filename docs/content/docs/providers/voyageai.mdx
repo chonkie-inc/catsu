@@ -33,12 +33,12 @@ export VOYAGE_API_KEY="your-voyage-api-key"
 ### Basic Usage
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Hello, world!"
 )
 
@@ -51,14 +51,14 @@ print(f"Cost: ${response.usage.cost:.8f}")
 ```python
 # For queries
 query_response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="What is machine learning?",
     input_type="query"
 )
 
 # For documents
 doc_response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Machine learning is a subset of artificial intelligence...",
     input_type="document"
 )
@@ -69,7 +69,7 @@ doc_response = client.embed(
 ```python
 # Smaller dimensions for faster similarity search
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Sample text",
     dimensions=256  # vs default 1024
 )
@@ -82,19 +82,19 @@ print(f"Dimensions: {response.dimensions}")  # 256
 ```python
 # Finance-specific
 finance_response = client.embed(
-    model="voyage-finance-2",
+    "voyage-finance-2",
     input="The company's Q4 earnings exceeded expectations..."
 )
 
 # Law-specific
 law_response = client.embed(
-    model="voyage-law-2",
+    "voyage-law-2",
     input="In accordance with Section 12(a) of the statute..."
 )
 
 # Code-specific
 code_response = client.embed(
-    model="voyage-code-3",
+    "voyage-code-3",
     input="def calculate_embeddings(texts): pass"
 )
 ```
@@ -104,7 +104,7 @@ code_response = client.embed(
 ```python
 # Text and image embeddings
 response = client.embed(
-    model="voyage-multimodal-3",
+    "voyage-multimodal-3",
     input="Description of an image"
 )
 ```
@@ -117,7 +117,7 @@ voyage-3.5 supports binary quantization for smaller storage:
 # Note: Quantization is configured on the provider side
 # Catsu returns float embeddings by default
 response = client.embed(
-    model="voyage-3.5",
+    "voyage-3.5",
     input="Text"
 )
 ```
@@ -128,10 +128,10 @@ response = client.embed(
 import asyncio
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="voyage-3",
+        "voyage-3",
         input="Async embedding generation",
         input_type="document"
     )

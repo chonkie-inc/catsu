@@ -9,19 +9,19 @@ Get started with Catsu in just a few steps!
 ## Step 1: Import and Initialize
 
 ```python
-import catsu
+from catsu import Client
 
-# Initialize the client (picks up API keys from environment)
-client = catsu.Client()
+# Initialize the client (reads API keys from environment)
+client = Client()
 ```
 
 ## Step 2: Generate Embeddings
 
 ```python
-# Generate embeddings (auto-detects provider from model name)
+# Generate embeddings using provider:model format
 response = client.embed(
-    model="voyage-3",
-    input="Hello, world!"
+    "openai:text-embedding-3-small",
+    ["Hello, world!"]
 )
 ```
 
@@ -30,38 +30,10 @@ response = client.embed(
 ```python
 # Access embeddings
 print(response.embeddings)      # [[0.1, 0.2, 0.3, ...]]
-print(response.dimensions)      # 1024
+print(response.dimensions)      # 1536
 
-# Check usage and cost
+# Check usage
 print(response.usage.tokens)    # 2
-print(response.usage.cost)      # 0.0000002
-print(response.usage.latency)   # 0.123 (seconds)
-```
-
-## Multiple Ways to Specify Provider
-
-### Method 1: Auto-detection (Recommended)
-
-Catsu automatically detects the provider from the model name:
-
-```python
-response = client.embed(model="voyage-3", input="Hello!")
-```
-
-### Method 2: Explicit Provider Parameter
-
-```python
-response = client.embed(
-    provider="voyageai",
-    model="voyage-3",
-    input="Hello!"
-)
-```
-
-### Method 3: Provider Prefix
-
-```python
-response = client.embed(model="voyageai:voyage-3", input="Hello!")
 ```
 
 ## Working with Multiple Inputs
@@ -69,13 +41,23 @@ response = client.embed(model="voyageai:voyage-3", input="Hello!")
 ```python
 # Batch processing (more efficient)
 response = client.embed(
-    model="voyage-3",
-    input=["Text 1", "Text 2", "Text 3"]
+    "openai:text-embedding-3-small",
+    ["Text 1", "Text 2", "Text 3"]
 )
 
 # Results include all embeddings
 print(len(response.embeddings))  # 3
-print(response.usage.tokens)      # Total tokens for all inputs
+print(response.usage.tokens)     # Total tokens for all inputs
+```
+
+## Single Text Input
+
+```python
+# You can also pass a single string
+response = client.embed(
+    "openai:text-embedding-3-small",
+    "Hello, world!"
+)
 ```
 
 ## Async Usage
@@ -84,22 +66,22 @@ For better performance with multiple requests:
 
 ```python
 import asyncio
-import catsu
+from catsu import Client
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     # Single async request
     response = await client.aembed(
-        model="voyage-3",
-        input="Hello, async world!"
+        "openai:text-embedding-3-small",
+        "Hello, async world!"
     )
 
     # Parallel requests
     responses = await asyncio.gather(
-        client.aembed(model="voyage-3", input="Query 1"),
-        client.aembed(model="voyage-3", input="Query 2"),
-        client.aembed(model="voyage-3", input="Query 3"),
+        client.aembed("openai:text-embedding-3-small", "Query 1"),
+        client.aembed("openai:text-embedding-3-small", "Query 2"),
+        client.aembed("openai:text-embedding-3-small", "Query 3"),
     )
 
     print(f"Processed {len(responses)} requests in parallel")
@@ -113,13 +95,13 @@ Context managers ensure proper cleanup:
 
 ```python
 # Sync context manager
-with catsu.Client() as client:
-    response = client.embed(model="voyage-3", input="Hello!")
+with Client() as client:
+    response = client.embed("openai:text-embedding-3-small", "Hello!")
     print(response.embeddings)
 
 # Async context manager
-async with catsu.Client() as client:
-    response = await client.aembed(model="voyage-3", input="Hello!")
+async with Client() as client:
+    response = await client.aembed("openai:text-embedding-3-small", "Hello!")
     print(response.embeddings)
 ```
 
@@ -128,26 +110,48 @@ async with catsu.Client() as client:
 Different providers support different parameters:
 
 ```python
-# Voyage AI with input_type
+# With input_type (for search optimization)
 response = client.embed(
-    model="voyage-3",
-    input="What is machine learning?",
+    "voyageai:voyage-3",
+    ["What is machine learning?"],
     input_type="query"  # or "document"
 )
 
-# Gemini with dimensions (Matryoshka)
+# With custom dimensions (Matryoshka embeddings)
 response = client.embed(
-    model="gemini-embedding-001",
-    input="Sample text",
-    dimensions=512  # 128-3072 supported
+    "openai:text-embedding-3-small",
+    ["Sample text"],
+    dimensions=256
+)
+```
+
+## NumPy Integration
+
+Convert embeddings to numpy arrays:
+
+```python
+response = client.embed(
+    "openai:text-embedding-3-small",
+    ["Text 1", "Text 2"]
 )
 
-# Nomic with task_type
-response = client.embed(
-    model="nomic-embed-text-v1.5",
-    input="Cluster this text",
-    task_type="clustering"
-)
+# Convert to numpy array
+arr = response.to_numpy()
+print(arr.shape)  # (2, 1536)
+```
+
+## Model Catalog
+
+List available models:
+
+```python
+# List all models
+models = client.list_models()
+
+# Filter by provider
+openai_models = client.list_models("openai")
+for m in openai_models:
+    print(f"{m.name}: {m.dimensions} dims")
 ```
 
 ## Next Steps

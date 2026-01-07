@@ -47,12 +47,12 @@ Gemini supports specific task types for optimization:
 ### Basic Usage
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 
 response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="Hello, Gemini!"
 )
 
@@ -64,21 +64,21 @@ print(f"Dimensions: {response.dimensions}")  # 3072 (default)
 ```python
 # For search queries
 query_response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="What is quantum computing?",
     task_type="RETRIEVAL_QUERY"
 )
 
 # For documents
 doc_response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="Quantum computing uses quantum mechanics...",
     task_type="RETRIEVAL_DOCUMENT"
 )
 
 # For classification
 classification_response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="This product is amazing!",
     task_type="CLASSIFICATION"
 )
@@ -89,7 +89,7 @@ classification_response = client.embed(
 ```python
 # Smaller dimensions for faster search
 response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="Sample text",
     dimensions=512  # vs default 3072
 )
@@ -98,7 +98,7 @@ print(f"Dimensions: {response.dimensions}")  # 512
 
 # Minimum dimensions
 tiny_response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="Text",
     dimensions=128
 )
@@ -108,7 +108,7 @@ tiny_response = client.embed(
 
 ```python
 response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input="AI research paper abstract...",
     input_type="document",
     task_type="SEMANTIC_SIMILARITY",
@@ -123,7 +123,7 @@ response = client.embed(
 long_text = "..." * 1000  # Very long document
 
 response = client.embed(
-    model="gemini-embedding-001",
+    "gemini-embedding-001",
     input=long_text,
     task_type="RETRIEVAL_DOCUMENT"
 )
@@ -135,10 +135,10 @@ response = client.embed(
 import asyncio
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="gemini-embedding-001",
+        "gemini-embedding-001",
         input="Async Gemini embedding",
         task_type="RETRIEVAL_QUERY",
         dimensions=512

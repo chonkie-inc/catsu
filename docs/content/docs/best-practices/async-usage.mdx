@@ -23,13 +23,13 @@ Asynchronous methods enable parallel processing and significantly better perform
 
 ```python
 import asyncio
-import catsu
+from catsu import Client
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="voyage-3",
+        "voyage-3",
         input="Async embedding"
     )
 
@@ -46,13 +46,13 @@ Process multiple requests concurrently:
 import asyncio
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     # All requests run in parallel
     responses = await asyncio.gather(
-        client.aembed(model="voyage-3", input="Text 1"),
-        client.aembed(model="voyage-3", input="Text 2"),
-        client.aembed(model="voyage-3", input="Text 3"),
+        client.aembed("voyage-3", "Text 1"),
+        client.aembed("voyage-3", "Text 2"),
+        client.aembed("voyage-3", "Text 3"),
     )
 
     for i, response in enumerate(responses):
@@ -71,20 +71,20 @@ texts = ["Sample text"] * 10
 
 # Synchronous (sequential)
 def sync_process():
-    client = catsu.Client()
+    client = Client()
     start = time.time()
 
     for text in texts:
-        response = client.embed(model="voyage-3", input=text)
+        response = client.embed("voyage-3", text)
 
     return time.time() - start
 
 # Asynchronous (parallel)
 async def async_process():
-    client = catsu.Client()
+    client = Client()
     start = time.time()
 
-    tasks = [client.aembed(model="voyage-3", input=text) for text in texts]
+    tasks = [client.aembed("voyage-3", text) for text in texts]
     await asyncio.gather(*tasks)
 
     return time.time() - start
@@ -105,14 +105,14 @@ Maximum efficiency with both async and batching:
 import asyncio
 
 async def process_large_dataset(texts, batch_size=50):
-    client = catsu.Client()
+    client = Client()
 
     # Split into batches
     batches = [texts[i:i + batch_size] for i in range(0, len(texts), batch_size)]
 
     # Process all batches in parallel
     responses = await asyncio.gather(*[
-        client.aembed(model="voyage-3", input=batch)
+        client.aembed("voyage-3", batch)
         for batch in batches
     ])
 
@@ -131,15 +131,15 @@ embeddings = asyncio.run(process_large_dataset(texts, batch_size=50))
 
 ```python
 from fastapi import FastAPI
-import catsu
+from catsu import Client
 
 app = FastAPI()
-client = catsu.Client()
+client = Client()
 
 @app.post("/embed")
 async def create_embedding(text: str):
     response = await client.aembed(
-        model="voyage-3",
+        "voyage-3",
         input=text
     )
 
@@ -151,7 +151,7 @@ async def create_embedding(text: str):
 @app.post("/embed-batch")
 async def create_embeddings(texts: list[str]):
     response = await client.aembed(
-        model="voyage-3",
+        "voyage-3",
         input=texts
     )
 
@@ -169,13 +169,13 @@ from catsu.exceptions import CatsuError
 
 async def safe_aembed(client, text):
     try:
-        return await client.aembed(model="voyage-3", input=text)
+        return await client.aembed("voyage-3", text)
     except CatsuError as e:
         print(f"Error: {e}")
         return None
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     # Process with error handling
     results = await asyncio.gather(
@@ -195,9 +195,9 @@ asyncio.run(main())
 
 ```python
 async def main():
-    async with catsu.Client() as client:
+    async with Client() as client:
         response = await client.aembed(
-            model="voyage-3",
+            "voyage-3",
             input="Async with automatic cleanup"
         )
         print(response.embeddings)

@@ -11,11 +11,11 @@ The `embed()` method generates embeddings synchronously using the specified mode
 ```python
 def embed(
     self,
-    *,
     model: str,
     input: Union[str, List[str]],
-    provider: Optional[str] = None,
-    **kwargs
+    *,
+    input_type: Optional[str] = None,
+    dimensions: Optional[int] = None,
 ) -> EmbedResponse
 ```
 
@@ -25,17 +25,12 @@ def embed(
 
 #### `model` (str)
 
-The model identifier. Can be specified in three ways:
+The model identifier in `provider:model` format:
 
 ```python
-# 1. Model name only (auto-detect provider)
-client.embed(model="voyage-3", input="Text")
-
-# 2. Provider prefix
-client.embed(model="voyageai:voyage-3", input="Text")
-
-# 3. With explicit provider parameter
-client.embed(provider="voyageai", model="voyage-3", input="Text")
+client.embed("openai:text-embedding-3-small", ["Text"])
+client.embed("voyageai:voyage-3", ["Text"])
+client.embed("cohere:embed-v4.0", ["Text"])
 ```
 
 #### `input` (str | List[str])
@@ -44,54 +39,45 @@ The text(s) to embed:
 
 ```python
 # Single text
-client.embed(model="voyage-3", input="Single text")
+client.embed("openai:text-embedding-3-small", "Single text")
 
 # Multiple texts (batch)
-client.embed(model="voyage-3", input=["Text 1", "Text 2", "Text 3"])
+client.embed("openai:text-embedding-3-small", ["Text 1", "Text 2", "Text 3"])
 ```
 
 ### Optional Parameters
 
-#### `provider` (str, optional)
+#### `input_type` (str, optional)
 
-Explicitly specify the provider:
-
-```python
-client.embed(
-    provider="voyageai",
-    model="voyage-3",
-    input="Text"
-)
-```
-
-#### `**kwargs` (provider-specific)
-
-Additional provider-specific parameters:
+Hint for optimizing embeddings for search:
 
 ```python
-# Voyage AI with input_type
+# For search queries
 client.embed(
-    model="voyage-3",
-    input="What is AI?",
+    "voyageai:voyage-3",
+    ["What is machine learning?"],
     input_type="query"
 )
 
-# Gemini with dimensions
+# For documents being searched
 client.embed(
-    model="gemini-embedding-001",
-    input="Text",
-    dimensions=512
-)
-
-# Per-request API key override
-client.embed(
-    model="voyage-3",
-    input="Text",
-    api_key="custom-api-key"
+    "voyageai:voyage-3",
+    ["Machine learning is..."],
+    input_type="document"
 )
 ```
 
-See [Provider Documentation](/providers) for provider-specific parameters.
+#### `dimensions` (int, optional)
+
+Output embedding dimensions (for models that support Matryoshka embeddings):
+
+```python
+client.embed(
+    "openai:text-embedding-3-small",
+    ["Text"],
+    dimensions=256  # Reduce from default 1536
+)
+```
 
 ## Return Value
 
@@ -105,8 +91,6 @@ class EmbedResponse:
 
 class Usage:
     tokens: int       # Total tokens processed
-    cost: float       # Cost in USD
-    latency: float    # Request latency in seconds
 ```
 
 ## Examples
@@ -115,13 +99,13 @@ class Usage:
 
 ```python
 response = client.embed(
-    model="voyage-3",
-    input="Hello, world!"
+    "openai:text-embedding-3-small",
+    "Hello, world!"
 )
 
 print(response.embeddings[0][:5])  # [0.123, 0.456, ...]
-print(response.dimensions)          # 1024
-print(response.usage.cost)          # 0.0000002
+print(response.dimensions)          # 1536
+print(response.usage.tokens)        # 2
 ```
 
 ### Batch Processing
@@ -134,61 +118,47 @@ texts = [
 ]
 
 response = client.embed(
-    model="voyage-3",
-    input=texts
+    "openai:text-embedding-3-small",
+    texts
 )
 
 # Process each embedding
 for i, embedding in enumerate(response.embeddings):
     print(f"Document {i+1}: {len(embedding)} dimensions")
-
-print(f"Total cost: ${response.usage.cost:.6f}")
 ```
 
-### With Provider-Specific Parameters
+### With Options
 
 ```python
 # Voyage AI with input_type
 response = client.embed(
-    model="voyage-3",
-    input="What is machine learning?",
-    input_type="query"  # vs "document"
+    "voyageai:voyage-3",
+    ["What is machine learning?"],
+    input_type="query"
 )
 
-# Nomic with task_type and dimensions
+# OpenAI with reduced dimensions
 response = client.embed(
-    model="nomic-embed-text-v1.5",
-    input="Clustering sample",
-    task_type="clustering",
-    dimensions=256  # Matryoshka embeddings
-)
-
-# Cohere with truncate
-response = client.embed(
-    model="embed-v4.0",
-    input="Very long text...",
-    truncate="END"  # or "START" or "NONE"
+    "openai:text-embedding-3-small",
+    ["Sample text"],
+    dimensions=256
 )
 ```
 
-## Error Handling
+### NumPy Integration
 
 ```python
-from catsu.exceptions import CatsuError
+response = client.embed(
+    "openai:text-embedding-3-small",
+    ["Text 1", "Text 2"]
+)
 
-try:
-    response = client.embed(
-        model="voyage-3",
-        input="Text"
-    )
-except CatsuError as e:
-    print(f"Error: {e}")
+# Convert to numpy array
+arr = response.to_numpy()
+print(arr.shape)  # (2, 1536)
 ```
-
-See [Error Handling](/error-handling) for complete exception reference.
 
 ## Next Steps
 
 - [aembed() Method](/client-api/aembed-method) - Async version for better performance
 - [Providers](/providers) - Learn about provider-specific parameters
-- [Common Parameters](/parameters) - Understanding input_type, dimensions, etc.

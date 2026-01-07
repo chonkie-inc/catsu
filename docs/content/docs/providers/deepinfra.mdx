@@ -35,7 +35,7 @@ export DEEPINFRA_API_KEY="your-deepinfra-api-key"
 
 ```python
 response = client.embed(
-    model="Qwen/Qwen3-Embedding-8B",
+    "Qwen/Qwen3-Embedding-8B",
     input="Hello, DeepInfra!"
 )
 ```
@@ -45,7 +45,7 @@ response = client.embed(
 ```python
 # Qwen3 models support Matryoshka (32-8192)
 response = client.embed(
-    model="Qwen/Qwen3-Embedding-8B",
+    "Qwen/Qwen3-Embedding-8B",
     input="Sample text",
     dimensions=1024  # vs default 4096
 )
@@ -58,19 +58,19 @@ print(f"Dimensions: {response.dimensions}")  # 1024
 ```python
 # Large model (8B parameters, 4096 dimensions)
 large_response = client.embed(
-    model="Qwen/Qwen3-Embedding-8B",
+    "Qwen/Qwen3-Embedding-8B",
     input="Text"
 )
 
 # Medium model (4B parameters, 2560 dimensions)
 medium_response = client.embed(
-    model="Qwen/Qwen3-Embedding-4B",
+    "Qwen/Qwen3-Embedding-4B",
     input="Text"
 )
 
 # Small model (0.6B parameters, 1024 dimensions)
 small_response = client.embed(
-    model="Qwen/Qwen3-Embedding-0.6B",
+    "Qwen/Qwen3-Embedding-0.6B",
     input="Text"
 )
 ```

@@ -41,10 +41,10 @@ Learn how to get the most out of Catsu with these expert tips and recommendation
 ```python
 # ❌ Inefficient: One request per text
 for text in texts:
-    response = client.embed(model="voyage-3", input=text)
+    response = client.embed("voyage-3", text)
 
 # ✅ Efficient: Batch request
-response = client.embed(model="voyage-3", input=texts)
+response = client.embed("voyage-3", texts)
 ```
 
 ### Use Async for Parallel Requests
@@ -55,9 +55,9 @@ import asyncio
 # ✅ Process multiple batches in parallel
 async def process_batches():
     responses = await asyncio.gather(
-        client.aembed(model="voyage-3", input=batch1),
-        client.aembed(model="voyage-3", input=batch2),
-        client.aembed(model="voyage-3", input=batch3),
+        client.aembed("voyage-3", batch1),
+        client.aembed("voyage-3", batch2),
+        client.aembed("voyage-3", batch3),
     )
     return responses
 ```
@@ -67,7 +67,7 @@ async def process_batches():
 ### Monitor Usage
 
 ```python
-response = client.embed(model="voyage-3", input=texts)
+response = client.embed("voyage-3", texts)
 
 print(f"Tokens: {response.usage.tokens}")
 print(f"Cost: ${response.usage.cost:.6f}")
@@ -88,14 +88,14 @@ Different providers and models have varying costs:
 ```python
 # For queries
 query_emb = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="search query",
     input_type="query"
 )
 
 # For documents
 doc_emb = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="document content",
     input_type="document"
 )
@@ -105,13 +105,13 @@ doc_emb = client.embed(
 
 ```python
 # For code
-code_emb = client.embed(model="voyage-code-3", input="def hello(): pass")
+code_emb = client.embed("voyage-code-3", "def hello(): pass")
 
 # For finance
-finance_emb = client.embed(model="voyage-finance-2", input="Q4 earnings...")
+finance_emb = client.embed("voyage-finance-2", "Q4 earnings...")
 
 # For legal
-law_emb = client.embed(model="voyage-law-2", input="Section 12(a)...")
+law_emb = client.embed("voyage-law-2", "Section 12(a)...")
 ```
 
 ## Reliability
@@ -132,7 +132,7 @@ client = catsu.Client(
 from catsu.exceptions import CatsuError
 
 try:
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 except CatsuError as e:
     # Log error and handle gracefully
     print(f"Error: {e}")

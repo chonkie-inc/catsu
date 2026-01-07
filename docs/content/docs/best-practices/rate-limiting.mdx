@@ -14,7 +14,7 @@ Catsu automatically retries rate-limited requests:
 client = catsu.Client(max_retries=5)
 
 # Automatically retries up to 5 times if rate limited
-response = client.embed(model="voyage-3", input="Text")
+response = client.embed("voyage-3", "Text")
 ```
 
 ## How Retries Work
@@ -34,13 +34,13 @@ from catsu.exceptions import RateLimitError
 import time
 
 try:
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 except RateLimitError as e:
     print(f"Rate limited. Retry after {e.retry_after} seconds")
 
     # Wait and retry
     time.sleep(e.retry_after)
-    response = client.embed(model="voyage-3", input="Text")
+    response = client.embed("voyage-3", "Text")
 ```
 
 ## Rate Limit Best Practices
@@ -77,7 +77,7 @@ def process_large_dataset(texts, batch_size=50):
         batch = texts[i:i + batch_size]
 
         try:
-            response = client.embed(model="voyage-3", input=batch)
+            response = client.embed("voyage-3", batch)
             results.extend(response.embeddings)
 
         except RateLimitError as e:
@@ -85,7 +85,7 @@ def process_large_dataset(texts, batch_size=50):
             time.sleep(e.retry_after)
 
             # Retry this batch
-            response = client.embed(model="voyage-3", input=batch)
+            response = client.embed("voyage-3", batch)
             results.extend(response.embeddings)
 
         # Small delay between batches
@@ -103,7 +103,7 @@ from catsu.exceptions import RateLimitError
 async def embed_with_rate_limit(client, text, max_attempts=5):
     for attempt in range(max_attempts):
         try:
-            return await client.aembed(model="voyage-3", input=text)
+            return await client.aembed("voyage-3", text)
         except RateLimitError as e:
             if attempt < max_attempts - 1:
                 await asyncio.sleep(e.retry_after or 2 ** attempt)
@@ -111,7 +111,7 @@ async def embed_with_rate_limit(client, text, max_attempts=5):
                 raise
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     # Process with automatic retry
     responses = await asyncio.gather(*[
@@ -136,7 +136,7 @@ class RateLimitTracker:
         self.total_requests += 1
 
         try:
-            return client.embed(model=model, input=input)
+            return client.embed(model=model, input)
         except RateLimitError as e:
             self.rate_limit_count += 1
             print(f"Rate limit {self.rate_limit_count}/{self.total_requests} requests")
@@ -164,7 +164,7 @@ def embed_with_failover(text):
     for _ in range(len(providers)):
         try:
             model = providers[current_provider]
-            return client.embed(model=model, input=text)
+            return client.embed(model=model, text)
         except RateLimitError:
             # Try next provider
             current_provider = (current_provider + 1) % len(providers)
@@ -185,7 +185,7 @@ async def worker(queue, results, client):
             break
 
         try:
-            response = await client.aembed(model="voyage-3", input=text)
+            response = await client.aembed("voyage-3", text)
             results.append(response)
         except RateLimitError as e:
             # Put back in queue after delay
@@ -204,7 +204,7 @@ async def process_with_queue(texts, num_workers=5):
 
     # Start workers
     workers = [
-        asyncio.create_task(worker(queue, results, catsu.Client()))
+        asyncio.create_task(worker(queue, results, Client()))
         for _ in range(num_workers)
     ]
 

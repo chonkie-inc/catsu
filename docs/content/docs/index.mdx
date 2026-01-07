@@ -1,6 +1,6 @@
 ---
 title: Welcome to Catsu
-description: A unified Python client for embedding APIs
+description: High-performance embeddings client for multiple providers
 icon: House
 ---
 
@@ -9,29 +9,29 @@ icon: House
   <img src="/catsu-logo-dark.png" alt="Catsu Logo" className="h-64 hidden dark:block" />
 </div>
 
-**A unified Python client for embedding APIs**
+**High-performance embeddings client for multiple providers, powered by Rust.**
 
-Catsu is a unified Python client for accessing multiple embedding providers through a single, consistent API. It supports **11 major embedding providers** with over 50 models, providing:
+Catsu is a unified client for accessing multiple embedding providers through a single, consistent API. It supports **11 major embedding providers** with over 60 models, providing:
 
 - **Unified Interface**: Single API for all providers
+- **High Performance**: Rust core with Python bindings
 - **Automatic Retry Logic**: Built-in exponential backoff
 - **Cost Tracking**: Automatic usage and cost calculation
-- **Local Tokenization**: Count tokens without API calls
-- **Type Safety**: Full type hints and validation
 - **Async Support**: Both sync and async methods
+- **NumPy Integration**: Convert embeddings to numpy arrays
 
 ## Quick Example
 
 ```python
-import catsu
+from catsu import Client
 
-# Initialize the client
-client = catsu.Client()
+# Initialize the client (reads API keys from environment)
+client = Client()
 
-# Generate embeddings (auto-detects provider from model name)
+# Generate embeddings
 response = client.embed(
-    model="voyage-3",
-    input="Hello, embeddings!"
+    "openai:text-embedding-3-small",
+    ["Hello, embeddings!"]
 )
 
 # Access your embeddings
@@ -39,9 +39,8 @@ embedding = response.embeddings[0]  # List of floats
 print(f"Embedding: {embedding[:5]}...")  # First 5 dimensions
 print(f"Dimensions: {response.dimensions}")
 
-# Check usage and cost
+# Check usage
 print(f"Tokens used: {response.usage.tokens}")
-print(f"Cost: ${response.usage.cost:.6f}")
 ```
 
 ## Get Started
@@ -63,6 +62,6 @@ print(f"Cost: ${response.usage.cost:.6f}")
 
 ## Why Catsu?
 
-The world of embedding API clients is fragmented. Catsu provides a clean, consistent interface across all major providers while handling the complexity of retries, error handling, and cost tracking for you.
+The world of embedding API clients is broken. Provider-specific libraries are inconsistent or broken, universal clients don't focus on embeddings, and there's no single source of truth for model metadata. Catsu fixes this with a clean, consistent interface across all major providers while handling the complexity of retries, error handling, and cost tracking for you.
 
 Ready to get started? Head to the [Installation](/installation) page!

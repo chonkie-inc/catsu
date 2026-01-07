@@ -37,7 +37,7 @@ export MIXEDBREAD_API_KEY="your-mixedbread-api-key"
 
 ```python
 response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="Hello, Mixed Bread!"
 )
 ```
@@ -47,14 +47,14 @@ response = client.embed(
 ```python
 # Query embeddings
 query_response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="What is NLP?",
     input_type="query"
 )
 
 # Document embeddings
 doc_response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="NLP stands for...",
     input_type="document"
 )
@@ -65,14 +65,14 @@ doc_response = client.embed(
 ```python
 # Int8 quantization
 int8_response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="Text",
     encoding_format="int8"
 )
 
 # Binary quantization
 binary_response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="Text",
     encoding_format="binary"
 )
@@ -83,7 +83,7 @@ binary_response = client.embed(
 ```python
 # German language model
 response = client.embed(
-    model="deepset-mxbai-embed-de-large-v1",
+    "deepset-mxbai-embed-de-large-v1",
     input="Hallo, wie geht es dir?"
 )
 ```
@@ -92,7 +92,7 @@ response = client.embed(
 
 ```python
 response = client.embed(
-    model="mxbai-embed-large-v1",
+    "mxbai-embed-large-v1",
     input="Sample text",
     dimensions=512
 )

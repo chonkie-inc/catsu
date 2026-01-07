@@ -20,11 +20,11 @@ Batching multiple texts into a single API request significantly improves efficie
 # ❌ Inefficient: Individual requests
 embeddings = []
 for text in texts:
-    response = client.embed(model="voyage-3", input=text)
+    response = client.embed("voyage-3", text)
     embeddings.append(response.embeddings[0])
 
 # ✅ Efficient: Single batch request
-response = client.embed(model="voyage-3", input=texts)
+response = client.embed("voyage-3", texts)
 embeddings = response.embeddings
 ```
 
@@ -48,7 +48,7 @@ def process_in_batches(texts, batch_size=50):
 
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
-        response = client.embed(model="voyage-3", input=batch)
+        response = client.embed("voyage-3", batch)
         results.extend(response.embeddings)
 
     return results
@@ -65,7 +65,7 @@ For maximum throughput, combine batching with async:
 import asyncio
 
 async def process_large_dataset(texts, batch_size=50):
-    client = catsu.Client()
+    client = Client()
 
     # Split into batches
     batches = [
@@ -75,7 +75,7 @@ async def process_large_dataset(texts, batch_size=50):
 
     # Process all batches in parallel
     responses = await asyncio.gather(*[
-        client.aembed(model="voyage-3", input=batch)
+        client.aembed("voyage-3", batch)
         for batch in batches
     ])
 
@@ -100,12 +100,12 @@ texts = ["Sample text"] * 100
 # Method 1: Individual requests
 start = time.time()
 for text in texts:
-    response = client.embed(model="voyage-3", input=text)
+    response = client.embed("voyage-3", text)
 individual_time = time.time() - start
 
 # Method 2: Batch request
 start = time.time()
-response = client.embed(model="voyage-3", input=texts)
+response = client.embed("voyage-3", texts)
 batch_time = time.time() - start
 
 print(f"Individual: {individual_time:.2f}s")

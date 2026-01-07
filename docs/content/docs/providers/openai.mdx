@@ -22,10 +22,9 @@ export OPENAI_API_KEY="your-openai-api-key"
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `model` | str | Yes | Model identifier |
+| `model` | str | Yes | Model identifier (`openai:model-name`) |
 | `input` | str \| List[str] | Yes | Text(s) to embed |
 | `dimensions` | int | No | Output dimensions (text-embedding-3 models only) |
-| `api_key` | str | No | Override API key for this request |
 
 **Note**: OpenAI **does not support** `input_type`. This parameter is ignored if provided.
 
@@ -34,17 +33,17 @@ export OPENAI_API_KEY="your-openai-api-key"
 ### Basic Usage
 
 ```python
-import catsu
+from catsu import Client
 
-client = catsu.Client()
+client = Client()
 
 response = client.embed(
-    model="text-embedding-3-small",
-    input="Hello, OpenAI!"
+    "openai:text-embedding-3-small",
+    "Hello, OpenAI!"
 )
 
 print(f"Dimensions: {response.dimensions}")  # 1536
-print(f"Cost: ${response.usage.cost:.8f}")
+print(f"Tokens: {response.usage.tokens}")
 ```
 
 ### With Custom Dimensions (text-embedding-3 only)
@@ -52,8 +51,8 @@ print(f"Cost: ${response.usage.cost:.8f}")
 ```python
 # Reduce dimensions for faster similarity search
 response = client.embed(
-    model="text-embedding-3-small",
-    input="Sample text",
+    "openai:text-embedding-3-small",
+    ["Sample text"],
     dimensions=512  # vs default 1536
 )
 
@@ -61,8 +60,8 @@ print(f"Dimensions: {response.dimensions}")  # 512
 
 # Large model with custom dimensions
 response = client.embed(
-    model="text-embedding-3-large",
-    input="Sample text",
+    "openai:text-embedding-3-large",
+    ["Sample text"],
     dimensions=1024  # vs default 3072
 )
 ```
@@ -77,25 +76,26 @@ texts = [
 ]
 
 response = client.embed(
-    model="text-embedding-3-small",
-    input=texts
+    "openai:text-embedding-3-small",
+    texts
 )
 
 print(f"Processed {len(response.embeddings)} texts")
-print(f"Total cost: ${response.usage.cost:.6f}")
+print(f"Total tokens: {response.usage.tokens}")
 ```
 
 ### Async Usage
 
 ```python
 import asyncio
+from catsu import Client
 
 async def main():
-    client = catsu.Client()
+    client = Client()
 
     response = await client.aembed(
-        model="text-embedding-3-small",
-        input="Async embedding"
+        "openai:text-embedding-3-small",
+        "Async embedding"
     )
 
     print(response.embeddings)
@@ -115,13 +115,12 @@ For pricing and benchmarks, visit [catsu.dev](https://catsu.dev).
 
 ## Special Notes
 
-- ⚠️ **`input_type` is NOT supported** - OpenAI ignores this parameter
-- ✅ Dimensions supported for text-embedding-3 models only
+- `input_type` is NOT supported - OpenAI ignores this parameter
+- Dimensions supported for text-embedding-3 models only
 - text-embedding-ada-002 does not support custom dimensions
 - Maximum 8191 tokens per input
-- Batch size limit varies (check provider documentation)
 
 ## Next Steps
 
-- [Common Parameters](/parameters) - Learn about dimensions parameter
-- [Best Practices: Cost Tracking](/best-practices/cost-tracking) - Monitor OpenAI usage costs
+- [Providers Overview](/providers) - Compare all providers
+- [Best Practices: Model Selection](/best-practices/model-selection) - Choose the right model

@@ -37,7 +37,7 @@ export NOMIC_API_KEY="your-nomic-api-key"
 
 ```python
 response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Hello, Nomic!"
 )
 ```
@@ -49,14 +49,14 @@ Like Cohere, Nomic maps `input_type` to `search_query`/`search_document`:
 ```python
 # Query
 query_response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="What is AI?",
     input_type="query"  # → search_query
 )
 
 # Document
 doc_response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="AI is...",
     input_type="document"  # → search_document
 )
@@ -67,7 +67,7 @@ doc_response = client.embed(
 ```python
 # Smaller dimensions
 response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Sample text",
     dimensions=256  # 64-768 supported
 )
@@ -80,14 +80,14 @@ print(f"Dimensions: {response.dimensions}")  # 256
 ```python
 # Mean pooling for long texts (default)
 response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Very long text..." * 1000,
     long_text_mode="mean"
 )
 
 # Truncate long texts
 response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Very long text..." * 1000,
     long_text_mode="truncate",
     max_tokens_per_text=4096
@@ -99,14 +99,14 @@ response = client.embed(
 ```python
 # Clustering
 cluster_response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Group similar documents",
     task_type="clustering"
 )
 
 # Classification
 classify_response = client.embed(
-    model="nomic-embed-text-v1.5",
+    "nomic-embed-text-v1.5",
     input="Classify this text",
     task_type="classification"
 )

@@ -12,7 +12,7 @@ Every `embed()` and `aembed()` response includes usage information:
 
 ```python
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Sample text"
 )
 
@@ -36,7 +36,7 @@ class Usage:
 ```python
 texts = ["Text 1", "Text 2", "Text 3"]
 
-response = client.embed(model="voyage-3", input=texts)
+response = client.embed("voyage-3", texts)
 
 # Total cost for batch
 total_cost = response.usage.cost
@@ -60,7 +60,7 @@ total_cost = 0
 total_tokens = 0
 
 for batch in batches:
-    response = client.embed(model="voyage-3", input=batch)
+    response = client.embed("voyage-3", batch)
 
     total_cost += response.usage.cost
     total_tokens += response.usage.tokens
@@ -99,7 +99,7 @@ models_to_compare = ["voyage-3", "text-embedding-3-small", "embed-v4.0"]
 sample_text = "Compare embedding costs across providers"
 
 for model in models_to_compare:
-    response = client.embed(model=model, input=sample_text)
+    response = client.embed(model=model, sample_text)
 
     print(f"{model}:")
     print(f"  Cost: ${response.usage.cost:.8f}")
@@ -114,13 +114,13 @@ for model in models_to_compare:
 ```python
 # Full dimensions
 full_response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Text"
 )
 
 # Reduced dimensions (same API cost, lower storage/compute)
 small_response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input="Text",
     dimensions=256
 )
@@ -138,7 +138,7 @@ Different providers have different pricing models. Compare on [catsu.dev](https:
 ```python
 # Batching reduces per-text overhead
 response = client.embed(
-    model="voyage-3",
+    "voyage-3",
     input=texts  # Batch of many texts
 )
 
@@ -150,12 +150,12 @@ cost_per_text = response.usage.cost / len(texts)
 ```python
 class EmbeddingService:
     def __init__(self):
-        self.client = catsu.Client()
+        self.client = Client()
         self.total_cost = 0
         self.total_requests = 0
 
     def embed(self, text, model="voyage-3"):
-        response = self.client.embed(model=model, input=text)
+        response = self.client.embed(model=model, text)
 
         # Track metrics
         self.total_cost += response.usage.cost

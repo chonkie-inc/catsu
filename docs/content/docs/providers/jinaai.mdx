@@ -36,7 +36,7 @@ export JINA_API_KEY="your-jina-api-key"
 
 ```python
 response = client.embed(
-    model="jina-embeddings-v3",
+    "jina-embeddings-v3",
     input="Hello, Jina!"
 )
 ```
@@ -45,7 +45,7 @@ response = client.embed(
 
 ```python
 response = client.embed(
-    model="jina-embeddings-v4",
+    "jina-embeddings-v4",
     input="Text that could be paired with images"
 )
 ```
@@ -54,7 +54,7 @@ response = client.embed(
 
 ```python
 response = client.embed(
-    model="jina-code-embeddings-1.5b",
+    "jina-code-embeddings-1.5b",
     input="def calculate_similarity(a, b): return cosine(a, b)"
 )
 ```
@@ -63,7 +63,7 @@ response = client.embed(
 
 ```python
 response = client.embed(
-    model="jina-embeddings-v3",
+    "jina-embeddings-v3",
     input="Search query",
     task="retrieval.query"
 )
@@ -76,7 +76,7 @@ response = client.embed(
 very_long_text = "..." * 10000
 
 response = client.embed(
-    model="jina-embeddings-v3",
+    "jina-embeddings-v3",
     input=very_long_text
 )
 ```
