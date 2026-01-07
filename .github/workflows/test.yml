@@ -8,8 +8,46 @@ on:
     branches:
       - main
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
-  test:
+  # Rust tests
+  rust-test:
+    name: Rust Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Run Rust tests
+        run: cargo test --workspace
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run clippy
+        run: cargo clippy --workspace -- -D warnings
+
+  # Python bindings tests
+  python-test:
+    name: Python Tests (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,35 +57,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install uv and set up Python
-        uses: astral-sh/setup-uv@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          enable-cache: true
-          cache-dependency-glob: "pyproject.toml"
 
-      - name: Install dependencies
-        run: uv pip install -e ".[dev]"
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
 
-      - name: Cache HuggingFace tokenizers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface/hub
-          key: ubuntu-huggingface-tokenizers-${{ hashFiles('src/catsu/data/models.json') }}
-          restore-keys: |
-            ubuntu-huggingface-tokenizers-
+      - name: Install maturin
+        run: pip install maturin pytest pytest-asyncio
 
-      - name: Run unit tests
+      - name: Build and install Python package
         run: |
-          source .venv/bin/activate
-          python -m pytest -n auto -vv --cov=src/catsu --cov-report=xml --cov-report=term-missing
+          cd packages/python
+          maturin develop
 
-      - name: Upload coverage to Codecov
-        if: matrix.python-version == '3.12'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          flags: unittests
-          fail_ci_if_error: false
-          verbose: true
+      - name: Test import
+        run: |
+          python -c "from catsu import Client, EmbedResponse, ModelInfo, Usage; print('Import successful')"
+          python -c "from catsu import Client; c = Client(); print(f'Models: {len(c.list_models())}')"
