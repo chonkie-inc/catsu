@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-rust:
+    name: Test Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: cargo test
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+
+  test-python:
+    name: Test Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Create virtualenv and install dependencies
+        run: |
+          uv venv
+          uv pip install pytest pytest-asyncio
+
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          args: --release -m packages/python/Cargo.toml -o dist
+
+      - name: Install wheel
+        run: uv pip install dist/*.whl
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          python -c "from catsu import Client, EmbedResponse, ModelInfo, Usage; print('Import OK')"
+          python -c "from catsu import Client; c = Client(); print(f'Models: {len(c.list_models())}')"
