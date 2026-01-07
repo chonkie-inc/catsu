@@ -37,4 +37,4 @@ Example:
 from catsu._catsu import Client, EmbedResponse, ModelInfo, Usage
 
 __all__ = ["Client", "EmbedResponse", "ModelInfo", "Usage"]
-__version__ = "0.1.1"
+__version__ = "0.1.2"

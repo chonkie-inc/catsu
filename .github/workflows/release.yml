@@ -39,13 +39,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: |
+            3.10
+            3.11
+            3.12
+            3.13
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist -m packages/python/Cargo.toml --find-interpreter
+          args: --release --out dist -m packages/python/Cargo.toml -i python3.10 -i python3.11 -i python3.12 -i python3.13
           manylinux: auto
 
       - name: Upload wheels
