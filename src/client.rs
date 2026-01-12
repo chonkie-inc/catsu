@@ -339,8 +339,20 @@ mod tests {
         assert_eq!(provider, "openai");
         assert_eq!(model, "text-embedding-3-small");
 
-        // Without provider (no openai registered, should error)
-        let result = client.parse_model_string("text-embedding-3-small");
+        // Without provider prefix - should auto-detect from catalog
+        let (provider, model) = client
+            .parse_model_string("text-embedding-3-small")
+            .unwrap();
+        assert_eq!(provider, "openai");
+        assert_eq!(model, "text-embedding-3-small");
+
+        // VoyageAI model without prefix - should auto-detect
+        let (provider, model) = client.parse_model_string("voyage-3-large").unwrap();
+        assert_eq!(provider, "voyageai");
+        assert_eq!(model, "voyage-3-large");
+
+        // Unknown model without prefix - should error
+        let result = client.parse_model_string("non-existent-model-xyz");
         assert!(result.is_err());
     }
 }
