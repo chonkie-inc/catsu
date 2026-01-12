@@ -56,7 +56,7 @@ pub mod models;
 pub mod providers;
 
 // Re-exports
-pub use catalog::{get_model, list_catalog_providers, list_models};
+pub use catalog::{find_model_by_name, get_model, list_catalog_providers, list_models};
 pub use client::Client;
 pub use errors::ClientError;
 pub use http::{HttpClient, HttpConfig};

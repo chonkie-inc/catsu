@@ -83,6 +83,18 @@ pub fn list_catalog_providers() -> Vec<&'static str> {
     CATALOG.keys().map(|s| s.as_str()).collect()
 }
 
+/// Find a model by name across all providers.
+///
+/// Returns the first matching model info if found.
+/// This is useful for auto-detecting the provider from a model name.
+pub fn find_model_by_name(model_name: &str) -> Option<ModelInfo> {
+    CATALOG
+        .values()
+        .flatten()
+        .find(|m| m.name == model_name)
+        .cloned()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -107,5 +119,26 @@ mod tests {
         let model = model.unwrap();
         assert_eq!(model.name, "text-embedding-3-small");
         assert_eq!(model.provider, "openai");
+    }
+
+    #[test]
+    fn test_find_model_by_name() {
+        // Test finding VoyageAI model by name only
+        let model = find_model_by_name("voyage-3-large");
+        assert!(model.is_some());
+        let model = model.unwrap();
+        assert_eq!(model.name, "voyage-3-large");
+        assert_eq!(model.provider, "voyageai");
+
+        // Test finding OpenAI model by name only
+        let model = find_model_by_name("text-embedding-3-small");
+        assert!(model.is_some());
+        let model = model.unwrap();
+        assert_eq!(model.name, "text-embedding-3-small");
+        assert_eq!(model.provider, "openai");
+
+        // Test non-existent model
+        let model = find_model_by_name("non-existent-model");
+        assert!(model.is_none());
     }
 }

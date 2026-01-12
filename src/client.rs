@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use crate::catalog::find_model_by_name;
 use crate::errors::ClientError;
 use crate::http::{HttpClient, HttpConfig};
 use crate::models::{EmbedRequest, EmbedResponse, InputType};
@@ -276,18 +277,20 @@ impl Client {
 
     /// Parse model string into provider and model name.
     ///
-    /// Supports format: "provider:model" (e.g., "openai:text-embedding-3-small")
+    /// Supports formats:
+    /// - "provider:model" (e.g., "openai:text-embedding-3-small")
+    /// - "model" (auto-detects provider from catalog)
     fn parse_model_string(&self, model: &str) -> Result<(String, String), ClientError> {
         if let Some((provider, model_name)) = model.split_once(':') {
             Ok((provider.to_string(), model_name.to_string()))
         } else {
-            // Try to auto-detect provider
-            // For now, if no colon, assume it might be an OpenAI model
-            if self.providers.contains_key("openai") {
-                Ok(("openai".to_string(), model.to_string()))
+            // Try to auto-detect provider from the model catalog
+            if let Some(model_info) = find_model_by_name(model) {
+                Ok((model_info.provider, model.to_string()))
             } else {
+                // Model not found in catalog - return error with helpful message
                 Err(ClientError::InvalidInput(format!(
-                    "Invalid model format '{}'. Expected 'provider:model' (e.g., 'openai:text-embedding-3-small')",
+                    "Model '{}' not found in catalog. Use 'provider:model' format (e.g., 'openai:text-embedding-3-small') or check available models with list_models()",
                     model
                 )))
             }
