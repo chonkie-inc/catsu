@@ -1248,6 +1248,106 @@
   ],
   "voyageai": [
     {
+      "name": "voyage-4-large",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.12,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 78.26,
+      "rteb_score": 78.26,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2026-01-15"
+    },
+    {
+      "name": "voyage-4",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.06,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2026-01-15"
+    },
+    {
+      "name": "voyage-4-lite",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.02,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": 73.29,
+      "rteb_score": 73.29,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2026-01-15"
+    },
+    {
+      "name": "voyage-4-nano",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.0,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-3-large"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "binary"
+      ],
+      "release_date": "2026-01-15"
+    },
+    {
       "name": "voyage-3-large",
       "provider": "voyageai",
       "dimensions": 1024,
