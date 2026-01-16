@@ -340,9 +340,7 @@ mod tests {
         assert_eq!(model, "text-embedding-3-small");
 
         // Without provider prefix - should auto-detect from catalog
-        let (provider, model) = client
-            .parse_model_string("text-embedding-3-small")
-            .unwrap();
+        let (provider, model) = client.parse_model_string("text-embedding-3-small").unwrap();
         assert_eq!(provider, "openai");
         assert_eq!(model, "text-embedding-3-small");
 
