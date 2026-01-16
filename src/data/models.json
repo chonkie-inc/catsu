@@ -1259,7 +1259,7 @@
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
-      "mteb_score": 78.26,
+      "mteb_score": null,
       "rteb_score": 78.26,
       "tokenizer": {
         "engine": "huggingface",
@@ -1309,7 +1309,7 @@
       "supports_batching": true,
       "supports_input_type": true,
       "supports_dimensions": true,
-      "mteb_score": 73.29,
+      "mteb_score": null,
       "rteb_score": 73.29,
       "tokenizer": {
         "engine": "huggingface",
