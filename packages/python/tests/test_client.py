@@ -17,6 +17,14 @@ def test_client_with_invalid_ca_cert():
         Client(ca_cert="not a valid certificate")
 
 
+def test_client_with_invalid_proxy():
+    """Test that Client raises an error for invalid proxy URL."""
+    from catsu import Client
+
+    with pytest.raises(RuntimeError):
+        Client(proxy="not-a-valid-url")
+
+
 def test_client_with_valid_ca_cert_format():
     """Test that Client accepts a valid PEM format CA certificate.
 
