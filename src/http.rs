@@ -216,4 +216,12 @@ mod tests {
         assert!(config.proxy.is_none());
         assert!(config.ca_cert_pem.is_none());
     }
+
+    #[test]
+    fn test_http_client_new_with_proxy() {
+        let mut config = HttpConfig::default();
+        config.proxy = Some("http://proxy.example.com:8080".to_string());
+        let result = HttpClient::new(config);
+        assert!(result.is_ok());
+    }
 }
