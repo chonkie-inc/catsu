@@ -158,12 +158,17 @@ impl CatsuClient {
     ///     api_keys: Optional dict of provider names to API keys
     ///     max_retries: Maximum number of retry attempts (default: 3)
     ///     timeout: Request timeout in seconds (default: 30)
+    ///     proxy: Optional HTTP/HTTPS proxy URL (e.g. "http://proxy.corp.com:8080").
+    ///         When None (default), reqwest respects HTTP_PROXY/HTTPS_PROXY env vars.
+    ///     ca_cert: Optional PEM-encoded CA certificate string for custom certificate authorities
     #[new]
-    #[pyo3(signature = (api_keys=None, max_retries=None, timeout=None))]
+    #[pyo3(signature = (api_keys=None, max_retries=None, timeout=None, proxy=None, ca_cert=None))]
     pub fn new(
         api_keys: Option<HashMap<String, String>>,
         max_retries: Option<u32>,
         timeout: Option<u64>,
+        proxy: Option<String>,
+        ca_cert: Option<String>,
     ) -> PyResult<Self> {
         let mut config = HttpConfig::default();
         if let Some(retries) = max_retries {
@@ -172,6 +177,8 @@ impl CatsuClient {
         if let Some(secs) = timeout {
             config.timeout_secs = secs;
         }
+        config.proxy = proxy.filter(|s| !s.is_empty());
+        config.ca_cert_pem = ca_cert.filter(|s| !s.is_empty());
 
         let inner = if let Some(keys) = api_keys {
             RustClient::with_api_keys_and_config(keys, config)

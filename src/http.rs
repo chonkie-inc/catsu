@@ -19,6 +19,10 @@ pub struct HttpConfig {
     pub max_backoff_ms: u64,
     /// Request timeout in seconds.
     pub timeout_secs: u64,
+    /// HTTP/HTTPS proxy URL.
+    pub proxy: Option<String>,
+    /// PEM-encoded CA certificate.
+    pub ca_cert_pem: Option<String>,
 }
 
 impl Default for HttpConfig {
@@ -28,6 +32,8 @@ impl Default for HttpConfig {
             initial_backoff_ms: 100,
             max_backoff_ms: 30_000,
             timeout_secs: 30,
+            proxy: None,
+            ca_cert_pem: None,
         }
     }
 }
@@ -42,10 +48,21 @@ pub struct HttpClient {
 impl HttpClient {
     /// Create a new HTTP client with the given configuration.
     pub fn new(config: HttpConfig) -> Result<Self, ClientError> {
-        let client = Client::builder()
+        let mut builder = Client::builder()
             .timeout(Duration::from_secs(config.timeout_secs))
-            .pool_max_idle_per_host(10)
-            .build()?;
+            .pool_max_idle_per_host(10);
+
+        if let Some(ref proxy_url) = config.proxy {
+            let proxy = reqwest::Proxy::all(proxy_url)?;
+            builder = builder.proxy(proxy);
+        }
+
+        if let Some(ref pem) = config.ca_cert_pem {
+            let cert = reqwest::Certificate::from_pem(pem.as_bytes())?;
+            builder = builder.add_root_certificate(cert);
+        }
+
+        let client = builder.build()?;
 
         Ok(Self { client, config })
     }
@@ -174,5 +191,37 @@ mod tests {
         assert!(!is_retryable_status(400));
         assert!(!is_retryable_status(401));
         assert!(!is_retryable_status(404));
+    }
+
+    #[test]
+    fn test_config_with_proxy_and_ca_cert() {
+        let config = HttpConfig {
+            proxy: Some("http://proxy.example.com:8080".to_string()),
+            ca_cert_pem: Some(
+                "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----".to_string(),
+            ),
+            ..HttpConfig::default()
+        };
+        assert_eq!(
+            config.proxy,
+            Some("http://proxy.example.com:8080".to_string())
+        );
+        assert!(config.ca_cert_pem.is_some());
+        assert!(config.ca_cert_pem.unwrap().contains("BEGIN CERTIFICATE"));
+    }
+
+    #[test]
+    fn test_default_config_has_no_proxy_or_ca_cert() {
+        let config = HttpConfig::default();
+        assert!(config.proxy.is_none());
+        assert!(config.ca_cert_pem.is_none());
+    }
+
+    #[test]
+    fn test_http_client_new_with_proxy() {
+        let mut config = HttpConfig::default();
+        config.proxy = Some("http://proxy.example.com:8080".to_string());
+        let result = HttpClient::new(config);
+        assert!(result.is_ok());
     }
 }
