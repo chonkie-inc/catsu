@@ -197,10 +197,15 @@ mod tests {
     fn test_config_with_proxy_and_ca_cert() {
         let config = HttpConfig {
             proxy: Some("http://proxy.example.com:8080".to_string()),
-            ca_cert_pem: Some("-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----".to_string()),
+            ca_cert_pem: Some(
+                "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----".to_string(),
+            ),
             ..HttpConfig::default()
         };
-        assert_eq!(config.proxy, Some("http://proxy.example.com:8080".to_string()));
+        assert_eq!(
+            config.proxy,
+            Some("http://proxy.example.com:8080".to_string())
+        );
         assert!(config.ca_cert_pem.is_some());
         assert!(config.ca_cert_pem.unwrap().contains("BEGIN CERTIFICATE"));
     }
