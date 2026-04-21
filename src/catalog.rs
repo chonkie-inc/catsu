@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 
-use crate::models::ModelInfo;
+use crate::models::{ModelInfo, TokenizerInfo};
 
 /// Raw JSON model data embedded at compile time.
 const MODELS_JSON: &str = include_str!("data/models.json");
@@ -24,6 +24,8 @@ struct CatalogEntry {
     supports_dimensions: bool,
     #[serde(default)]
     supports_input_type: bool,
+    #[serde(default)]
+    tokenizer: Option<TokenizerInfo>,
 }
 
 impl From<CatalogEntry> for ModelInfo {
@@ -36,6 +38,7 @@ impl From<CatalogEntry> for ModelInfo {
             supports_dimensions: entry.supports_dimensions,
             supports_input_type: entry.supports_input_type,
             cost_per_million_tokens: entry.cost_per_million_tokens,
+            tokenizer: entry.tokenizer,
         }
     }
 }

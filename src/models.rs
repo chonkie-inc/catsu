@@ -58,6 +58,13 @@ pub enum InputType {
     Document,
 }
 
+/// Tokenizer configuration from the model catalog.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TokenizerInfo {
+    pub engine: String,
+    pub name: String,
+}
+
 /// Model information from the catalog.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModelInfo {
@@ -75,4 +82,6 @@ pub struct ModelInfo {
     pub supports_input_type: bool,
     /// Cost per 1M tokens in USD.
     pub cost_per_million_tokens: Option<f64>,
+    /// Tokenizer configuration.
+    pub tokenizer: Option<TokenizerInfo>,
 }
