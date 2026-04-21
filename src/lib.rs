@@ -54,11 +54,12 @@ pub mod errors;
 pub mod http;
 pub mod models;
 pub mod providers;
+pub(crate) mod tokenizer;
 
 // Re-exports
 pub use catalog::{find_model_by_name, get_model, list_catalog_providers, list_models};
 pub use client::Client;
 pub use errors::ClientError;
 pub use http::{HttpClient, HttpConfig};
-pub use models::{EmbedRequest, EmbedResponse, InputType, ModelInfo, Usage};
+pub use models::{EmbedRequest, EmbedResponse, InputType, ModelInfo, TokenizerInfo, Usage};
 pub use providers::EmbeddingProvider;

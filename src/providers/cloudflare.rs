@@ -162,13 +162,19 @@ impl EmbeddingProvider for CloudflareProvider {
             .copied()
             .unwrap_or_else(|| embedding_vectors.first().map(|e| e.len()).unwrap_or(0));
 
-        // Cloudflare doesn't return token count, estimate based on input
-        // Rough estimate: 1 token per 5 characters
-        let estimated_tokens: u64 = request
-            .inputs
-            .iter()
-            .map(|s| (s.len() as u64 / 5).max(1))
-            .sum();
+        let inputs_for_counting = request.inputs.clone();
+        let model_for_counting = request.model.clone();
+        let estimated_tokens = tokio::task::spawn_blocking(move || {
+            crate::tokenizer::count_tokens_for_model(
+                "cloudflare",
+                &model_for_counting,
+                &inputs_for_counting,
+            )
+        })
+        .await
+        .unwrap_or_else(|_| {
+            crate::tokenizer::fallback_count(&request.inputs)
+        });
 
         let cost = calculate_cost(&request.model, estimated_tokens);
 
