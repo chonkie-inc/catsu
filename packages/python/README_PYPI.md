@@ -83,6 +83,21 @@ response = client.embed(
 )
 ```
 
+## Contextualized Embeddings
+
+```python
+response = client.contextualized_embed(
+    "voyage-context-3",
+    [
+        ["doc 1 chunk 1", "doc 1 chunk 2"],
+        ["doc 2 chunk 1"],
+    ],
+    input_type="document",
+)
+
+print(response.embeddings[0][0][:5])
+```
+
 ## Model Catalog
 
 ```python

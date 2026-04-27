@@ -34,7 +34,13 @@ Example:
     >>> print(arr.shape)  # (1, 1536)
 """
 
-from catsu._catsu import Client, EmbedResponse, ModelInfo, Usage
+from catsu._catsu import Client, ContextualizedEmbedResponse, EmbedResponse, ModelInfo, Usage
 
-__all__ = ["Client", "EmbedResponse", "ModelInfo", "Usage"]
+__all__ = [
+    "Client",
+    "ContextualizedEmbedResponse",
+    "EmbedResponse",
+    "ModelInfo",
+    "Usage",
+]
 __version__ = "0.1.8"

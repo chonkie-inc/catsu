@@ -11,8 +11,8 @@ use pyo3_async_runtimes::tokio::future_into_py;
 use tokio::runtime::Runtime;
 
 use catsu::{
-    Client as RustClient, EmbedResponse as RustEmbedResponse, HttpConfig, InputType,
-    ModelInfo as RustModelInfo,
+    Client as RustClient, ContextualizedEmbedResponse as RustContextualizedEmbedResponse,
+    EmbedResponse as RustEmbedResponse, HttpConfig, InputType, ModelInfo as RustModelInfo,
 };
 
 /// Global tokio runtime for async operations.
@@ -91,6 +91,30 @@ pub struct EmbedResponse {
     pub usage: Usage,
 }
 
+/// Response from a contextualized embedding request.
+#[pyclass]
+#[derive(Clone)]
+pub struct ContextualizedEmbedResponse {
+    #[pyo3(get)]
+    pub embeddings: Vec<Vec<Vec<f32>>>,
+    #[pyo3(get)]
+    pub model: String,
+    #[pyo3(get)]
+    pub provider: String,
+    #[pyo3(get)]
+    pub dimensions: usize,
+    #[pyo3(get)]
+    pub input_count: usize,
+    #[pyo3(get)]
+    pub chunk_count: usize,
+    #[pyo3(get)]
+    pub input_type: Option<String>,
+    #[pyo3(get)]
+    pub latency_ms: f64,
+    #[pyo3(get)]
+    pub usage: Usage,
+}
+
 #[pymethods]
 impl EmbedResponse {
     /// Convert embeddings to a numpy array.
@@ -111,17 +135,33 @@ impl EmbedResponse {
 
 impl From<RustEmbedResponse> for EmbedResponse {
     fn from(response: RustEmbedResponse) -> Self {
-        let input_type = response.input_type.map(|it| match it {
-            InputType::Query => "query".to_string(),
-            InputType::Document => "document".to_string(),
-        });
-
         EmbedResponse {
             embeddings: response.embeddings,
             model: response.model,
             provider: response.provider,
             dimensions: response.dimensions,
             input_count: response.input_count,
+            input_type: input_type_to_string(response.input_type),
+            latency_ms: response.latency_ms,
+            usage: Usage {
+                tokens: response.usage.tokens,
+                cost: response.usage.cost,
+            },
+        }
+    }
+}
+
+impl From<RustContextualizedEmbedResponse> for ContextualizedEmbedResponse {
+    fn from(response: RustContextualizedEmbedResponse) -> Self {
+        let input_type = input_type_to_string(response.input_type);
+
+        ContextualizedEmbedResponse {
+            embeddings: response.embeddings,
+            model: response.model,
+            provider: response.provider,
+            dimensions: response.dimensions,
+            input_count: response.input_count,
+            chunk_count: response.chunk_count,
             input_type,
             latency_ms: response.latency_ms,
             usage: Usage {
@@ -130,6 +170,25 @@ impl From<RustEmbedResponse> for EmbedResponse {
             },
         }
     }
+}
+
+fn parse_input_type(input_type: Option<&str>) -> PyResult<Option<InputType>> {
+    match input_type {
+        Some("query") => Ok(Some(InputType::Query)),
+        Some("document") => Ok(Some(InputType::Document)),
+        Some(other) => Err(PyRuntimeError::new_err(format!(
+            "Invalid input_type '{}'. Must be 'query' or 'document'",
+            other
+        ))),
+        None => Ok(None),
+    }
+}
+
+fn input_type_to_string(input_type: Option<InputType>) -> Option<String> {
+    input_type.map(|it| match it {
+        InputType::Query => "query".to_string(),
+        InputType::Document => "document".to_string(),
+    })
 }
 
 /// High-performance embeddings client.
@@ -234,17 +293,7 @@ impl CatsuClient {
 
         let model = model.to_string();
         let provider_owned = provider.map(|s| s.to_string());
-        let input_type_enum = match input_type {
-            Some("query") => Some(InputType::Query),
-            Some("document") => Some(InputType::Document),
-            Some(other) => {
-                return Err(PyRuntimeError::new_err(format!(
-                    "Invalid input_type '{}'. Must be 'query' or 'document'",
-                    other
-                )))
-            }
-            None => None,
-        };
+        let input_type_enum = parse_input_type(input_type)?;
 
         let rt = GLOBAL_RUNTIME.clone();
         let client = &self.inner;
@@ -313,17 +362,7 @@ impl CatsuClient {
 
         let model = model.to_string();
         let provider_owned = provider.map(|s| s.to_string());
-        let input_type_enum = match input_type {
-            Some("query") => Some(InputType::Query),
-            Some("document") => Some(InputType::Document),
-            Some(other) => {
-                return Err(PyRuntimeError::new_err(format!(
-                    "Invalid input_type '{}'. Must be 'query' or 'document'",
-                    other
-                )))
-            }
-            None => None,
-        };
+        let input_type_enum = parse_input_type(input_type)?;
 
         let client = Arc::clone(&self.inner);
 
@@ -341,6 +380,94 @@ impl CatsuClient {
                 .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
 
             Ok(EmbedResponse::from(result))
+        })
+    }
+
+    /// Generate contextualized embeddings for grouped input text.
+    ///
+    /// Args:
+    ///     model: Model name (with or without "provider:" prefix)
+    ///     inputs: List of text groups. Each inner list is embedded together.
+    ///     provider: Optional explicit provider name (e.g., "voyageai")
+    ///     input_type: Optional input type hint ("query" or "document")
+    ///     dimensions: Optional output dimensions
+    ///     api_key: Optional API key override for this request
+    ///
+    /// Example:
+    ///     >>> response = client.contextualized_embed(
+    ///     ...     "voyage-context-3",
+    ///     ...     [["doc 1 chunk 1", "doc 1 chunk 2"], ["doc 2 chunk 1"]],
+    ///     ...     input_type="document",
+    ///     ... )
+    #[pyo3(signature = (model, inputs, provider=None, input_type=None, dimensions=None, api_key=None))]
+    pub fn contextualized_embed(
+        &self,
+        py: Python<'_>,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+        provider: Option<&str>,
+        input_type: Option<&str>,
+        dimensions: Option<u32>,
+        api_key: Option<String>,
+    ) -> PyResult<ContextualizedEmbedResponse> {
+        let model = model.to_string();
+        let provider_owned = provider.map(|s| s.to_string());
+        let input_type_enum = parse_input_type(input_type)?;
+
+        let rt = GLOBAL_RUNTIME.clone();
+        let client = &self.inner;
+
+        let result = py.allow_threads(move || {
+            rt.block_on(async {
+                client
+                    .contextualized_embed_with_api_key(
+                        &model,
+                        inputs,
+                        input_type_enum,
+                        dimensions,
+                        provider_owned.as_deref(),
+                        api_key,
+                    )
+                    .await
+            })
+        });
+
+        result
+            .map(ContextualizedEmbedResponse::from)
+            .map_err(|e| PyRuntimeError::new_err(e.to_string()))
+    }
+
+    /// Async version of contextualized_embed().
+    #[pyo3(signature = (model, inputs, provider=None, input_type=None, dimensions=None, api_key=None))]
+    pub fn acontextualized_embed<'py>(
+        &self,
+        py: Python<'py>,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+        provider: Option<&str>,
+        input_type: Option<&str>,
+        dimensions: Option<u32>,
+        api_key: Option<String>,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        let model = model.to_string();
+        let provider_owned = provider.map(|s| s.to_string());
+        let input_type_enum = parse_input_type(input_type)?;
+        let client = Arc::clone(&self.inner);
+
+        future_into_py(py, async move {
+            let result = client
+                .contextualized_embed_with_api_key(
+                    &model,
+                    inputs,
+                    input_type_enum,
+                    dimensions,
+                    provider_owned.as_deref(),
+                    api_key,
+                )
+                .await
+                .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+
+            Ok(ContextualizedEmbedResponse::from(result))
         })
     }
 
@@ -438,6 +565,7 @@ impl CatsuClient {
 fn _catsu(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<CatsuClient>()?;
     m.add_class::<EmbedResponse>()?;
+    m.add_class::<ContextualizedEmbedResponse>()?;
     m.add_class::<Usage>()?;
     m.add_class::<ModelInfo>()?;
     Ok(())
