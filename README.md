@@ -80,6 +80,22 @@ let response = client.embed_with_options(
 ).await?;
 ```
 
+### Contextualized Embeddings
+
+```rust
+use catsu::{Client, InputType};
+
+let response = client.contextualized_embed_with_options(
+    "voyage-context-3",
+    vec![
+        vec!["doc 1 chunk 1".to_string(), "doc 1 chunk 2".to_string()],
+        vec!["doc 2 chunk 1".to_string()],
+    ],
+    Some(InputType::Document),
+    None,
+).await?;
+```
+
 ### Model Catalog
 
 ```rust

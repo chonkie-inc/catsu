@@ -62,3 +62,20 @@ def test_client_with_proxy_and_other_options():
         timeout=60,
     )
     assert client is not None
+
+
+def test_contextualized_response_is_exported():
+    """Test that the contextualized response type is exported."""
+    from catsu import ContextualizedEmbedResponse
+
+    assert ContextualizedEmbedResponse is not None
+
+
+def test_voyage_context_model_in_catalog():
+    """Test that voyage-context-3 can be auto-detected as a VoyageAI model."""
+    from catsu import Client
+
+    client = Client()
+    models = client.list_models("voyageai")
+    model_names = {model.name for model in models}
+    assert "voyage-context-3" in model_names

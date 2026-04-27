@@ -1348,6 +1348,33 @@
       "release_date": "2026-01-15"
     },
     {
+      "name": "voyage-context-3",
+      "provider": "voyageai",
+      "dimensions": 1024,
+      "max_input_tokens": 32000,
+      "cost_per_million_tokens": 0.18,
+      "modalities": [
+        "text"
+      ],
+      "supports_batching": true,
+      "supports_input_type": true,
+      "supports_dimensions": true,
+      "mteb_score": null,
+      "rteb_score": null,
+      "tokenizer": {
+        "engine": "huggingface",
+        "name": "voyageai/voyage-context-3"
+      },
+      "quantizations": [
+        "float",
+        "int8",
+        "uint8",
+        "binary",
+        "ubinary"
+      ],
+      "release_date": "2025-07-23"
+    },
+    {
       "name": "voyage-3-large",
       "provider": "voyageai",
       "dimensions": 1024,
