@@ -23,6 +23,29 @@ pub struct EmbedResponse {
     pub usage: Usage,
 }
 
+/// Response from a contextualized embedding request.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContextualizedEmbedResponse {
+    /// The generated embeddings grouped by input document/query group.
+    pub embeddings: Vec<Vec<Vec<f32>>>,
+    /// The model used to generate embeddings.
+    pub model: String,
+    /// The provider that generated the embeddings.
+    pub provider: String,
+    /// The dimensionality of the embeddings.
+    pub dimensions: usize,
+    /// Number of input groups that were embedded.
+    pub input_count: usize,
+    /// Total number of chunks embedded across all input groups.
+    pub chunk_count: usize,
+    /// The input type used (if specified).
+    pub input_type: Option<InputType>,
+    /// Latency of the request in milliseconds.
+    pub latency_ms: f64,
+    /// Usage information.
+    pub usage: Usage,
+}
+
 /// Token and cost usage information.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Usage {
@@ -39,6 +62,22 @@ pub struct EmbedRequest {
     pub model: String,
     /// Input texts to embed.
     pub inputs: Vec<String>,
+    /// Optional input type hint (query or document).
+    pub input_type: Option<InputType>,
+    /// Optional output dimensions (if model supports it).
+    pub dimensions: Option<u32>,
+    /// Optional API key override for this request.
+    #[serde(skip)]
+    pub api_key: Option<String>,
+}
+
+/// Request for generating contextualized embeddings.
+#[derive(Debug, Clone, Serialize)]
+pub struct ContextualizedEmbedRequest {
+    /// The model to use.
+    pub model: String,
+    /// Input text groups to embed together.
+    pub inputs: Vec<Vec<String>>,
     /// Optional input type hint (query or document).
     pub input_type: Option<InputType>,
     /// Optional output dimensions (if model supports it).

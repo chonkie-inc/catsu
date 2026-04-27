@@ -6,7 +6,9 @@ use std::sync::Arc;
 use crate::catalog::find_model_by_name;
 use crate::errors::ClientError;
 use crate::http::{HttpClient, HttpConfig};
-use crate::models::{EmbedRequest, EmbedResponse, InputType};
+use crate::models::{
+    ContextualizedEmbedRequest, ContextualizedEmbedResponse, EmbedRequest, EmbedResponse, InputType,
+};
 use crate::providers::{
     CloudflareProvider, CohereProvider, DeepInfraProvider, EmbeddingProvider, GeminiProvider,
     JinaProvider, MistralProvider, MixedbreadProvider, NomicProvider, OpenAIProvider,
@@ -275,6 +277,84 @@ impl Client {
         provider_impl.embed(request).await
     }
 
+    /// Generate contextualized embeddings for grouped inputs.
+    ///
+    /// Each inner input list is embedded together, so chunks in the same group can
+    /// contribute context to each other.
+    pub async fn contextualized_embed(
+        &self,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+    ) -> Result<ContextualizedEmbedResponse, ClientError> {
+        self.contextualized_embed_with_options(model, inputs, None, None)
+            .await
+    }
+
+    /// Generate contextualized embeddings with additional options.
+    pub async fn contextualized_embed_with_options(
+        &self,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+        input_type: Option<InputType>,
+        dimensions: Option<u32>,
+    ) -> Result<ContextualizedEmbedResponse, ClientError> {
+        self.contextualized_embed_full(model, inputs, input_type, dimensions, None)
+            .await
+    }
+
+    /// Generate contextualized embeddings with all options including explicit provider.
+    pub async fn contextualized_embed_full(
+        &self,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+        input_type: Option<InputType>,
+        dimensions: Option<u32>,
+        provider: Option<&str>,
+    ) -> Result<ContextualizedEmbedResponse, ClientError> {
+        self.contextualized_embed_with_api_key(
+            model, inputs, input_type, dimensions, provider, None,
+        )
+        .await
+    }
+
+    /// Generate contextualized embeddings with all options including API key override.
+    pub async fn contextualized_embed_with_api_key(
+        &self,
+        model: &str,
+        inputs: Vec<Vec<String>>,
+        input_type: Option<InputType>,
+        dimensions: Option<u32>,
+        provider: Option<&str>,
+        api_key: Option<String>,
+    ) -> Result<ContextualizedEmbedResponse, ClientError> {
+        let (provider_name, model_name) = if let Some(p) = provider {
+            let model_name = model
+                .split_once(':')
+                .map(|(_, m)| m.to_string())
+                .unwrap_or_else(|| model.to_string());
+            (p.to_string(), model_name)
+        } else {
+            self.parse_model_string(model)?
+        };
+
+        let provider_impl =
+            self.providers
+                .get(&provider_name)
+                .ok_or_else(|| ClientError::ProviderNotFound {
+                    provider: provider_name.clone(),
+                })?;
+
+        let request = ContextualizedEmbedRequest {
+            model: model_name,
+            inputs,
+            input_type,
+            dimensions,
+            api_key,
+        };
+
+        provider_impl.contextualized_embed(request).await
+    }
+
     /// Parse model string into provider and model name.
     ///
     /// Supports formats:
@@ -348,6 +428,10 @@ mod tests {
         let (provider, model) = client.parse_model_string("voyage-3-large").unwrap();
         assert_eq!(provider, "voyageai");
         assert_eq!(model, "voyage-3-large");
+
+        let (provider, model) = client.parse_model_string("voyage-context-3").unwrap();
+        assert_eq!(provider, "voyageai");
+        assert_eq!(model, "voyage-context-3");
 
         // Unknown model without prefix - should error
         let result = client.parse_model_string("non-existent-model-xyz");

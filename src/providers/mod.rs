@@ -15,7 +15,9 @@ pub mod voyageai;
 use async_trait::async_trait;
 
 use crate::errors::ClientError;
-use crate::models::{EmbedRequest, EmbedResponse};
+use crate::models::{
+    ContextualizedEmbedRequest, ContextualizedEmbedResponse, EmbedRequest, EmbedResponse,
+};
 
 pub use cloudflare::CloudflareProvider;
 pub use cohere::CohereProvider;
@@ -37,4 +39,15 @@ pub trait EmbeddingProvider: Send + Sync {
 
     /// Generate embeddings for the given request.
     async fn embed(&self, request: EmbedRequest) -> Result<EmbedResponse, ClientError>;
+
+    /// Generate contextualized embeddings for grouped inputs.
+    async fn contextualized_embed(
+        &self,
+        _request: ContextualizedEmbedRequest,
+    ) -> Result<ContextualizedEmbedResponse, ClientError> {
+        Err(ClientError::InvalidInput(format!(
+            "{} does not support contextualized embeddings",
+            self.name()
+        )))
+    }
 }
